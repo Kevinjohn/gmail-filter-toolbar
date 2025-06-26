@@ -7,7 +7,8 @@ const match = script.match(/function\s+isCalendarRow\(row\)\s*{[\s\S]*?}/);
 let isCalendarRow;
 if (match) {
   // eslint-disable-next-line no-eval
-  eval(`${match[0]}`);
+  // eval(`${match[0]}`);
+  isCalendarRow = eval(`(${match[0]})`);  
 }
 
 test('detects invitation by subject', () => {

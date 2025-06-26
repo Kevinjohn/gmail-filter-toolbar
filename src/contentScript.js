@@ -55,9 +55,9 @@ function injectToolbar(anchor) {
   bar.innerHTML = `
     <div class="gcal-btn-group">
       <span class="gcal-label">${chrome.i18n.getMessage('label_options') || 'Calendar options:'}</span>
-      <button data-mode="${MODES.ALL}">${chrome.i18n.getMessage('btn_yes') || 'Yes'}</button>
-      <button data-mode="${MODES.HIDE}">${chrome.i18n.getMessage('btn_no')  || 'No'}</button>
-      <button data-mode="${MODES.ONLY}">${chrome.i18n.getMessage('btn_only')|| 'Only'}</button>
+      <button aria-pressed="false" data-mode="${MODES.ALL}">${chrome.i18n.getMessage('btn_yes') || 'Yes'}</button>
+      <button aria-pressed="false" data-mode="${MODES.HIDE}">${chrome.i18n.getMessage('btn_no')  || 'No'}</button>
+      <button aria-pressed="false" data-mode="${MODES.ONLY}">${chrome.i18n.getMessage('btn_only')|| 'Only'}</button>
     </div>
     <span class="gcal-status" aria-live="polite"></span>
   `;
@@ -114,9 +114,11 @@ function applyFilter() {
 // ---------------- UI refresh helpers ------------------------
 function refreshUI(bar) {
   // highlight active button
-  bar.querySelectorAll('button').forEach(btn =>
-    btn.toggleAttribute('data-active', btn.dataset.mode === currentMode)
-  );
+  bar.querySelectorAll('button').forEach(btn => {
+    const active = btn.dataset.mode === currentMode;
+    btn.toggleAttribute('data-active', active);
+    btn.setAttribute('aria-pressed', active);
+  });
   refreshStatusText();
 }
 

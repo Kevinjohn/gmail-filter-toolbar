@@ -1,8 +1,10 @@
 .gcal-filter-bar {
   display: flex;
   justify-content: space-between;
-  margin: 4px 0;
-  padding: 2px 4px;
+  margin-block: 4px;
+  margin-inline: 0;
+  padding-block: 2px;
+  padding-inline: 4px;
   background: #f1f3f4;
   border-radius: 4px;
   font-size: 13px;

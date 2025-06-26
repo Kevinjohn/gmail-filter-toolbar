@@ -211,4 +211,4 @@ Pull requests are welcome! Before raising a PR:
 
 ## Licence
 
-MIT © Kevin John – see `LICENCE` for full text.
+MIT © Kevin John – see [LICENCE](LICENCE) for full text.

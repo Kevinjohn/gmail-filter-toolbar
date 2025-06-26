@@ -40,20 +40,18 @@ chrome.storage.onChanged.addListener((changes) => {
 function waitForGmailChrome() {
   return new Promise(resolve => {
     (function poll() {
-      /* NEW: first try the 2025 layout — .G6 inside .G-atb */
+      // inner toolbar (current Gmail)
       const inner = document.querySelector('.G-atb .G6[role="toolbar"]');
-
-      /* Fallbacks for older layouts we supported before */
+      // legacy fallbacks
       const oldDirect = document.querySelector('.G-atb[role="toolbar"]');
       const oldAria   = document.querySelector('div[aria-label="Main toolbar"]');
+      const toolbar   = inner || oldDirect || oldAria;
 
-      const target = inner || oldDirect || oldAria;
-
-      if (target) {
-        // Always insert *after* the outer .G-atb so our bar sits immediately below
-        const anchor = target.closest('.G-atb') || target;
-        console.log('[GCO] native toolbar found →', anchor);
-        resolve(anchor);
+      if (toolbar) {
+        /* NEW: grab the fixed header box (.aeH) that wraps the toolbar */
+        const header = toolbar.closest('.aeH') || toolbar.closest('.G-atb');
+        console.log('[GCO] injecting into header →', header);
+        resolve(header);                // <- return header, not toolbar
       } else {
         requestAnimationFrame(poll);
       }
@@ -62,8 +60,9 @@ function waitForGmailChrome() {
 }
 
 
+
 // ---------------- UI injection ------------------------------
-function injectToolbar(anchor) {
+function injectToolbar(headerBox) {
   const bar = document.createElement('div');
   bar.className = 'gcal-filter-bar';
   bar.setAttribute('role', 'toolbar');
@@ -72,23 +71,15 @@ function injectToolbar(anchor) {
   bar.innerHTML = `
     <div class="gcal-btn-group">
       <span class="gcal-label">${chrome.i18n.getMessage('label_options') || 'Calendar options:'}</span>
-      <button aria-pressed="false" data-mode="${MODES.ALL}">${chrome.i18n.getMessage('btn_yes') || 'Yes'}</button>
-      <button aria-pressed="false" data-mode="${MODES.HIDE}">${chrome.i18n.getMessage('btn_no') || 'No'}</button>
-      <button aria-pressed="false" data-mode="${MODES.ONLY}">${chrome.i18n.getMessage('btn_only') || 'Only'}</button>
+      <button data-mode="${MODES.ALL}">${chrome.i18n.getMessage('btn_yes')  || 'Yes'}</button>
+      <button data-mode="${MODES.HIDE}">${chrome.i18n.getMessage('btn_no')   || 'No'}</button>
+      <button data-mode="${MODES.ONLY}">${chrome.i18n.getMessage('btn_only') || 'Only'}</button>
     </div>
     <span class="gcal-status" aria-live="polite"></span>
   `;
-  anchor.insertAdjacentElement('afterend', bar);
-  ensureListElement();
 
-  bar.addEventListener('click', (e) => {
-    if (e.target.dataset.mode) {
-      currentMode = e.target.dataset.mode;
-      chrome.storage.sync.set({ [KEY_MODE]: currentMode });
-      applyFilter();
-      refreshUI(bar);
-    }
-  });
+  /* instead of afterend → append inside the fixed header */
+  headerBox.appendChild(bar);
   refreshUI(bar);
 
   // Esc key returns focus to Gmail list (focus-trap)

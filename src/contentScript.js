@@ -9,7 +9,9 @@ const MODES = {
 };
 
 let currentMode = MODES.ALL;
-let debugOn = false;
+let debugOn = true;
+
+console.log('[GCO] content script loaded – mode =', currentMode);
 
 // ---------------- initial storage load ---------------------
 chrome.storage.sync.get([KEY_MODE, KEY_DEBUG], (res) => {
@@ -31,19 +33,34 @@ chrome.storage.onChanged.addListener((changes) => {
 });
 
 // ---------------- anchor finder -----------------------------
+/* -----------------------------------------------------------
+ * Helper: wait until Gmail's native action toolbar exists,
+ * then resolve with its parent element so we can insert ours.
+ * --------------------------------------------------------- */
 function waitForGmailChrome() {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     (function poll() {
-      // Gmail’s main action-bar wrapper is .G-atb[role="toolbar"]
-      const nativeTB = document.querySelector('.G-atb[role="toolbar"]');
-      if (nativeTB && nativeTB.parentElement) {
-        resolve(nativeTB.parentElement); // anchor just below it
+      /* NEW: first try the 2025 layout — .G6 inside .G-atb */
+      const inner = document.querySelector('.G-atb .G6[role="toolbar"]');
+
+      /* Fallbacks for older layouts we supported before */
+      const oldDirect = document.querySelector('.G-atb[role="toolbar"]');
+      const oldAria   = document.querySelector('div[aria-label="Main toolbar"]');
+
+      const target = inner || oldDirect || oldAria;
+
+      if (target) {
+        // Always insert *after* the outer .G-atb so our bar sits immediately below
+        const anchor = target.closest('.G-atb') || target;
+        console.log('[GCO] native toolbar found →', anchor);
+        resolve(anchor);
       } else {
         requestAnimationFrame(poll);
       }
     })();
   });
 }
+
 
 // ---------------- UI injection ------------------------------
 function injectToolbar(anchor) {
@@ -141,5 +158,7 @@ function refreshStatusText() {
 }
 
 // ---------------- observe DOM mutations ---------------------
-const obs = new MutationObserver(applyFilter);
-obs.observe(document.body, { childList: true, subtree: true });
+// const obs = new MutationObserver(applyFilter);
+// obs.observe(document.body, { childList: true, subtree: true });
+
+console.log('[GCO] content script hit the bottom – mode =', currentMode);

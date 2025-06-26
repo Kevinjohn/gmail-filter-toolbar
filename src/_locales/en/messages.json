@@ -1,9 +1,9 @@
 {
   "label_toolbar": { "message": "Calendar filter" },
   "label_options": { "message": "Calendar options:" },
-  "btn_yes": { "message": "Yes" },
-  "btn_no": { "message": "No" },
-  "btn_only": { "message": "Only" },
+  "btn_yes": { "message": "Email + Calendar" },
+  "btn_no": { "message": "Email only" },
+  "btn_only": { "message": "Calendar only" },
   "status_hidden": { "message": "Calendar is hidden" },
   "status_only": { "message": "Only showing calendars" },
   "status_all": { "message": "Showing e-mails and calendar invites" },

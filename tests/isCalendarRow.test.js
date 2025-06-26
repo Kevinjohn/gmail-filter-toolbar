@@ -1,16 +1,17 @@
 import { expect, test } from '@jest/globals';
-import { JSDOM } from 'jsdom';
 import fs from 'fs';
 
+// Extract just the isCalendarRow() source without running the whole script
 const script = fs.readFileSync('src/contentScript.js', 'utf8');
-const { window } = new JSDOM('<table class="UI"><tr class="zA"><td class="bog">Invitation: Meeting</td></tr></table>');
-window.document.body.innerHTML += '';
-
+const match = script.match(/function\s+isCalendarRow\(row\)\s*{[\s\S]*?}/);
 let isCalendarRow;
-const exports = {};
-eval(script + '\n;isCalendarRow = globalThis.isCalendarRow || isCalendarRow;');
+if (match) {
+  // eslint-disable-next-line no-eval
+  eval(`${match[0]}`);
+}
 
 test('detects invitation by subject', () => {
-  const row = window.document.querySelector('tr');
+  document.body.innerHTML = '<table class="UI"><tr class="zA"><td class="bog">Invitation: Meeting</td></tr></table>';
+  const row = document.querySelector('tr');
   expect(isCalendarRow(row)).toBe(true);
 });

@@ -6,7 +6,7 @@
   "scripts": {
     "build": "vite build",
     "lint": "eslint src --fix",
-    "test": "jest",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "format": "prettier --write \"src/**/*.{js,css,html,json}\""    
   },
   "devDependencies": {

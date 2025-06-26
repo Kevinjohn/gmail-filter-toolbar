@@ -15,13 +15,28 @@ console.log('[GCO] content script loaded – mode =', currentMode);
 
 // ---------------- initial storage load ---------------------
 chrome.storage.sync.get([KEY_MODE, KEY_DEBUG], (res) => {
-  if (res[KEY_MODE]) currentMode = res[KEY_MODE];
+  currentMode = res[KEY_MODE] || MODES.ALL;   // ← fallback to ALL
   debugOn = !!res[KEY_DEBUG];
 
   waitForGmailChrome().then((anchor) => {
     injectToolbar(anchor);
-    applyFilter();
+    refreshUI();
+
+    // Wait until Gmail has painted at least one row
+    waitForMessageTable().then(() => {
+      applyFilter();                  // run once, now rows exist
+
+      // Start observing changes so pagination / searches stay filtered
+      const obs = new MutationObserver(() => {
+        if (currentMode !== MODES.ALL) applyFilter();
+      });
+      obs.observe(document.querySelector('.UI').parentElement, {
+        childList: true,
+        subtree: true,
+      });
+    });
   });
+
 });
 
 // Listen for changes (e.g. debug mode toggled in options.html)
@@ -126,16 +141,39 @@ function applyFilter() {
   refreshStatusText();
 }
 
-// ---------------- UI refresh helpers ------------------------
-function refreshUI(bar) {
-  // highlight active button
-  bar.querySelectorAll('button').forEach((btn) => {
-    const active = btn.dataset.mode === currentMode;
-    btn.toggleAttribute('data-active', active);
-    btn.setAttribute('aria-pressed', active);
+function waitForMessageTable() {
+  return new Promise((resolve) => {
+    (function poll() {
+      const table = document.querySelector('.UI tr.zA');
+      if (table) resolve();                     // at least one row exists
+      else requestAnimationFrame(poll);
+    })();
   });
-  refreshStatusText();
 }
+
+
+// ---------------- UI refresh helpers ------------------------
+function refreshUI() {
+  const bar = document.querySelector('.gcal-filter-bar');
+  if (!bar) return;
+
+  bar.querySelectorAll('button[data-mode]').forEach((btn) => {
+    btn.toggleAttribute('data-active', btn.dataset.mode === currentMode);
+    btn.setAttribute('aria-pressed', btn.dataset.mode === currentMode);
+  });
+
+  const status = bar.querySelector('.gcal-status');
+  if (!status) return;
+
+  status.textContent =
+    currentMode === MODES.HIDE
+      ? chrome.i18n.getMessage('status_hidden') || 'Calendar is hidden'
+      : currentMode === MODES.ONLY
+      ? chrome.i18n.getMessage('status_only') || 'Only showing calendars'
+      : chrome.i18n.getMessage('status_all') ||
+        'Showing e-mails and calendar invites';
+}
+
 
 function refreshStatusText() {
   const status = document.querySelector('.gcal-status');
@@ -154,15 +192,12 @@ function refreshStatusText() {
 
 console.log('[GCO] content script hit the bottom – mode =', currentMode);
 
-/* Delete this later */
 document.addEventListener('click', (e) => {
   const btn = e.target.closest('.gcal-filter-bar button[data-mode]');
-  if (!btn) return;                                 // ignore unrelated clicks
-
-  console.log('[GCO] click', btn.dataset.mode);     // ← probe #2
+  if (!btn) return;
 
   currentMode = btn.dataset.mode;
   chrome.storage.sync.set({ [KEY_MODE]: currentMode });
   applyFilter();
-  refreshUI(btn.closest('.gcal-filter-bar'));
+  refreshUI();
 });

@@ -153,3 +153,16 @@ function refreshStatusText() {
 // obs.observe(document.body, { childList: true, subtree: true });
 
 console.log('[GCO] content script hit the bottom – mode =', currentMode);
+
+/* Delete this later */
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.gcal-filter-bar button[data-mode]');
+  if (!btn) return;                                 // ignore unrelated clicks
+
+  console.log('[GCO] click', btn.dataset.mode);     // ← probe #2
+
+  currentMode = btn.dataset.mode;
+  chrome.storage.sync.set({ [KEY_MODE]: currentMode });
+  applyFilter();
+  refreshUI(btn.closest('.gcal-filter-bar'));
+});

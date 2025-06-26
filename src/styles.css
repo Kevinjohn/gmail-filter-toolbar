@@ -15,6 +15,25 @@
   border:1px solid red;
 }
 
+/* 1 — let Gmail’s toolbar wrap */
+.G-atb {
+  /* Gmail sets display:flex; align-items:center; nowrap  */
+  flex-wrap: wrap !important;     /* NEW: allow a second row */
+  height: auto !important; 
+  padding-top:16px !important;
+}
+
+/* 2 — make our bar occupy that second row */
+.gcal-filter-bar {
+  flex: 0 0 100%;         /* full-width line in the wrap */
+  width: 100%;
+  margin-top: 4px;        /* visual gap below icons */
+  /* keep any existing rules such as font, padding, z-index */
+  margin-top:10px;
+  margin-bottom:10px;
+
+  z-index: 602; position: relative;
+}
 
 
 

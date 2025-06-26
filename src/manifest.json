@@ -3,6 +3,7 @@
   "description": "Toggle visibility of calendar invites inside Gmail.",
   "version": "1.0.0",
   "manifest_version": 3,
+  "default_locale": "en",
 
   "action": {
     "default_title": "Calendar filter is embedded on Gmail pages"

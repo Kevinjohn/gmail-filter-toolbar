@@ -1,0 +1,12 @@
+{
+  "label_toolbar": { "message": "Calendar filter" },
+  "label_options": { "message": "Calendar options:" },
+  "btn_yes": { "message": "Yes" },
+  "btn_no": { "message": "No" },
+  "btn_only": { "message": "Only" },
+  "status_hidden": { "message": "Calendar is hidden" },
+  "status_only": { "message": "Only showing calendars" },
+  "status_all": { "message": "Showing e-mails and calendar invites" },
+  "options_debug": { "message": "Enable debug mode (show filtered rows in blue)" },
+  "page_title": { "message": "Calendar Options" }
+}

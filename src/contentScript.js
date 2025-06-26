@@ -62,6 +62,7 @@ function injectToolbar(anchor) {
     <span class="gcal-status" aria-live="polite"></span>
   `;
   anchor.insertAdjacentElement('afterend', bar);
+  ensureListElement();
 
   bar.addEventListener('click', (e) => {
     if (e.target.dataset.mode) {
@@ -76,13 +77,18 @@ function injectToolbar(anchor) {
   // Esc key returns focus to Gmail list (focus-trap)
   bar.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      const list = document.querySelector('.UI');
-      if (list) {
-        list.setAttribute('tabindex', '-1');
-        list.focus();
-      }
+      const list = ensureListElement();
+      list?.focus();
     }
   });
+}
+
+function ensureListElement() {
+  const list = document.querySelector('.UI');
+  if (list && !list.hasAttribute('tabindex')) {
+    list.setAttribute('tabindex', '-1');
+  }
+  return list;
 }
 
 // ---------------- helper: row classification ----------------

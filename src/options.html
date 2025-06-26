@@ -1,23 +1,28 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Calendar Options</title>
-<style>
-  body { font-family: sans-serif; padding: 20px; }
-</style>
-</head>
-<body>
-  <label>
-    <input type="checkbox" id="debug"> Enable debug mode (show filtered rows in blue)
-  </label>
-  <script>
-    const KEY = 'gmailCalDebug';
-    const box = document.getElementById('debug');
-    chrome.storage.sync.get(KEY, res => { box.checked = !!res[KEY]; });
-    box.addEventListener('change', () => {
-      chrome.storage.sync.set({ [KEY]: box.checked });
-    });
-  </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Calendar Options</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <label>
+      <input type="checkbox" id="debug" /> Enable debug mode (show filtered rows in blue)
+    </label>
+    <script>
+      const KEY = 'gmailCalDebug';
+      const box = document.getElementById('debug');
+      chrome.storage.sync.get(KEY, (res) => {
+        box.checked = !!res[KEY];
+      });
+      box.addEventListener('change', () => {
+        chrome.storage.sync.set({ [KEY]: box.checked });
+      });
+    </script>
+  </body>
 </html>

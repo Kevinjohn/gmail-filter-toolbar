@@ -169,8 +169,8 @@ docs/                     # screenshots & diagrams
 ## Testing
 
 ### Unit
-* `tests/isCalendarRow.test.js` covers invite detection regex.  
-* `jest` runs in a JSDOM environment.
+* Jest covers unit tests such as `tests/isCalendarRow.test.js` (runs in JSDOM).
+* Playwright verifies keyboard and focus behaviour.
 
 ### Manual Smoke
 1. Load unpacked extension.  

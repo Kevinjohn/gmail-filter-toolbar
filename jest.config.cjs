@@ -1,5 +1,6 @@
 /** @type {import('jest').Config} */
 module.exports = {
   testEnvironment: 'jsdom',
-  transform: {}
+  transform: {},
+  testMatch: ['**/*.test.js'] // or use testPathIgnorePatterns for *.spec.js
 };

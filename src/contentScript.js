@@ -25,7 +25,7 @@ chrome.storage.sync.get([KEY_MODE, KEY_DEBUG], (res) => {
     // Wait until Gmail has painted at least one row
     waitForMessageTable().then(() => {
       applyFilter();                  // run once, now rows exist
-
+      ensureToolbar();            // make sure it's pinned to the live toolbar
       // Start observing changes so pagination / searches stay filtered
       const obs = new MutationObserver(() => {
         if (currentMode !== MODES.ALL) applyFilter();
@@ -186,9 +186,65 @@ function refreshStatusText() {
         : chrome.i18n.getMessage('status_all') || 'Showing e-mails and calendar invites';
 }
 
+/**
+ * Make sure our bar is attached to the *visible* Gmail toolbar.
+ * Creates it if missing, or moves the existing node out of a hidden toolbar.
+ */
+function ensureToolbar() {
+  const header = document.querySelector('.aeH');
+  if (!header) return;
+
+  // Find the toolbar Gmail currently shows (.G-atb without display:none)
+  const activeTb = [...header.querySelectorAll('.G-atb')]
+    .find(el => el.offsetParent !== null && el.style.display !== 'none');
+
+  if (!activeTb) return;        // Gmail not ready yet
+
+  // Do we already have a bar?
+  let bar = activeTb.querySelector('.gcal-filter-bar');
+
+  if (!bar) {
+    // Maybe it's stuck in the old (hidden) toolbar – grab and move it
+    bar = document.querySelector('.gcal-filter-bar');
+    if (bar) {
+      activeTb.appendChild(bar);
+    } else {
+      // No bar anywhere → inject a fresh one
+      injectToolbar(activeTb);
+      bar = activeTb.querySelector('.gcal-filter-bar');
+    }
+  }
+  refreshUI();                  // keep button highlight & status correct
+}
+
+
+// --------------- observe Message List -----------------------
+function observeMessageList() {
+  const listBox = document.querySelector('.aeF');   // Gmail’s scroll container
+  if (!listBox) return;
+
+  const listObserver = new MutationObserver(() => {
+    if (currentMode !== MODES.ALL) applyFilter();
+  });
+
+  // Watching only direct children is enough; no subtree needed
+  listObserver.observe(listBox, { childList: true });
+}
+
+
+
+
 // ---------------- observe DOM mutations ---------------------
 // const obs = new MutationObserver(applyFilter);
 // obs.observe(document.body, { childList: true, subtree: true });
+const obs = new MutationObserver(() => {
+  ensureToolbar();              // swap bar into the new toolbar if needed
+  if (currentMode !== MODES.ALL) applyFilter();
+});
+
+obs.observe(document.querySelector('.aeH'), { childList: true });      // header
+//obs.observe(document.body,            { childList: true, subtree: true }); // rows
+
 
 console.log('[GCO] content script hit the bottom – mode =', currentMode);
 

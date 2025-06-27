@@ -24,9 +24,11 @@ chrome.storage.sync.get([KEY_MODE, KEY_DEBUG], (res) => {
 
     // Wait until Gmail has painted at least one row
     waitForMessageTable().then(() => {
-      applyFilter();                  // run once, now rows exist
+      applyFilter();              // run once, now rows exist
       ensureToolbar();            // make sure it's pinned to the live toolbar
+      observeMessageList();       // watch for pagination / search changes
       // Start observing changes so pagination / searches stay filtered
+      /*
       const obs = new MutationObserver(() => {
         if (currentMode !== MODES.ALL) applyFilter();
       });
@@ -34,6 +36,7 @@ chrome.storage.sync.get([KEY_MODE, KEY_DEBUG], (res) => {
         childList: true,
         subtree: true,
       });
+      */
     });
   });
 
@@ -220,15 +223,18 @@ function ensureToolbar() {
 
 // --------------- observe Message List -----------------------
 function observeMessageList() {
-  const listBox = document.querySelector('.aeF');   // Gmail’s scroll container
-  if (!listBox) return;
+  //const listBox = document.querySelector('.aeF');   // Gmail’s scroll container
+  //if (!listBox) return;
+
+  const target = document.querySelector('.UI')?.parentElement;
+  if (!target) return;
 
   const listObserver = new MutationObserver(() => {
     if (currentMode !== MODES.ALL) applyFilter();
   });
 
   // Watching only direct children is enough; no subtree needed
-  listObserver.observe(listBox, { childList: true });
+  listObserver.observe(target, { childList: true, subtree: true });
 }
 
 
@@ -243,11 +249,9 @@ const obs = new MutationObserver(() => {
 });
 
 obs.observe(document.querySelector('.aeH'), { childList: true });      // header
-//obs.observe(document.body,            { childList: true, subtree: true }); // rows
 
 
-console.log('[GCO] content script hit the bottom – mode =', currentMode);
-
+// ---------------- Listener: Button Clicks ---------------------
 document.addEventListener('click', (e) => {
   const btn = e.target.closest('.gcal-filter-bar button[data-mode]');
   if (!btn) return;
@@ -257,3 +261,5 @@ document.addEventListener('click', (e) => {
   applyFilter();
   refreshUI();
 });
+
+console.log('[GCO] content script hit the bottom – mode =', currentMode);

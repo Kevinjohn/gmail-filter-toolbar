@@ -1,9 +1,9 @@
 // ---------------- constants & state -------------------------
-const KEY_MODE = 'gmailCalMode'; // persisted filter choice
-const KEY_DEBUG = 'gmailCalDebug'; // persisted dev flag
+const KEY_MODE = 'gmailCalMode';    // persisted filter choice
+const KEY_DEBUG = 'gmailCalDebug';  // persisted dev flag
 
 const MODES = {
-  ALL: 'ALL', // yes – show everything
+  ALL: 'ALL',       // yes – show everything
   HIDE: 'HIDE_CAL', // no  – hide calendar invites
   ONLY: 'ONLY_CAL', // only – show calendar invites
 };
@@ -13,6 +13,7 @@ let debugOn = true;
 
 console.log('[GCO] content script loaded – mode =', currentMode);
 
+//
 // ---------------- initial storage load ---------------------
 chrome.storage.sync.get([KEY_MODE, KEY_DEBUG], (res) => {
   currentMode = res[KEY_MODE] || MODES.ALL;   // ← fallback to ALL
@@ -25,7 +26,7 @@ chrome.storage.sync.get([KEY_MODE, KEY_DEBUG], (res) => {
     // Wait until Gmail has painted at least one row
     waitForMessageTable().then(() => {
       applyFilter();              // run once, now rows exist
-      ensureToolbar();            // make sure it's pinned to the live toolbar
+      ensureToolbarAttachedToVisibleToolbar();            // make sure it's pinned to the live toolbar
       observeMessageList();       // watch for pagination / search changes
       // Start observing changes so pagination / searches stay filtered
       /*
@@ -50,11 +51,8 @@ chrome.storage.onChanged.addListener((changes) => {
   }
 });
 
+//
 // ---------------- anchor finder -----------------------------
-/* -----------------------------------------------------------
- * Helper: wait until Gmail's native action toolbar exists,
- * then resolve with its parent element so we can insert ours.
- * --------------------------------------------------------- */
 function waitForGmailChrome() {
   return new Promise(resolve => {
     (function poll() {
@@ -78,7 +76,7 @@ function waitForGmailChrome() {
 }
 
 
-
+//
 // ---------------- UI injection ------------------------------
 function injectToolbar(headerBox) {
   const bar = document.createElement('div');
@@ -93,8 +91,11 @@ function injectToolbar(headerBox) {
       <button data-mode="${MODES.HIDE}">${chrome.i18n.getMessage('btn_no')   || 'No'}</button>
       <button data-mode="${MODES.ONLY}">${chrome.i18n.getMessage('btn_only') || 'Only'}</button>
     </div>
-    <span class="gcal-status" aria-live="polite"></span>
   `;
+
+  // I removed this, but, y'know
+  // <span class="gcal-status" aria-live="polite"></span>
+
 
   /* instead of afterend → append inside the fixed header */
   headerBox.appendChild(bar);
@@ -117,6 +118,8 @@ function ensureListElement() {
   return list;
 }
 
+
+//
 // ---------------- helper: row classification ----------------
 function isCalendarRow(row) {
   const subj = row.querySelector('.bog')?.innerText || '';
@@ -125,6 +128,8 @@ function isCalendarRow(row) {
   return hasPrefix || hasIcs;
 }
 
+
+//
 // ---------------- apply filter ------------------------------
 function applyFilter() {
   document.querySelectorAll('.UI tr.zA').forEach((row) => {
@@ -141,7 +146,7 @@ function applyFilter() {
       row.style.display = hide ? 'none' : '';
     }
   });
-  refreshStatusText();
+  // refreshStatusText();
 }
 
 function waitForMessageTable() {
@@ -155,6 +160,7 @@ function waitForMessageTable() {
 }
 
 
+//
 // ---------------- UI refresh helpers ------------------------
 function refreshUI() {
   const bar = document.querySelector('.gcal-filter-bar');
@@ -165,9 +171,10 @@ function refreshUI() {
     btn.setAttribute('aria-pressed', btn.dataset.mode === currentMode);
   });
 
-  const status = bar.querySelector('.gcal-status');
-  if (!status) return;
-
+  
+  // const status = bar.querySelector('.gcal-status');
+  // if (!status) return;
+  /*
   status.textContent =
     currentMode === MODES.HIDE
       ? chrome.i18n.getMessage('status_hidden') || 'Calendar is hidden'
@@ -175,25 +182,29 @@ function refreshUI() {
       ? chrome.i18n.getMessage('status_only') || 'Only showing calendars'
       : chrome.i18n.getMessage('status_all') ||
         'Showing e-mails and calendar invites';
+        */
 }
 
 
 function refreshStatusText() {
+  
   const status = document.querySelector('.gcal-status');
   if (!status) return;
+  /*
   status.textContent =
     currentMode === MODES.HIDE
       ? chrome.i18n.getMessage('status_hidden') || 'Calendar is hidden'
       : currentMode === MODES.ONLY
         ? chrome.i18n.getMessage('status_only') || 'Only showing calendars'
         : chrome.i18n.getMessage('status_all') || 'Showing e-mails and calendar invites';
+        */
 }
 
 /**
  * Make sure our bar is attached to the *visible* Gmail toolbar.
  * Creates it if missing, or moves the existing node out of a hidden toolbar.
  */
-function ensureToolbar() {
+function ensureToolbarAttachedToVisibleToolbar() {
   const header = document.querySelector('.aeH');
   if (!header) return;
 
@@ -217,10 +228,12 @@ function ensureToolbar() {
       bar = activeTb.querySelector('.gcal-filter-bar');
     }
   }
-  refreshUI();                  // keep button highlight & status correct
+  // keep button highlight & status correct
+  refreshUI();                  
 }
 
 
+//
 // --------------- observe Message List -----------------------
 function observeMessageList() {
   //const listBox = document.querySelector('.aeF');   // Gmail’s scroll container
@@ -239,18 +252,17 @@ function observeMessageList() {
 
 
 
-
+//
 // ---------------- observe DOM mutations ---------------------
-// const obs = new MutationObserver(applyFilter);
-// obs.observe(document.body, { childList: true, subtree: true });
 const obs = new MutationObserver(() => {
-  ensureToolbar();              // swap bar into the new toolbar if needed
+  ensureToolbarAttachedToVisibleToolbar();              // swap bar into the new toolbar if needed
   if (currentMode !== MODES.ALL) applyFilter();
 });
 
 obs.observe(document.querySelector('.aeH'), { childList: true });      // header
 
 
+//
 // ---------------- Listener: Button Clicks ---------------------
 document.addEventListener('click', (e) => {
   const btn = e.target.closest('.gcal-filter-bar button[data-mode]');

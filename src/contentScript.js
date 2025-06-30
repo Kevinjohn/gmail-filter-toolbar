@@ -2,11 +2,47 @@
 const KEY_MODE = 'gmailCalMode';    // persisted filter choice
 const KEY_DEBUG = 'gmailCalDebug';  // persisted dev flag
 
+const SELECTORS = {
+  gmailToolbar: '.G-atb .G6[role="toolbar"]',
+  gmailToolbarLegacy: '.G-atb[role="toolbar"]',
+  gmailToolbarAria: 'div[aria-label="Main toolbar"]',
+  gmailToolbarHeader: '.aeH',
+  emailRow: '.UI tr.zA',
+  emailSubject: '.bog',
+  emailList: '.UI',
+  attachmentIcon: 'img.aSK',
+  attachmentRowClass: 'byw', // This is a class, not a selector
+  attachmentTooltip: '[data-tooltip="Has attachment"]',
+  icsImage: 'img[alt*=".ics"]',
+  filterBar: '.gcal-filter-bar',
+  filterWrapper: '.gcal-filter-wrapper',
+  filterButtons: '.gcal-filter-bar button[data-mode]',
+};
+
 const MODES = {
   ALL: 'ALL',       // yes – show everything
   HIDE: 'HIDE_CAL', // no  – hide calendar invites
   ONLY: 'ONLY_CAL', // only – show calendar invites
   ONLY_ATTACH: 'ONLY_ATTACH', // only – show attachments
+};
+
+const FILTER_CONFIG = {
+  [MODES.ALL]: {
+    labelKey: 'btn_all',
+    filterFn: (row) => false, // Never hide
+  },
+  [MODES.HIDE]: {
+    labelKey: 'btn_mail',
+    filterFn: (row) => isCalendarRow(row),
+  },
+  [MODES.ONLY]: {
+    labelKey: 'btn_cal',
+    filterFn: (row) => !isCalendarRow(row),
+  },
+  [MODES.ONLY_ATTACH]: {
+    labelKey: 'btn_attach',
+    filterFn: (row) => !hasAttachmentRow(row) || isCalendarRow(row),
+  },
 };
 
 let currentMode = MODES.ALL;
@@ -20,20 +56,21 @@ chrome.storage.sync.get([KEY_MODE, KEY_DEBUG], (res) => {
   currentMode = res[KEY_MODE] || MODES.ALL;   // ← fallback to ALL
   debugOn = !!res[KEY_DEBUG];
 
-  waitForGmailChrome().then((header) => {
-    injectToolbar(header);
+  waitForGmailChrome().then(() => {
+    injectToolbar();
     refreshUI();
 
     // Wait until Gmail has painted at least one row
     waitForMessageTable().then(() => {
       applyFilter();              // run once, now rows exist
-      ensureToolbarAttachedToVisibleToolbar(); // make sure it's pinned to the live toolbar
+      // No need for ensureToolbarAttachedToVisibleToolbar here, injectToolbar handles it
       observeMessageList();       // watch for pagination / search changes
     });
 
     // Now that we have the stable header, observe it for changes
+    const header = document.querySelector(SELECTORS.gmailToolbarHeader);
     const obs = new MutationObserver(() => {
-      ensureToolbarAttachedToVisibleToolbar();
+      injectToolbar(); // Simply call injectToolbar to ensure correct placement
       if (currentMode !== MODES.ALL) applyFilter();
     });
     obs.observe(header, { childList: true, subtree: true });
@@ -54,13 +91,13 @@ function waitForGmailChrome() {
   return new Promise(resolve => {
     (function poll() {
       // Find any of the possible Gmail toolbars
-      const toolbar = document.querySelector('.G-atb .G6[role="toolbar"]') ||
-                      document.querySelector('.G-atb[role="toolbar"]') ||
-                      document.querySelector('div[aria-label="Main toolbar"]');
+      const toolbar = document.querySelector(SELECTORS.gmailToolbar) ||
+                      document.querySelector(SELECTORS.gmailToolbarLegacy) ||
+                      document.querySelector(SELECTORS.gmailToolbarAria);
 
       if (toolbar) {
         // Now find the stable header that contains the toolbars
-        const header = toolbar.closest('.aeH');
+        const header = toolbar.closest(SELECTORS.gmailToolbarHeader);
         if (header) {
           console.log('[GCO] injecting into header →', header);
           resolve(header); // Resolve with the stable parent
@@ -77,41 +114,61 @@ function waitForGmailChrome() {
 
 //
 // ---------------- UI injection ------------------------------
-function injectToolbar(headerBox) {
-  const bar = document.createElement('div');
-  bar.className = 'gcal-filter-bar';
-  bar.setAttribute('role', 'toolbar');
-  bar.setAttribute('aria-label', chrome.i18n.getMessage('label_toolbar') || 'Calendar filter');
+function injectToolbar() {
+  const header = document.querySelector(SELECTORS.gmailToolbarHeader);
+  if (!header) return; // Cannot inject if header is not found
 
-  bar.innerHTML = `
-    <div class="gcal-btn-group">
-      <span class="gcal-label">${chrome.i18n.getMessage('label_options') || 'Calendar options:'}</span>
-      <button data-mode="${MODES.ALL}">${chrome.i18n.getMessage('btn_all')  || 'Yes'}</button>
-      <button data-mode="${MODES.HIDE}">${chrome.i18n.getMessage('btn_mail')   || 'No'}</button>
-      <button data-mode="${MODES.ONLY}">${chrome.i18n.getMessage('btn_cal') || 'Only'}</button>
-      <button data-mode="${MODES.ONLY_ATTACH}">${chrome.i18n.getMessage('btn_attach') || 'Attachments only'}</button>
-    </div>
-  `;
+  let wrapper = document.querySelector(SELECTORS.filterWrapper);
+  if (!wrapper) {
+    wrapper = document.createElement('div');
+    wrapper.className = 'gcal-filter-wrapper';
+    header.appendChild(wrapper);
+  }
 
-  // I removed this, but, y'know
-  // <span class="gcal-status" aria-live="polite"></span>
+  // Ensure the wrapper is always the last child of the header
+  if (header.lastChild !== wrapper) {
+    header.appendChild(wrapper);
+  }
 
+  let bar = document.querySelector(SELECTORS.filterBar);
 
-  /* instead of afterend → append inside the fixed header */
-  headerBox.appendChild(bar);
-  refreshUI(bar);
+  if (!bar) {
+    // Create the bar if it doesn't exist
+    bar = document.createElement('div');
+    bar.className = 'gcal-filter-bar';
+    bar.setAttribute('role', 'toolbar');
+    bar.setAttribute('aria-label', chrome.i18n.getMessage('label_toolbar') || 'Calendar filter');
 
-  // Esc key returns focus to Gmail list (focus-trap)
-  bar.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      const list = ensureListElement();
-      list?.focus();
-    }
-  });
+    bar.innerHTML = `
+      <div class="gcal-btn-group">
+        <span class="gcal-label">${chrome.i18n.getMessage('label_options') || 'Calendar options:'}</span>
+        ${Object.values(MODES).map(mode => `
+          <button data-mode="${mode}">${chrome.i18n.getMessage(FILTER_CONFIG[mode].labelKey) || mode}</button>
+        `).join('')}
+      </div>
+    `;
+    wrapper.appendChild(bar); // Append to the wrapper
+  } else if (bar.parentNode !== wrapper) {
+    // If it exists but is in the wrong parent, move it
+    wrapper.appendChild(bar);
+  }
+
+  refreshUI(bar); // Refresh UI regardless of creation or move
+
+  // Esc key returns focus to Gmail list (focus-trap) - only add listener once
+  if (!bar.dataset.listenerAdded) { // Use a data attribute to prevent multiple listeners
+    bar.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const list = ensureListElement();
+        list?.focus();
+      }
+    });
+    bar.dataset.listenerAdded = 'true';
+  }
 }
 
 function ensureListElement() {
-  const list = document.querySelector('.UI');
+  const list = document.querySelector(SELECTORS.emailList);
   if (list && !list.hasAttribute('tabindex')) {
     list.setAttribute('tabindex', '-1');
   }
@@ -122,18 +179,18 @@ function ensureListElement() {
 //
 // ---------------- helper: row classification ----------------
 function isCalendarRow(row) {
-  const subj = row.querySelector('.bog')?.innerText || '';
+  const subj = row.querySelector(SELECTORS.emailSubject)?.innerText || '';
   const hasPrefix = /^(Invitation:|Cancelled:|Accepted:|Declined:|Updated invitation)/i.test(subj);
-  const hasIcs = [...row.querySelectorAll('img[alt]')].some((img) => img.alt.includes('.ics'));
+  const hasIcs = !!row.querySelector(SELECTORS.icsImage);
   return hasPrefix || hasIcs;
 }
 
 function hasAttachmentRow(row) {
   // Gmail's UI is complex. A single selector is too brittle.
   // We'll check for a few common patterns.
-  const hasBywClass = row.classList.contains('byw');
-  const hasAttachmentTooltip = !!row.querySelector('[data-tooltip="Has attachment"]');
-  const hasPaperclipIcon = !!row.querySelector('img.aSK');
+  const hasBywClass = row.classList.contains(SELECTORS.attachmentRowClass);
+  const hasAttachmentTooltip = !!row.querySelector(SELECTORS.attachmentTooltip);
+  const hasPaperclipIcon = !!row.querySelector(SELECTORS.attachmentIcon);
 
   return hasBywClass || hasAttachmentTooltip || hasPaperclipIcon;
 }
@@ -142,18 +199,11 @@ function hasAttachmentRow(row) {
 //
 // ---------------- apply filter ------------------------------
 function applyFilter() {
-  document.querySelectorAll('.UI tr.zA').forEach((row) => {
-    const isCal = isCalendarRow(row);
-    const hasAttachment = hasAttachmentRow(row);
+  const currentFilter = FILTER_CONFIG[currentMode];
+  if (!currentFilter) return; // Should not happen if MODES and FILTER_CONFIG are in sync
 
-    let hide = false;
-    if (currentMode === MODES.HIDE) {
-      hide = isCal;
-    } else if (currentMode === MODES.ONLY) {
-      hide = !isCal;
-    } else if (currentMode === MODES.ONLY_ATTACH) {
-      hide = !hasAttachment || isCal;
-    }
+  document.querySelectorAll(SELECTORS.emailRow).forEach((row) => {
+    const hide = currentFilter.filterFn(row);
 
     if (debugOn) {
       row.style.display = '';
@@ -170,7 +220,7 @@ function applyFilter() {
 function waitForMessageTable() {
   return new Promise((resolve) => {
     (function poll() {
-      const table = document.querySelector('.UI tr.zA');
+      const table = document.querySelector(SELECTORS.emailRow);
       if (table) resolve();                     // at least one row exists
       else requestAnimationFrame(poll);
     })();
@@ -181,7 +231,7 @@ function waitForMessageTable() {
 //
 // ---------------- UI refresh helpers ------------------------
 function refreshUI() {
-  const bar = document.querySelector('.gcal-filter-bar');
+  const bar = document.querySelector(SELECTORS.filterBar);
   if (!bar) return;
 
   bar.querySelectorAll('button[data-mode]').forEach((btn) => {
@@ -189,75 +239,18 @@ function refreshUI() {
     btn.setAttribute('aria-pressed', btn.dataset.mode === currentMode);
   });
 
-  
-  // const status = bar.querySelector('.gcal-status');
-  // if (!status) return;
-  /*
-  status.textContent =
-    currentMode === MODES.HIDE
-      ? chrome.i18n.getMessage('status_hidden') || 'Calendar is hidden'
-      : currentMode === MODES.ONLY
-      ? chrome.i18n.getMessage('status_only') || 'Only showing calendars'
-      : chrome.i18n.getMessage('status_all') ||
-        'Showing e-mails and calendar invites';
-        */
 }
 
 
-function refreshStatusText() {
-  
-  const status = document.querySelector('.gcal-status');
-  if (!status) return;
-  /*
-  status.textContent =
-    currentMode === MODES.HIDE
-      ? chrome.i18n.getMessage('status_hidden') || 'Calendar is hidden'
-      : currentMode === MODES.ONLY
-        ? chrome.i18n.getMessage('status_only') || 'Only showing calendars'
-        : chrome.i18n.getMessage('status_all') || 'Showing e-mails and calendar invites';
-        */
-}
 
-/**
- * Make sure our bar is attached to the *visible* Gmail toolbar.
- * Creates it if missing, or moves the existing node out of a hidden toolbar.
- */
-function ensureToolbarAttachedToVisibleToolbar() {
-  const header = document.querySelector('.aeH');
-  if (!header) return;
 
-  // Find the toolbar Gmail currently shows (.G-atb without display:none)
-  const activeTb = [...header.querySelectorAll('.G-atb')]
-    .find(el => el.offsetParent !== null && el.style.display !== 'none');
 
-  if (!activeTb) return;        // Gmail not ready yet
-
-  // Do we already have a bar?
-  let bar = activeTb.querySelector('.gcal-filter-bar');
-
-  if (!bar) {
-    // Maybe it's stuck in the old (hidden) toolbar – grab and move it
-    bar = document.querySelector('.gcal-filter-bar');
-    if (bar) {
-      activeTb.appendChild(bar);
-    } else {
-      // No bar anywhere → inject a fresh one
-      injectToolbar(activeTb);
-      bar = activeTb.querySelector('.gcal-filter-bar');
-    }
-  }
-  // keep button highlight & status correct
-  refreshUI();                  
-}
 
 
 //
 // --------------- observe Message List -----------------------
 function observeMessageList() {
-  //const listBox = document.querySelector('.aeF');   // Gmail’s scroll container
-  //if (!listBox) return;
-
-  const target = document.querySelector('.UI')?.parentElement;
+  const target = document.querySelector(SELECTORS.emailList)?.parentElement;
   if (!target) return;
 
   const listObserver = new MutationObserver(() => {
@@ -276,7 +269,7 @@ function observeMessageList() {
 //
 // ---------------- Listener: Button Clicks ---------------------
 document.addEventListener('click', (e) => {
-  const btn = e.target.closest('.gcal-filter-bar button[data-mode]');
+  const btn = e.target.closest(SELECTORS.filterButtons);
   if (!btn) return;
 
   currentMode = btn.dataset.mode;

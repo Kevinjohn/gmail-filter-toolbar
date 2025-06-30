@@ -18,7 +18,7 @@
     {
       "matches": ["https://mail.google.com/*"],
       "js": ["contentScript.js"],
-      "css": ["styles.css"],
+      "css": ["styles.css", "colours.css"],
       "run_at": "document_idle"
     }
   ],

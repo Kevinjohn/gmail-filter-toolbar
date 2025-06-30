@@ -5,14 +5,15 @@
   margin-inline: 0;
   padding-block: 2px;
   padding-inline: 4px;
-  background: #f1f3f4;
+  background: var(--gcal-bg-color);
   border-radius: 4px;
   font-size: 13px;
 
   flex: 0 0 100%;   /* NEW: occupy a whole flex line */
   width: 100%;      /* belt-and-braces */
   margin-top: 4px;  /* small gap below Google’s bar */
-  border:1px solid red;
+  border:1px solid var(--gcal-border-color);
+  color: var(--gcal-text-color);
 }
 
 /* 1 — let Gmail’s toolbar wrap */
@@ -30,17 +31,21 @@
   margin-top: 4px;        /* visual gap below icons */
   /* keep any existing rules such as font, padding, z-index */
   margin-top:10px;
-  margin-bottom:10px;
-
   z-index: 602; position: relative;
 }
 
-
+.gcal-btn-group button {
+  background: none;
+  border: 1px solid var(--gcal-border-color);
+  color: var(--gcal-text-color);
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-inline-end: 4px;
+}
 
 .gcal-btn-group button[data-active] {
   font-weight: bold;
-}
-.gcal-status {
-  font-style: italic;
-  opacity: 0.8;
+  color: var(--gcal-active-button-text);
+  border-color: var(--gcal-active-button-text);
 }

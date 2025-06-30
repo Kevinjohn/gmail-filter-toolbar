@@ -1,19 +1,42 @@
 {
-  "label_toolbar": { "message": "Calendar filter" },
-  "label_options": { "message": "Calendar options:" },
+  "extension_name": {
+    "message": "Gmail Calendar Options",
+    "description": "Name of the extension."
+  },
+  "extension_description": {
+    "message": "Toggle visibility of calendar invites inside Gmail.",
+    "description": "Description of the extension."
+  },
+  "label_toolbar": {
+    "message": "Calendar filter",
+    "description": "ARIA label for the main toolbar."
+  },
+  "label_options": {
+    "message": "Email filter: ",
+    "description": "Label preceding the filter buttons."
+  },
   "btn_all": {
-    "message": "Yes",
+    "message": "All Email",
     "description": "Button to show all e-mails."
   },
   "btn_mail": {
-    "message": "No",
+    "message": "Email only",
     "description": "Button to hide calendar e-mails."
   },
   "btn_cal": {
-    "message": "Only",
+    "message": "Calendar only",
     "description": "Button to show only calendar e-mails."
   },
-  "btn_attach": { "message": "Attachments only" },
-  "options_debug": { "message": "Enable debug mode (show filtered rows in blue)" },
-  "page_title": { "message": "Calendar Options" }
+  "btn_attach": {
+    "message": "Attachments only",
+    "description": "Button to show only e-mails with attachments."
+  },
+  "page_title": {
+    "message": "Calendar Options",
+    "description": "Title for the extension's options page."
+  },
+  "options_debug": {
+    "message": "Enable debug mode (show filtered rows in blue)",
+    "description": "Label for the debug mode checkbox."
+  }
 }

@@ -1,7 +1,7 @@
 {
   "label_toolbar": { "message": "Calendar filter" },
-  "label_options": { "message": "Calendar options:" },
-  "btn_all": { "message": "Email + Calendar" },
+  "label_options": { "message": "Email filter: " },
+  "btn_all": { "message": "All Email" },
   "btn_mail": { "message": "Email only" },
   "btn_cal": { "message": "Calendar only" },
   "btn_attach": { "message": "Attachments only" },

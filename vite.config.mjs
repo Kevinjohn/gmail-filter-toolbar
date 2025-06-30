@@ -22,6 +22,7 @@ export default defineConfig({
         { src: 'src/manifest.json',     dest: '.' },
         { src: 'src/contentScript.js',  dest: '.' },
         { src: 'src/styles.css',        dest: '.' },
+        { src: 'src/colours.css',      dest: '.' },
         { src: 'src/options.html',      dest: '.' },
         { src: 'src/icons',             dest: '.' },
         { src: 'src/_locales',          dest: '.' } // if present

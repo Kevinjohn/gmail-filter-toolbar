@@ -1,12 +1,19 @@
 {
   "label_toolbar": { "message": "Calendar filter" },
   "label_options": { "message": "Calendar options:" },
-  "btn_yes": { "message": "Email + Calendar" },
-  "btn_no": { "message": "Email only" },
-  "btn_only": { "message": "Calendar only" },
-  "status_hidden": { "message": "Calendar is hidden" },
-  "status_only": { "message": "Only showing calendars" },
-  "status_all": { "message": "Showing e-mails and calendar invites" },
+  "btn_all": {
+    "message": "Yes",
+    "description": "Button to show all e-mails."
+  },
+  "btn_mail": {
+    "message": "No",
+    "description": "Button to hide calendar e-mails."
+  },
+  "btn_cal": {
+    "message": "Only",
+    "description": "Button to show only calendar e-mails."
+  },
+  "btn_attach": { "message": "Attachments only" },
   "options_debug": { "message": "Enable debug mode (show filtered rows in blue)" },
   "page_title": { "message": "Calendar Options" }
 }

@@ -19,28 +19,24 @@ chrome.storage.sync.get([KEY_MODE, KEY_DEBUG], (res) => {
   currentMode = res[KEY_MODE] || MODES.ALL;   // ← fallback to ALL
   debugOn = !!res[KEY_DEBUG];
 
-  waitForGmailChrome().then((anchor) => {
-    injectToolbar(anchor);
+  waitForGmailChrome().then((header) => {
+    injectToolbar(header);
     refreshUI();
 
     // Wait until Gmail has painted at least one row
     waitForMessageTable().then(() => {
       applyFilter();              // run once, now rows exist
-      ensureToolbarAttachedToVisibleToolbar();            // make sure it's pinned to the live toolbar
+      ensureToolbarAttachedToVisibleToolbar(); // make sure it's pinned to the live toolbar
       observeMessageList();       // watch for pagination / search changes
-      // Start observing changes so pagination / searches stay filtered
-      /*
-      const obs = new MutationObserver(() => {
-        if (currentMode !== MODES.ALL) applyFilter();
-      });
-      obs.observe(document.querySelector('.UI').parentElement, {
-        childList: true,
-        subtree: true,
-      });
-      */
     });
-  });
 
+    // Now that we have the stable header, observe it for changes
+    const obs = new MutationObserver(() => {
+      ensureToolbarAttachedToVisibleToolbar();
+      if (currentMode !== MODES.ALL) applyFilter();
+    });
+    obs.observe(header, { childList: true, subtree: true });
+  });
 });
 
 // Listen for changes (e.g. debug mode toggled in options.html)
@@ -56,20 +52,22 @@ chrome.storage.onChanged.addListener((changes) => {
 function waitForGmailChrome() {
   return new Promise(resolve => {
     (function poll() {
-      // inner toolbar (current Gmail)
-      const inner = document.querySelector('.G-atb .G6[role="toolbar"]');
-      // legacy fallbacks
-      const oldDirect = document.querySelector('.G-atb[role="toolbar"]');
-      const oldAria   = document.querySelector('div[aria-label="Main toolbar"]');
-      const toolbar   = inner || oldDirect || oldAria;
+      // Find any of the possible Gmail toolbars
+      const toolbar = document.querySelector('.G-atb .G6[role="toolbar"]') ||
+                      document.querySelector('.G-atb[role="toolbar"]') ||
+                      document.querySelector('div[aria-label="Main toolbar"]');
 
       if (toolbar) {
-        /* NEW: grab the fixed header box (.aeH) that wraps the toolbar */
-        const header = toolbar.closest('.aeH') || toolbar.closest('.G-atb');
-        console.log('[GCO] injecting into header →', header);
-        resolve(header);                // <- return header, not toolbar
+        // Now find the stable header that contains the toolbars
+        const header = toolbar.closest('.aeH');
+        if (header) {
+          console.log('[GCO] injecting into header →', header);
+          resolve(header); // Resolve with the stable parent
+        } else {
+          requestAnimationFrame(poll); // Header not found yet, poll again
+        }
       } else {
-        requestAnimationFrame(poll);
+        requestAnimationFrame(poll); // Toolbar not found yet, poll again
       }
     })();
   });
@@ -126,6 +124,10 @@ function isCalendarRow(row) {
   const hasPrefix = /^(Invitation:|Cancelled:|Accepted:|Declined:|Updated invitation)/i.test(subj);
   const hasIcs = [...row.querySelectorAll('img[alt]')].some((img) => img.alt.includes('.ics'));
   return hasPrefix || hasIcs;
+}
+
+function hasAttachmentRow(row) {
+  return !!row.querySelector('img.aSK'); // paperclip icon
 }
 
 
@@ -252,14 +254,7 @@ function observeMessageList() {
 
 
 
-//
-// ---------------- observe DOM mutations ---------------------
-const obs = new MutationObserver(() => {
-  ensureToolbarAttachedToVisibleToolbar();              // swap bar into the new toolbar if needed
-  if (currentMode !== MODES.ALL) applyFilter();
-});
 
-obs.observe(document.querySelector('.aeH'), { childList: true });      // header
 
 
 //

@@ -6,6 +6,7 @@ const MODES = {
   ALL: 'ALL',       // yes – show everything
   HIDE: 'HIDE_CAL', // no  – hide calendar invites
   ONLY: 'ONLY_CAL', // only – show calendar invites
+  ONLY_ATTACH: 'ONLY_ATTACH', // only – show attachments
 };
 
 let currentMode = MODES.ALL;
@@ -88,6 +89,7 @@ function injectToolbar(headerBox) {
       <button data-mode="${MODES.ALL}">${chrome.i18n.getMessage('btn_yes')  || 'Yes'}</button>
       <button data-mode="${MODES.HIDE}">${chrome.i18n.getMessage('btn_no')   || 'No'}</button>
       <button data-mode="${MODES.ONLY}">${chrome.i18n.getMessage('btn_only') || 'Only'}</button>
+      <button data-mode="${MODES.ONLY_ATTACH}">${chrome.i18n.getMessage('btn_attach') || 'Attachments only'}</button>
     </div>
   `;
 
@@ -127,7 +129,13 @@ function isCalendarRow(row) {
 }
 
 function hasAttachmentRow(row) {
-  return !!row.querySelector('img.aSK'); // paperclip icon
+  // Gmail's UI is complex. A single selector is too brittle.
+  // We'll check for a few common patterns.
+  const hasBywClass = row.classList.contains('byw');
+  const hasAttachmentTooltip = !!row.querySelector('[data-tooltip="Has attachment"]');
+  const hasPaperclipIcon = !!row.querySelector('img.aSK');
+
+  return hasBywClass || hasAttachmentTooltip || hasPaperclipIcon;
 }
 
 
@@ -136,7 +144,16 @@ function hasAttachmentRow(row) {
 function applyFilter() {
   document.querySelectorAll('.UI tr.zA').forEach((row) => {
     const isCal = isCalendarRow(row);
-    const hide = (currentMode === MODES.HIDE && isCal) || (currentMode === MODES.ONLY && !isCal);
+    const hasAttachment = hasAttachmentRow(row);
+
+    let hide = false;
+    if (currentMode === MODES.HIDE) {
+      hide = isCal;
+    } else if (currentMode === MODES.ONLY) {
+      hide = !isCal;
+    } else if (currentMode === MODES.ONLY_ATTACH) {
+      hide = !hasAttachment || isCal;
+    }
 
     if (debugOn) {
       row.style.display = '';
@@ -148,7 +165,6 @@ function applyFilter() {
       row.style.display = hide ? 'none' : '';
     }
   });
-  // refreshStatusText();
 }
 
 function waitForMessageTable() {

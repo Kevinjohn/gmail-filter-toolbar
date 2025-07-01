@@ -67,16 +67,7 @@ describe('hasAttachmentRow', () => {
 });
 
 describe('isCalendarRow', () => {
-  test('detects invitation by subject', () => {
-    document.body.innerHTML = '<table class="UI"><tr class="zA"><td class="bog">Invitation: Meeting</td></tr></table>';
-    const row = document.querySelector('tr');
-    // jsdom lacks `innerText` so copy from `textContent` for the test
-    const cell = row.querySelector('.bog');
-    if (cell && cell.textContent && !('innerText' in cell)) {
-      Object.defineProperty(cell, 'innerText', { value: cell.textContent, configurable: true });
-    }
-    expect(isCalendarRow(row)).toBe(true);
-  });
+  
 
   test('detects invitation by ics image', () => {
     document.body.innerHTML = '<table class="UI"><tr class="zA"><td class="bog">Meeting</td><td><img alt=".ics"></td></tr></table>';

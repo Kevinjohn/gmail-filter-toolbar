@@ -179,10 +179,9 @@ function ensureListElement() {
 //
 // ---------------- helper: row classification ----------------
 function isCalendarRow(row) {
-  const subj = row.querySelector(SELECTORS.emailSubject)?.innerText || '';
-  const hasPrefix = /^(Invitation:|Cancelled:|Accepted:|Declined:|Updated invitation)/i.test(subj);
   const hasIcs = !!row.querySelector(SELECTORS.icsImage);
-  return hasPrefix || hasIcs;
+  const hasCalendarEventIcon = !!row.querySelector('img[alt="Calendar event"]');
+  return hasIcs || hasCalendarEventIcon;
 }
 
 function hasAttachmentRow(row) {

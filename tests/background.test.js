@@ -27,6 +27,6 @@ describe('background.js', () => {
     onInstalledCallback();
 
     // Verify that chrome.storage.sync.set was called correctly
-    expect(chrome.storage.sync.set).toHaveBeenCalledWith({ gmailCalMode: 'ALL' });
+    expect(chrome.storage.sync.set).toHaveBeenCalledWith({ gmailCalMode: 'ALL' }, expect.any(Function));
   });
 });

@@ -43,7 +43,9 @@ describe('options.js', () => {
             }
             callback(result);
           }),
-          set: jest.fn(),
+          set: jest.fn((data, callback) => {
+            if (callback) callback();
+          }),
         },
       },
       i18n: {
@@ -52,6 +54,9 @@ describe('options.js', () => {
           if (key === 'options_debug') return 'Mock Debug Label';
           return '';
         }),
+      },
+      runtime: {
+        lastError: undefined,
       },
     };
     Object.defineProperty(global, 'chrome', { value: chrome, writable: true });
@@ -71,12 +76,12 @@ describe('options.js', () => {
   test('changing checkbox should update stored value', () => {
     const changeCallback = mockBox.addEventListener.mock.calls[0][1];
     changeCallback(); // Simulate change event
-    expect(chrome.storage.sync.set).toHaveBeenCalledWith({ gmailCalDebug: true });
+    expect(chrome.storage.sync.set).toHaveBeenCalledWith({ gmailCalDebug: true }, expect.any(Function));
 
     // Simulate unchecking the box
     mockBox.checked = false;
     changeCallback();
-    expect(chrome.storage.sync.set).toHaveBeenCalledWith({ gmailCalDebug: false });
+    expect(chrome.storage.sync.set).toHaveBeenCalledWith({ gmailCalDebug: false }, expect.any(Function));
   });
 
   test('document title should be set from i18n message', () => {

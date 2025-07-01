@@ -53,8 +53,15 @@ console.log('[GCO] content script loaded – mode =', currentMode);
 //
 // ---------------- initial storage load ---------------------
 chrome.storage.sync.get([KEY_MODE, KEY_DEBUG], (res) => {
-  currentMode = res[KEY_MODE] || MODES.ALL;   // ← fallback to ALL
-  debugOn = !!res[KEY_DEBUG];
+  if (chrome.runtime.lastError) {
+    console.error("Error retrieving storage data:", chrome.runtime.lastError);
+    // Proceed with default values if storage retrieval fails
+    currentMode = MODES.ALL;
+    debugOn = false;
+  } else {
+    currentMode = res[KEY_MODE] || MODES.ALL;   // ← fallback to ALL
+    debugOn = !!res[KEY_DEBUG];
+  }
 
   waitForGmailChrome().then(() => {
     injectToolbar();
@@ -169,8 +176,10 @@ function injectToolbar() {
 
 function ensureListElement() {
   const list = document.querySelector(SELECTORS.emailList);
-  if (list && !list.hasAttribute('tabindex')) {
-    list.setAttribute('tabindex', '-1');
+  if (list) {
+    if (!list.hasAttribute('tabindex')) {
+      list.setAttribute('tabindex', '-1');
+    }
   }
   return list;
 }
@@ -253,12 +262,24 @@ function observeMessageList() {
   const target = document.querySelector(SELECTORS.emailList)?.parentElement;
   if (!target) return;
 
-  const listObserver = new MutationObserver(() => {
+  const debouncedApplyFilter = debounce(() => {
     if (currentMode !== MODES.ALL) applyFilter();
-  });
+  }, 200); // Debounce by 200ms
+
+  const listObserver = new MutationObserver(debouncedApplyFilter);
 
   // Watching only direct children is enough; no subtree needed
-  listObserver.observe(target, { childList: true, subtree: true });
+  listObserver.observe(target, { childList: true });
+}
+
+// Debounce utility function
+function debounce(func, delay) {
+  let timeout;
+  return function(...args) {
+    const context = this;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), delay);
+  };
 }
 
 
@@ -273,7 +294,11 @@ document.addEventListener('click', (e) => {
   if (!btn) return;
 
   currentMode = btn.dataset.mode;
-  chrome.storage.sync.set({ [KEY_MODE]: currentMode });
+  chrome.storage.sync.set({ [KEY_MODE]: currentMode }, () => {
+    if (chrome.runtime.lastError) {
+      console.error("Error saving mode:", chrome.runtime.lastError);
+    }
+  });
   applyFilter();
   refreshUI();
 });

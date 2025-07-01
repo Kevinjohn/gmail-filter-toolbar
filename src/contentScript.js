@@ -178,9 +178,10 @@ function ensureListElement() {
 
 //
 // ---------------- helper: row classification ----------------
-function isCalendarRow(row) {
+function isCalendarRow(row, chromeApi = chrome) {
   const hasIcs = !!row.querySelector(SELECTORS.icsImage);
-  const hasCalendarEventIcon = !!row.querySelector('img[alt="Calendar event"]');
+  const calendarEventAltText = chromeApi.i18n.getMessage('alt_calendar_event');
+  const hasCalendarEventIcon = !!row.querySelector(`img[alt="${calendarEventAltText}"]`);
   return hasIcs || hasCalendarEventIcon;
 }
 

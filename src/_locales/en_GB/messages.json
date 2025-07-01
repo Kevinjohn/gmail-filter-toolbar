@@ -5,6 +5,13 @@
   "btn_mail": { "message": "Email only" },
   "btn_cal": { "message": "Calendar only" },
   "btn_attach": { "message": "Attachments only" },
-  "options_debug": { "message": "Enable debug mode (show filtered rows in blue)" },
+  "options_debug": {
+    "message": "Enable debug mode (show filtered rows in blue)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "alt_calendar_event": {
+    "message": "Calendar event",
+    "description": "The alt text for the calendar event icon in an email row."
+  },
   "page_title": { "message": "Calendar Options" }
 }

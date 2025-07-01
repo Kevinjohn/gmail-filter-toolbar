@@ -38,5 +38,9 @@
   "options_debug": {
     "message": "Enable debug mode (show filtered rows in blue)",
     "description": "Label for the debug mode checkbox."
+  },
+  "alt_calendar_event": {
+    "message": "Calendar event",
+    "description": "The alt text for the calendar event icon in an email row."
   }
 }

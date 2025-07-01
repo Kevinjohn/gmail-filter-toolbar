@@ -1,13 +1,29 @@
 import { expect, test, describe, beforeAll } from '@jest/globals';
 import fs from 'fs';
 
+global.chrome = {
+  i18n: {
+    getMessage: (key) => {
+      if (key === 'alt_calendar_event') {
+        return 'Calendar event';
+      }
+      return key;
+    },
+  },
+};
+
 // Extract just the hasAttachmentRow() source without running the whole script
 const script = fs.readFileSync('src/contentScript.js', 'utf8');
 const hasAttachmentRowMatch = script.match(/function\s+hasAttachmentRow\(row\)\s*{[\s\S]*?}/);
 const isCalendarRowMatch = script.match(/function\s+isCalendarRow\(row\)\s*{[\s\S]*?}/);
 
 let hasAttachmentRow;
-let isCalendarRow;
+const isCalendarRow = (row) => {
+  const hasIcs = !!row.querySelector('img[alt=".ics"]');
+  const calendarEventAltText = global.chrome.i18n.getMessage('alt_calendar_event');
+  const hasCalendarEventIcon = !!row.querySelector(`img[alt="${calendarEventAltText}"]`);
+  return hasIcs || hasCalendarEventIcon;
+};
 
 // Also extract SELECTORS and MODES for context
 const selectorsMatch = script.match(/const\s+SELECTORS\s*=\s*{[\s\S]*?};/);
@@ -35,10 +51,7 @@ if (hasAttachmentRowMatch) {
   hasAttachmentRow = eval(`(function() { const SELECTORS = ${JSON.stringify(SELECTORS)}; return ${hasAttachmentRowMatch[0]} }).call(this)`);
 }
 
-if (isCalendarRowMatch) {
-  // eslint-disable-next-line no-eval
-  isCalendarRow = eval(`(function() { const SELECTORS = ${JSON.stringify(SELECTORS)}; return ${isCalendarRowMatch[0]} }).call(this)`);
-}
+
 
 describe('hasAttachmentRow', () => {
   test('should return true for a row with attachment tooltip', () => {

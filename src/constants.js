@@ -1,0 +1,16 @@
+export const SELECTORS = {
+  gmailToolbar: '.G-atb .G6[role="toolbar"]',
+  gmailToolbarLegacy: '.G-atb[role="toolbar"]',
+  gmailToolbarAria: 'div[aria-label="Main toolbar"]',
+  gmailToolbarHeader: '.aeH',
+  emailRow: '.UI tr.zA',
+  emailSubject: '.bog',
+  emailList: '.UI',
+  attachmentIcon: 'img.aSK',
+  attachmentRowClass: 'byw',
+  attachmentTooltip: '[data-tooltip="Has attachment"]',
+  icsImage: 'img[alt*=".ics"]',
+  filterBar: '.gcal-filter-bar',
+  filterWrapper: '.gcal-filter-wrapper',
+  filterButtons: '.gcal-filter-bar button[data-mode]',
+};

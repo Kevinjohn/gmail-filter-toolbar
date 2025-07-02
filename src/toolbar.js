@@ -1,0 +1,83 @@
+import { SELECTORS } from './constants.js';
+import { MODES, currentMode } from './state.js';
+
+const FILTER_CONFIG = {
+    [MODES.ALL]: {
+      labelKey: 'btn_all',
+    },
+    [MODES.HIDE]: {
+      labelKey: 'btn_mail',
+    },
+    [MODES.ONLY]: {
+      labelKey: 'btn_cal',
+    },
+    [MODES.ONLY_ATTACH]: {
+      labelKey: 'btn_attach',
+    },
+  };
+
+function ensureListElement() {
+  const list = document.querySelector(SELECTORS.emailList);
+  if (list && !list.hasAttribute('tabindex')) {
+    list.setAttribute('tabindex', '-1');
+  }
+  return list;
+}
+
+export function injectToolbar() {
+  const header = document.querySelector(SELECTORS.gmailToolbarHeader);
+  if (!header) return;
+
+  let wrapper = document.querySelector(SELECTORS.filterWrapper);
+  if (!wrapper) {
+    wrapper = document.createElement('div');
+    wrapper.className = 'gcal-filter-wrapper';
+    header.appendChild(wrapper);
+  }
+
+  if (header.lastChild !== wrapper) {
+    header.appendChild(wrapper);
+  }
+
+  let bar = document.querySelector(SELECTORS.filterBar);
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.className = 'gcal-filter-bar';
+    bar.setAttribute('role', 'toolbar');
+    bar.setAttribute('aria-label', chrome.i18n.getMessage('label_toolbar') || 'Calendar filter');
+
+    bar.innerHTML = `
+      <div class="gcal-btn-group">
+        <span class="gcal-label">${chrome.i18n.getMessage('label_options') || 'Calendar options:'}</span>
+        ${Object.values(MODES).map(mode => `
+          <button data-mode="${mode}">${chrome.i18n.getMessage(FILTER_CONFIG[mode].labelKey) || mode}</button>
+        `).join('')}
+      </div>
+    `;
+    wrapper.appendChild(bar);
+  } else if (bar.parentNode !== wrapper) {
+    wrapper.appendChild(bar);
+  }
+
+  refreshUI(bar);
+
+  if (!bar.dataset.listenerAdded) {
+    bar.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const list = ensureListElement();
+        list?.focus();
+      }
+    });
+    bar.dataset.listenerAdded = 'true';
+  }
+}
+
+export function refreshUI() {
+  const bar = document.querySelector(SELECTORS.filterBar);
+  if (!bar) return;
+
+  bar.querySelectorAll('button[data-mode]').forEach((btn) => {
+    btn.toggleAttribute('data-active', btn.dataset.mode === currentMode);
+    btn.setAttribute('aria-pressed', btn.dataset.mode === currentMode);
+  });
+}

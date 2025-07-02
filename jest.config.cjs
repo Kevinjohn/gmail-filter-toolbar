@@ -2,5 +2,6 @@
 module.exports = {
   testEnvironment: 'jsdom',
   transform: {},
-  testMatch: ['**/*.test.js'] // or use testPathIgnorePatterns for *.spec.js
+  testMatch: ['**/*.test.js'], // or use testPathIgnorePatterns for *.spec.js
+  setupFilesAfterEnv: ['./tests/setup.js']
 };

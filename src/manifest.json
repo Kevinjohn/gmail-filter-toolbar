@@ -34,7 +34,7 @@
 
   "web_accessible_resources": [
     {
-      "resources": ["assets/fonts/MaterialIcons-Regular.woff2", "assets/fonts/material-icons.css"],
+      "resources": ["fonts/MaterialIcons-Regular.woff2", "fonts/material-icons.css"],
       "matches": ["https://mail.google.com/*"]
     }
   ],

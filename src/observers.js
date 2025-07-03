@@ -30,7 +30,7 @@ export function observeToolbar() {
         injectToolbar();
         if (currentMode !== MODES.ALL) applyFilter();
     });
-    obs.observe(header, { childList: true, subtree: true });
+    obs.observe(header, { childList: true });
 }
 
 export function waitForGmailChrome() {

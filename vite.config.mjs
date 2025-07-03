@@ -8,7 +8,7 @@ export default defineConfig({
 
     rollupOptions: {
       /* ONE real entry stops the error */
-      input: { background: 'src/background.js' },
+      input: { background: 'src/background.js', contentScript: 'src/contentScript.js' },
       /* keep the default file-naming */
       output: { entryFileNames: '[name].js' }
     },
@@ -20,7 +20,7 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         { src: 'src/manifest.json',     dest: '.' },
-        { src: 'src/contentScript.js',  dest: '.' },
+        
         { src: 'src/styles.css',        dest: '.' },
         { src: 'src/colours.css',      dest: '.' },
         { src: 'src/options.html',      dest: '.' },

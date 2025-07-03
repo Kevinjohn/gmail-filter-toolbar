@@ -29,6 +29,7 @@
 | **Mail Only** | Hide calendar invites |
 | **Calendar Only** | Show **only** calendar invites |
 | **Attachments Only** | Show **only** e-mails with attachments |
+| **Favourites Only** | Show **only** starred/favourite e-mails |
 
 * MV3-compliant (`service_worker` background, no persistent pages).
 * Zero network calls – all filtering happens client-side.

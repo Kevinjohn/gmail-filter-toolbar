@@ -1,8 +1,8 @@
-import { SELECTORS } from './constants.js';
-import { loadState, saveState, setCurrentMode, setDebugOn, KEY_DEBUG } from './state.js';
-import { applyFilter } from './filter.js';
-import { injectToolbar, refreshUI } from './toolbar.js';
-import { waitForGmailChrome, waitForMessageTable, observeMessageList, observeToolbar } from './observers.js';
+import { SELECTORS } from './modules/constants.js';
+import { loadState, saveState, setCurrentMode, setDebugOn, KEY_DEBUG } from './modules/state.js';
+import { applyFilter } from './modules/filter.js';
+import { injectToolbar, refreshUI } from './modules/toolbar.js';
+import { waitForGmailChrome, waitForMessageTable, observeMessageList, observeToolbar } from './modules/observers.js';
 
 function main() {
   loadState(() => {

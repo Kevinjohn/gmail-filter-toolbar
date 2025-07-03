@@ -8,7 +8,7 @@ export default defineConfig({
 
     rollupOptions: {
       /* ONE real entry stops the error */
-      input: { background: 'src/modules/background.js', contentScript: 'src/modules/contentScript.js' },
+      input: { background: 'src/modules/background.js', contentScript: 'src/contentScript.js' },
       /* keep the default file-naming */
       output: { entryFileNames: '[name].js' }
     },

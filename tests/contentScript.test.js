@@ -1,6 +1,8 @@
 import { expect, test, describe } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { isCalendarRow, hasAttachmentRow } from '../src/filter.js';
+import { isCalendarRow, hasAttachmentRow, isFavouriteRow } from '../src/filter.js';
+import { applyFilter } from '../src/filter.js';
+import { MODES, setCurrentMode } from '../src/state.js';
 import { SELECTORS } from '../src/constants.js';
 
 // Mock the chrome API and JSDOM
@@ -61,3 +63,18 @@ describe('isCalendarRow', () => {
     expect(isCalendarRow(row)).toBe(false);
   });
 });
+
+describe('isFavouriteRow', () => {
+  test('should return true for a row with a starred image', () => {
+    const doc = setupDOM('<div class="UI"><div class="zA"><td class="apU xY"><span id=":ph" class="T-KT T-KT-Jp" aria-label="Starred" role="button" data-tooltip="Starred"><img class="T-KT-JX" src="images/cleardot.gif" alt="Starred"></span></td></div></div>');
+    const row = doc.querySelector('.zA');
+    expect(isFavouriteRow(row)).toBe(true);
+  });
+
+  test('should return false for a row without a starred image', () => {
+    const doc = setupDOM('<div class="UI"><div class="zA"></div></div>');
+    const row = doc.querySelector('.zA');
+    expect(isFavouriteRow(row)).toBe(false);
+  });
+});
+

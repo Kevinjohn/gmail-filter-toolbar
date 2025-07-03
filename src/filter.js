@@ -15,6 +15,10 @@ export function hasAttachmentRow(row) {
   return hasBywClass || hasAttachmentTooltip || hasPaperclipIcon;
 }
 
+export function isFavouriteRow(row) {
+  return !!row.querySelector('img[alt="Starred"]');
+}
+
 const FILTER_CONFIG = {
   [MODES.ALL]: {
     labelKey: 'btn_all',
@@ -31,6 +35,10 @@ const FILTER_CONFIG = {
   [MODES.ONLY_ATTACH]: {
     labelKey: 'btn_attach',
     filterFn: (row) => !hasAttachmentRow(row) || isCalendarRow(row),
+  },
+  [MODES.FAVOURITES]: {
+    labelKey: 'btn_fav',
+    filterFn: (row) => !isFavouriteRow(row),
   },
 };
 

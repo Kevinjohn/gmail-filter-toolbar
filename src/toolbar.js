@@ -14,6 +14,9 @@ const FILTER_CONFIG = {
     [MODES.ONLY_ATTACH]: {
       labelKey: 'btn_attach',
     },
+    [MODES.FAVOURITES]: {
+      labelKey: 'btn_fav',
+    },
   };
 
 function ensureListElement() {
@@ -50,7 +53,7 @@ export function injectToolbar() {
       <div class="gcal-btn-group">
         <span class="gcal-label">${chrome.i18n.getMessage('label_options') || 'Calendar options:'}</span>
         ${Object.values(MODES).map(mode => `
-          <button data-mode="${mode}">${chrome.i18n.getMessage(FILTER_CONFIG[mode].labelKey) || mode}</button>
+          <button data-mode="${mode}">${chrome.i18n.getMessage(FILTER_CONFIG[mode].labelKey)}</button>
         `).join('')}
       </div>
     `;

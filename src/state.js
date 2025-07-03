@@ -6,6 +6,7 @@ export const MODES = {
   HIDE: 'HIDE_CAL',
   ONLY: 'ONLY_CAL',
   ONLY_ATTACH: 'ONLY_ATTACH',
+  FAVOURITES: 'FAVOURITES',
 };
 
 export let currentMode = MODES.ALL;

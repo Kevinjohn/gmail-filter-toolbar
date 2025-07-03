@@ -31,6 +31,10 @@
     "message": "Attachments only",
     "description": "Button to show only e-mails with attachments."
   },
+  "btn_fav": {
+    "message": "Favourites only",
+    "description": "Button to show only starred/favourite e-mails."
+  },
   "page_title": {
     "message": "Calendar Options",
     "description": "Title for the extension's options page."

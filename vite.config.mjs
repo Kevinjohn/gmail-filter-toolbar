@@ -25,7 +25,8 @@ export default defineConfig({
         { src: 'src/colours.css',      dest: '.' },
         { src: 'src/options.html',      dest: '.' },
         { src: 'src/icons',             dest: '.' },
-        { src: 'src/_locales',          dest: '.' } // if present
+        { src: 'src/_locales',          dest: '.' }, // if present
+        { src: 'assets/fonts',          dest: '.' }
       ]
     })
   ]

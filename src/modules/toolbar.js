@@ -52,9 +52,32 @@ export function injectToolbar(doc = document) {
     bar.innerHTML = `
       <div class="gcal-btn-group">
         <span class="gcal-label">${chrome.i18n.getMessage('label_options')}</span>
-        ${Object.values(MODES).map(mode => `
-          <button data-mode="${mode}">${chrome.i18n.getMessage(FILTER_CONFIG[mode].labelKey)}</button>
-        `).join('')}
+        ${Object.values(MODES).map(mode => {
+          let iconName = '';
+          switch (mode) {
+            case MODES.ALL:
+              iconName = 'inbox';
+              break;
+            case MODES.HIDE:
+              iconName = 'mail';
+              break;
+            case MODES.ONLY:
+              iconName = 'calendar_today';
+              break;
+            case MODES.ONLY_ATTACH:
+              iconName = 'attachment';
+              break;
+            case MODES.FAVOURITES:
+              iconName = 'star';
+              break;
+          }
+          return `
+            <button data-mode="${mode}">
+              <i class="material-icons">${iconName}</i>
+              <span>${chrome.i18n.getMessage(FILTER_CONFIG[mode].labelKey)}</span>
+            </button>
+          `;
+        }).join('')}
       </div>
     `;
     wrapper.appendChild(bar);

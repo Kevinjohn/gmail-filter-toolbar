@@ -13,4 +13,5 @@ export const SELECTORS = {
   filterBar: '.gcal-filter-bar',
   filterWrapper: '.gcal-filter-wrapper',
   filterButtons: '.gcal-filter-bar button[data-mode]',
+  liveRegion: '.gcal-live-region',
 };

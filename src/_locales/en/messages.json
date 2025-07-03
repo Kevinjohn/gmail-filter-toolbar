@@ -46,5 +46,9 @@
   "alt_calendar_event": {
     "message": "Calendar event",
     "description": "The alt text for the calendar event icon in an email row."
+  },
+  "filter_status_update": {
+    "message": "Filter set to $1",
+    "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
   }
 }

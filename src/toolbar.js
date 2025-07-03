@@ -47,17 +47,24 @@ export function injectToolbar() {
     bar = document.createElement('div');
     bar.className = 'gcal-filter-bar';
     bar.setAttribute('role', 'toolbar');
-    bar.setAttribute('aria-label', chrome.i18n.getMessage('label_toolbar') || 'Calendar filter');
+    bar.setAttribute('aria-label', chrome.i18n.getMessage('label_toolbar'));
 
     bar.innerHTML = `
       <div class="gcal-btn-group">
-        <span class="gcal-label">${chrome.i18n.getMessage('label_options') || 'Calendar options:'}</span>
+        <span class="gcal-label">${chrome.i18n.getMessage('label_options')}</span>
         ${Object.values(MODES).map(mode => `
           <button data-mode="${mode}">${chrome.i18n.getMessage(FILTER_CONFIG[mode].labelKey)}</button>
         `).join('')}
       </div>
     `;
     wrapper.appendChild(bar);
+
+    const liveRegion = document.createElement('div');
+    liveRegion.className = 'gcal-live-region';
+    liveRegion.setAttribute('role', 'status');
+    liveRegion.setAttribute('aria-live', 'polite');
+    liveRegion.style.cssText = 'position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;';
+    wrapper.appendChild(liveRegion);
   } else if (bar.parentNode !== wrapper) {
     wrapper.appendChild(bar);
   }
@@ -83,4 +90,10 @@ export function refreshUI() {
     btn.toggleAttribute('data-active', btn.dataset.mode === currentMode);
     btn.setAttribute('aria-pressed', btn.dataset.mode === currentMode);
   });
+
+  const liveRegion = document.querySelector(SELECTORS.liveRegion);
+  if (liveRegion) {
+    const currentModeLabel = chrome.i18n.getMessage(FILTER_CONFIG[currentMode].labelKey);
+    liveRegion.textContent = chrome.i18n.getMessage('filter_status_update', [currentModeLabel]);
+  }
 }

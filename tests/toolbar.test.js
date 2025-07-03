@@ -1,8 +1,8 @@
 import { expect, test, describe, beforeEach, afterEach, jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { injectToolbar, refreshUI } from '../src/toolbar.js';
-import { MODES, setCurrentMode } from '../src/state.js';
-import { SELECTORS } from '../src/constants.js';
+import { injectToolbar, refreshUI } from '../src/modules/toolbar.js';
+import { MODES, setCurrentMode } from '../src/modules/state.js';
+import { SELECTORS } from '../src/modules/constants.js';
 
 // Mock the chrome API
 global.chrome = {

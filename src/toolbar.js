@@ -19,21 +19,21 @@ const FILTER_CONFIG = {
     },
   };
 
-function ensureListElement() {
-  const list = document.querySelector(SELECTORS.emailList);
+function ensureListElement(doc = document) {
+  const list = doc.querySelector(SELECTORS.emailList);
   if (list && !list.hasAttribute('tabindex')) {
     list.setAttribute('tabindex', '-1');
   }
   return list;
 }
 
-export function injectToolbar() {
-  const header = document.querySelector(SELECTORS.gmailToolbarHeader);
+export function injectToolbar(doc = document) {
+  const header = doc.querySelector(SELECTORS.gmailToolbarHeader);
   if (!header) return;
 
-  let wrapper = document.querySelector(SELECTORS.filterWrapper);
+  let wrapper = doc.querySelector(SELECTORS.filterWrapper);
   if (!wrapper) {
-    wrapper = document.createElement('div');
+    wrapper = doc.createElement('div');
     wrapper.className = 'gcal-filter-wrapper';
     header.appendChild(wrapper);
   }
@@ -42,9 +42,9 @@ export function injectToolbar() {
     header.appendChild(wrapper);
   }
 
-  let bar = document.querySelector(SELECTORS.filterBar);
+  let bar = doc.querySelector(SELECTORS.filterBar);
   if (!bar) {
-    bar = document.createElement('div');
+    bar = doc.createElement('div');
     bar.className = 'gcal-filter-bar';
     bar.setAttribute('role', 'toolbar');
     bar.setAttribute('aria-label', chrome.i18n.getMessage('label_toolbar'));
@@ -59,7 +59,7 @@ export function injectToolbar() {
     `;
     wrapper.appendChild(bar);
 
-    const liveRegion = document.createElement('div');
+    const liveRegion = doc.createElement('div');
     liveRegion.className = 'gcal-live-region';
     liveRegion.setAttribute('role', 'status');
     liveRegion.setAttribute('aria-live', 'polite');
@@ -69,12 +69,12 @@ export function injectToolbar() {
     wrapper.appendChild(bar);
   }
 
-  refreshUI(bar);
+  refreshUI(doc);
 
   if (!bar.dataset.listenerAdded) {
     bar.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        const list = ensureListElement();
+        const list = ensureListElement(doc);
         list?.focus();
       }
     });
@@ -82,8 +82,8 @@ export function injectToolbar() {
   }
 }
 
-export function refreshUI() {
-  const bar = document.querySelector(SELECTORS.filterBar);
+export function refreshUI(doc = document) {
+  const bar = doc.querySelector(SELECTORS.filterBar);
   if (!bar) return;
 
   bar.querySelectorAll('button[data-mode]').forEach((btn) => {
@@ -91,7 +91,7 @@ export function refreshUI() {
     btn.setAttribute('aria-pressed', btn.dataset.mode === currentMode);
   });
 
-  const liveRegion = document.querySelector(SELECTORS.liveRegion);
+  const liveRegion = doc.querySelector(SELECTORS.liveRegion);
   if (liveRegion) {
     const currentModeLabel = chrome.i18n.getMessage(FILTER_CONFIG[currentMode].labelKey);
     liveRegion.textContent = chrome.i18n.getMessage('filter_status_update', [currentModeLabel]);

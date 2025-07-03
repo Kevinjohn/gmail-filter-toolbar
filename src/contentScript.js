@@ -7,8 +7,8 @@ import { waitForGmailChrome, waitForMessageTable, observeMessageList, observeToo
 function main() {
   loadState(() => {
     waitForGmailChrome().then(() => {
-      injectToolbar();
-      refreshUI();
+      injectToolbar(document);
+      refreshUI(document);
 
       waitForMessageTable().then(() => {
         applyFilter();
@@ -27,7 +27,7 @@ document.addEventListener('click', (e) => {
   setCurrentMode(btn.dataset.mode);
   saveState();
   applyFilter();
-  refreshUI();
+  refreshUI(document);
 });
 
 // Listen for storage changes (e.g., debug mode toggled in options.html)

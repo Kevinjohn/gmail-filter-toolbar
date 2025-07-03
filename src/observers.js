@@ -27,7 +27,7 @@ export function observeMessageList() {
 export function observeToolbar() {
     const header = document.querySelector(SELECTORS.gmailToolbarHeader);
     const obs = new MutationObserver(() => {
-        injectToolbar();
+        injectToolbar(document);
         if (currentMode !== MODES.ALL) applyFilter();
     });
     obs.observe(header, { childList: true });

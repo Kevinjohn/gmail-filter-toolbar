@@ -5,6 +5,12 @@ import { injectToolbar, refreshUI } from './modules/toolbar.js';
 import { waitForGmailChrome, waitForMessageTable, observeMessageList, observeToolbar } from './modules/observers.js';
 
 function main() {
+  // Dynamically inject Material Icons CSS
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = chrome.runtime.getURL('fonts/material-icons.css');
+  document.head.appendChild(link);
+
   loadState(() => {
     waitForGmailChrome().then(() => {
       injectToolbar(document);

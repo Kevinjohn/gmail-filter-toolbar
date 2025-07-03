@@ -19,7 +19,7 @@
       "matches": ["https://mail.google.com/*"],
       "js": ["contentScript.js"],
       "type": "module",
-      "css": ["styles.css", "colours.css", "assets/fonts/material-icons.css"],
+      "css": ["styles.css", "colours.css", "fonts/material-icons.css"],
       "run_at": "document_idle"
     }
   ],

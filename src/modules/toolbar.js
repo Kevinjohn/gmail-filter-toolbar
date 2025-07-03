@@ -36,61 +36,71 @@ export function injectToolbar(doc = document) {
     wrapper = doc.createElement('div');
     wrapper.className = 'gcal-filter-wrapper';
     header.appendChild(wrapper);
+  } else {
+    // If wrapper already exists, clear its children
+    while (wrapper.firstChild) {
+      wrapper.removeChild(wrapper.firstChild);
+    }
   }
 
-  if (header.lastChild !== wrapper) {
-    header.appendChild(wrapper);
-  }
+  // Create the bar element and append it to the wrapper
+  const bar = doc.createElement('div'); // Always create a new bar
+  bar.className = 'gcal-filter-bar';
+  bar.setAttribute('role', 'toolbar');
+  bar.setAttribute('aria-label', chrome.i18n.getMessage('label_toolbar'));
+  wrapper.appendChild(bar); // Append bar to the wrapper
 
-  let bar = doc.querySelector(SELECTORS.filterBar);
-  if (!bar) {
-    bar = doc.createElement('div');
-    bar.className = 'gcal-filter-bar';
-    bar.setAttribute('role', 'toolbar');
-    bar.setAttribute('aria-label', chrome.i18n.getMessage('label_toolbar'));
+  const btnGroup = doc.createElement('div');
+  btnGroup.className = 'gcal-btn-group';
 
-    bar.innerHTML = `
-      <div class="gcal-btn-group">
-        <span class="gcal-label">${chrome.i18n.getMessage('label_options')}</span>
-        ${Object.values(MODES).map(mode => {
-          let iconName = '';
-          switch (mode) {
-            case MODES.ALL:
-              iconName = 'inbox';
-              break;
-            case MODES.HIDE:
-              iconName = 'mail';
-              break;
-            case MODES.ONLY:
-              iconName = 'calendar_today';
-              break;
-            case MODES.ONLY_ATTACH:
-              iconName = 'attachment';
-              break;
-            case MODES.FAVOURITES:
-              iconName = 'star';
-              break;
-          }
-          return `
-            <button data-mode="${mode}">
-              <i class="material-icons">${iconName}</i>
-              <span>${chrome.i18n.getMessage(FILTER_CONFIG[mode].labelKey)}</span>
-            </button>
-          `;
-        }).join('')}
-      </div>
-    `;
-    wrapper.appendChild(bar);
+  const labelSpan = doc.createElement('span');
+  labelSpan.className = 'gcal-label';
+  labelSpan.textContent = chrome.i18n.getMessage('label_options');
+  btnGroup.appendChild(labelSpan);
 
-    const liveRegion = doc.createElement('div');
-    liveRegion.className = 'gcal-live-region';
-    liveRegion.setAttribute('role', 'status');
-    liveRegion.setAttribute('aria-live', 'polite');
-    liveRegion.style.cssText = 'position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;';
-    wrapper.appendChild(liveRegion);
-  } else if (bar.parentNode !== wrapper) {
-    wrapper.appendChild(bar);
-  }
+  Object.values(MODES).forEach(mode => {
+    let iconName = '';
+    switch (mode) {
+      case MODES.ALL:
+        iconName = 'inbox';
+        break;
+      case MODES.HIDE:
+        iconName = 'mail';
+        break;
+      case MODES.ONLY:
+        iconName = 'calendar_today';
+        break;
+      case MODES.ONLY_ATTACH:
+        iconName = 'attachment';
+        break;
+      case MODES.FAVOURITES:
+        iconName = 'star';
+        break;
+    }
+
+    const button = doc.createElement('button');
+    button.dataset.mode = mode;
+
+    const icon = doc.createElement('i');
+    icon.className = 'material-icons';
+    icon.textContent = iconName;
+    button.appendChild(icon);
+
+    const textSpan = doc.createElement('span');
+    textSpan.textContent = chrome.i18n.getMessage(FILTER_CONFIG[mode].labelKey);
+    button.appendChild(textSpan);
+
+    btnGroup.appendChild(button);
+  });
+
+  bar.appendChild(btnGroup);
+
+  const liveRegion = doc.createElement('div');
+  liveRegion.className = 'gcal-live-region';
+  liveRegion.setAttribute('role', 'status');
+  liveRegion.setAttribute('aria-live', 'polite');
+  liveRegion.style.cssText = 'position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;';
+  wrapper.appendChild(liveRegion);
 
   refreshUI(doc);
 

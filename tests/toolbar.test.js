@@ -34,12 +34,7 @@ describe('injectToolbar', () => {
   beforeEach(() => {
     doc = setupDOM(`<div class="aeH"></div>`);
     header = doc.querySelector('.aeH');
-    jest.spyOn(document, 'querySelector').mockImplementation((selector) => {
-      if (selector === SELECTORS.gmailToolbarHeader) {
-        return header;
-      }
-      return doc.querySelector(selector);
-    });
+    doc.body.appendChild(header); // Append header to document body
   });
 
   afterEach(() => {
@@ -57,6 +52,17 @@ describe('injectToolbar', () => {
     expect(liveRegion).not.toBeNull();
     expect(liveRegion.getAttribute('role')).toBe('status');
     expect(liveRegion.getAttribute('aria-live')).toBe('polite');
+  });
+
+  test('should inject Material Icons into buttons', () => {
+    injectToolbar(doc);
+    const headerHtml = header.innerHTML;
+
+    expect(headerHtml).toContain('<button data-mode="ALL" data-active="" aria-pressed="true"><i class="material-icons">inbox</i><span>All Email</span></button>');
+    expect(headerHtml).toContain('<button data-mode="HIDE_CAL" aria-pressed="false"><i class="material-icons">mail</i><span>Email only</span></button>');
+    expect(headerHtml).toContain('<button data-mode="ONLY_CAL" aria-pressed="false"><i class="material-icons">calendar_today</i><span>Calendar only</span></button>');
+    expect(headerHtml).toContain('<button data-mode="ONLY_ATTACH" aria-pressed="false"><i class="material-icons">attachment</i><span>Attachments only</span></button>');
+    expect(headerHtml).toContain('<button data-mode="FAVOURITES" aria-pressed="false"><i class="material-icons">star</i><span>Favourites only</span></button>');
   });
 });
 

@@ -31,7 +31,7 @@
   margin-top: 4px;        /* visual gap below icons */
   /* keep any existing rules such as font, padding, z-index */
   margin-top:10px;
-  z-index: 602; position: relative;
+  z-index: 4; position: relative;
 }
 
 .gcal-btn-group button {

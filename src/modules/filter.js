@@ -52,7 +52,7 @@ export function applyFilter() {
     if (debugOn) {
       row.style.display = '';
       row.style.background = hide ? 'rgba(0,123,255,.15)' : '';
-      row.style.opacity = hide ? '0.5' : '1';
+      row.style.opacity = hide ? '0.5' : '';
     } else {
       row.style.background = '';
       row.style.opacity = '';

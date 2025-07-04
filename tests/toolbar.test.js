@@ -30,11 +30,14 @@ const setupDOM = (html) => {
 describe('injectToolbar', () => {
   let header;
   let doc;
+  let wrapper;
 
   beforeEach(() => {
     doc = setupDOM(`<div class="aeH"></div>`);
     header = doc.querySelector('.aeH');
     doc.body.appendChild(header); // Append header to document body
+    injectToolbar(doc, header);
+    wrapper = header.nextElementSibling;
   });
 
   afterEach(() => {
@@ -42,8 +45,8 @@ describe('injectToolbar', () => {
   });
 
   test('should inject the toolbar and live region', () => {
-    injectToolbar(doc);
-    const wrapper = header.querySelector('.gcal-filter-wrapper');
+    injectToolbar(doc, header);
+    const wrapper = header.nextElementSibling;
     const toolbar = wrapper.querySelector(SELECTORS.filterBar);
     const liveRegion = wrapper.querySelector(SELECTORS.liveRegion);
 
@@ -56,19 +59,20 @@ describe('injectToolbar', () => {
 
   test('should inject Material Icons into buttons', () => {
     injectToolbar(doc);
-    const headerHtml = header.innerHTML;
+    const headerHtml = wrapper.innerHTML;
 
-    expect(headerHtml).toContain('<button data-mode="ALL" data-active="" aria-pressed="true"><span class="material-symbols-outlined">inbox</span><span>All Email</span></button>');
-    expect(headerHtml).toContain('<button data-mode="HIDE_CAL" aria-pressed="false"><span class="material-symbols-outlined">mail</span><span>Email only</span></button>');
-    expect(headerHtml).toContain('<button data-mode="ONLY_CAL" aria-pressed="false"><span class="material-symbols-outlined">calendar_today</span><span>Calendar only</span></button>');
-    expect(headerHtml).toContain('<button data-mode="ONLY_ATTACH" aria-pressed="false"><span class="material-symbols-outlined">attachment</span><span>Attachments only</span></button>');
-    expect(headerHtml).toContain('<button data-mode="FAVOURITES" aria-pressed="false"><span class="material-symbols-outlined">star</span><span>Favourites only</span></button>');
+    expect(headerHtml).toContain('<button data-mode="ALL" data-active="" aria-pressed="true"><span class="material-symbols-outlined">inbox</span><span class="gcal-text-label">All Email</span></button>');
+    expect(headerHtml).toContain('<button data-mode="HIDE_CAL" aria-pressed="false"><span class="material-symbols-outlined">mail</span><span class="gcal-text-label">Email only</span></button>');
+    expect(headerHtml).toContain('<button data-mode="ONLY_CAL" aria-pressed="false"><span class="material-symbols-outlined">calendar_today</span><span class="gcal-text-label">Calendar only</span></button>');
+    expect(headerHtml).toContain('<button data-mode="ONLY_ATTACH" aria-pressed="false"><span class="material-symbols-outlined">attachment</span><span class="gcal-text-label">Attachments only</span></button>');
+    expect(headerHtml).toContain('<button data-mode="FAVOURITES" aria-pressed="false"><span class="material-symbols-outlined">star</span><span class="gcal-text-label">Favourites only</span></button>');
   });
 });
 
 describe('refreshUI', () => {
   let header;
   let doc;
+  let wrapper;
 
   beforeEach(() => {
     const doc = setupDOM(`
@@ -81,7 +85,8 @@ describe('refreshUI', () => {
       }
       return doc.querySelector(selector);
     });
-    injectToolbar(doc); // Ensure toolbar is injected before refreshUI is called
+    injectToolbar(doc, header); // Ensure toolbar is injected before refreshUI is called
+    wrapper = header.nextElementSibling;
   });
 
   afterEach(() => {
@@ -91,14 +96,14 @@ describe('refreshUI', () => {
   test('should update the live region text for ALL mode', () => {
     setCurrentMode(MODES.ALL);
     refreshUI(doc);
-    const liveRegion = header.querySelector(SELECTORS.liveRegion);
+    const liveRegion = wrapper.querySelector(SELECTORS.liveRegion);
     expect(liveRegion.textContent).toBe('Filter set to All Email');
   });
 
   test('should update the live region text for FAVOURITES mode', () => {
     setCurrentMode(MODES.FAVOURITES);
     refreshUI(doc);
-    const liveRegion = header.querySelector(SELECTORS.liveRegion);
+    const liveRegion = wrapper.querySelector(SELECTORS.liveRegion);
     expect(liveRegion.textContent).toBe('Filter set to Favourites only');
   });
 });

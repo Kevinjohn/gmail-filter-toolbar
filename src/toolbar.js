@@ -49,14 +49,40 @@ export function injectToolbar(doc = document) {
     bar.setAttribute('role', 'toolbar');
     bar.setAttribute('aria-label', chrome.i18n.getMessage('label_toolbar'));
 
-    bar.innerHTML = `
-      <div class="gcal-btn-group">
-        <span class="gcal-label">${chrome.i18n.getMessage('label_options')}</span>
-        ${Object.values(MODES).map(mode => `
-          <button data-mode="${mode}">${chrome.i18n.getMessage(FILTER_CONFIG[mode].labelKey)}</button>
-        `).join('')}
-      </div>
-    `;
+    const btnGroup = doc.createElement('div');
+    btnGroup.className = 'gcal-btn-group';
+
+    const labelSpan = doc.createElement('span');
+    labelSpan.className = 'gcal-label';
+    labelSpan.textContent = chrome.i18n.getMessage('label_options');
+    btnGroup.appendChild(labelSpan);
+
+    const ICON_MAP = {
+      [MODES.ALL]: 'select_all',
+      [MODES.HIDE]: 'mail',
+      [MODES.ONLY]: 'calendar_month',
+      [MODES.ONLY_ATTACH]: 'attachment',
+      [MODES.FAVOURITES]: 'star',
+    };
+
+    Object.values(MODES).forEach(mode => {
+      const button = doc.createElement('button');
+      button.dataset.mode = mode;
+
+      const iconSpan = doc.createElement('span');
+      iconSpan.className = 'material-symbols-outlined';
+      iconSpan.textContent = ICON_MAP[mode];
+
+      const textSpan = doc.createElement('span');
+      textSpan.className = 'text-label';
+      textSpan.textContent = chrome.i18n.getMessage(FILTER_CONFIG[mode].labelKey);
+
+      button.appendChild(iconSpan);
+      button.appendChild(textSpan);
+      btnGroup.appendChild(button);
+    });
+
+    bar.appendChild(btnGroup);
     wrapper.appendChild(bar);
 
     const liveRegion = doc.createElement('div');

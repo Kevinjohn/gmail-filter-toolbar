@@ -134,3 +134,7 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# KJ added
+.DS_store
+GIT-COMMIT.md

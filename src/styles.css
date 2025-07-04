@@ -4,10 +4,10 @@
   margin-block: 4px;
   margin-inline: 0;
   padding-block: 2px;
-  padding-inline: 4px;
+  padding-inline: 12px;
   background: var(--gcal-bg-color);
-  border-radius: 4px;
-  font-size: 13px;
+  border-radius: 0;
+  font-size: 12px;
 
   flex: 0 0 100%;   /* NEW: occupy a whole flex line */
   width: 100%;      /* belt-and-braces */
@@ -62,7 +62,7 @@
   font-family: 'Material Symbols Outlined';
   font-weight: normal;
   font-style: normal;
-  font-size: 20px !important;
+  font-size: 18px !important;
   line-height: 1;
   letter-spacing: normal;
   text-transform: none;
@@ -73,5 +73,14 @@
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
   margin-inline-end: 4px; /* Space between icon and text */
+}
+
+span.gcal-label {
+  display: none;
+}
+
+span.text-label {
+  margin-inline-start: 4px;
+  margin-inline-end: 2px;
 }
 

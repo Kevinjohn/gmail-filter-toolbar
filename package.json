@@ -1,6 +1,6 @@
 {
   "name": "gmail-calendar-options",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Toggle visibility of calendar invites inside Gmail.",
   "type": "module",
   "scripts": {

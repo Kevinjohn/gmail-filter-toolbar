@@ -1,25 +1,43 @@
 import { expect, test, describe, beforeEach, afterEach, jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { injectToolbar, refreshUI } from '../src/modules/toolbar.js';
-import { MODES, setCurrentMode } from '../src/modules/state.js';
+import { MODES, setCurrentMode, saveState, currentMode } from '../src/modules/state.js';
 import { SELECTORS } from '../src/modules/constants.js';
+import { applyFilter } from '../src/modules/filter.js';
 
 // Mock the chrome API
 global.chrome = {
   i18n: {
-    getMessage: (key, substitutions) => {
+    getMessage: jest.fn((key, substitutions) => {
       if (key === 'label_toolbar') return 'Calendar filter';
       if (key === 'label_options') return 'Calendar options:';
-      if (key === 'filter_status_update') return `Filter set to ${substitutions[0]}`;
+      if (key === 'filter_status_update') return `Filter set to ${substitutions ? substitutions[0] : ''}`;
       if (key === 'btn_all') return 'All Email';
       if (key === 'btn_mail') return 'Email only';
       if (key === 'btn_cal') return 'Calendar only';
       if (key === 'btn_attach') return 'Attachments only';
       if (key === 'btn_fav') return 'Favourites only';
-      return key;
+      return `Mocked ${key}`;
+    }),
+  },
+  storage: {
+    sync: {
+      set: jest.fn(),
     },
   },
 };
+
+jest.mock('../src/modules/filter.js', () => ({
+  applyFilter: jest.fn(),
+}));
+
+jest.mock('../src/modules/state.js', () => ({
+  ...jest.requireActual('../src/modules/state.js'),
+  setCurrentMode: jest.fn((mode) => {
+    jest.requireActual('../src/modules/state.js').setCurrentMode(mode);
+  }),
+  saveState: jest.fn(),
+}));
 
 const setupDOM = (html) => {
   const dom = new JSDOM(html);
@@ -27,17 +45,30 @@ const setupDOM = (html) => {
   return dom.window.document;
 };
 
+function simulateClick(mode) {
+    const button = document.querySelector(`button[data-mode="${mode}"]`);
+    if (button) {
+        button.click(); // This will trigger the event listener in contentScript.js
+    } else {
+        throw new Error(`Button for mode ${mode} not found.`); // Fail fast if button is missing
+    }
+}
+
 describe('injectToolbar', () => {
   let header;
   let doc;
   let wrapper;
 
   beforeEach(() => {
-    doc = setupDOM(`<div class="aeH"></div>`);
-    header = doc.querySelector('.aeH');
-    doc.body.appendChild(header); // Append header to document body
+    document.body.innerHTML = ''; // Clear the DOM completely
+    document.body.innerHTML = '<div class="gb_Id gb_Hd gb_Id"></div>'; // Establish a clean, consistent Gmail-like header
+    doc = document;
+    header = doc.querySelector('.gb_Id');
     injectToolbar(doc, header);
     wrapper = header.nextElementSibling;
+
+    chrome.storage.sync.set.mockClear();
+    chrome.i18n.getMessage.mockClear(); // Clear i18n mock calls as well
   });
 
   afterEach(() => {
@@ -45,8 +76,6 @@ describe('injectToolbar', () => {
   });
 
   test('should inject the toolbar and live region', () => {
-    injectToolbar(doc, header);
-    const wrapper = header.nextElementSibling;
     const toolbar = wrapper.querySelector(SELECTORS.filterBar);
     const liveRegion = wrapper.querySelector(SELECTORS.liveRegion);
 

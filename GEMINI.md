@@ -22,6 +22,6 @@ This file serves as a persistent memory for the Gemini agent regarding the `chom
 
 ## Agent Preferences
 
-*   **Commit Messages:** All commit messages should include the model name as a footer (e.g., `- gemini-1.5-pro`).
+*   **Commit Messages:** All commit messages should include the model name as a footer. This should be updated dynamically by the LLM. (e.g., `- gemini-2.5-pro` or `- gemini-2.5-flash`).
 *   **Language Style:** All code comments and documentation should be written in British English (en-GB). For example, use "colour" instead of "color" and "behaviour" instead of "behavior".
 *   **Naming Conventions:** Variable and function names should be descriptive and clear, favouring readability, similar to Python's conventions (e.g., `is_calendar_row` or `applyFilter` depending on the language's idiomatic style).

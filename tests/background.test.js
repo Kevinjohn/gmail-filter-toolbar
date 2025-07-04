@@ -15,7 +15,7 @@ describe('background.js', () => {
       },
     };
     // Dynamically import background.js to ensure it runs after mocks are set up
-    await import('../src/background.js');
+    await import('../src/modules/background.js');
   });
 
   test('should set gmailCalMode to ALL on installation', () => {

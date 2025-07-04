@@ -8,7 +8,7 @@ export default defineConfig({
 
     rollupOptions: {
       /* ONE real entry stops the error */
-      input: { background: 'src/background.js', contentScript: 'src/contentScript.js' },
+      input: { background: 'src/modules/background.js', contentScript: 'src/contentScript.js' },
       /* keep the default file-naming */
       output: { entryFileNames: '[name].js' }
     },
@@ -25,7 +25,8 @@ export default defineConfig({
         { src: 'src/colours.css',      dest: '.' },
         { src: 'src/options.html',      dest: '.' },
         { src: 'src/icons',             dest: '.' },
-        { src: 'src/_locales',          dest: '.' } // if present
+        { src: 'src/_locales',          dest: '.' }, // if present
+        { src: 'src/assets/fonts',          dest: '.' }
       ]
     })
   ]

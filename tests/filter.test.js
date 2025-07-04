@@ -1,7 +1,7 @@
 import { expect, test, describe, beforeEach, jest } from '@jest/globals';
-import { applyFilter } from '../src/filter.js';
-import { MODES, setCurrentMode } from '../src/state.js';
-import { SELECTORS } from '../src/constants.js';
+import { applyFilter } from '../src/modules/filter.js';
+import { MODES, setCurrentMode } from '../src/modules/state.js';
+import { SELECTORS } from '../src/modules/constants.js';
 
 // Mock the chrome API
 global.chrome = {

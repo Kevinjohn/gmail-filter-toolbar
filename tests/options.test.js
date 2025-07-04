@@ -62,7 +62,7 @@ describe('options.js', () => {
     Object.defineProperty(global, 'chrome', { value: chrome, writable: true });
 
     // Import the script after mocks are set up
-    await import('../src/options.js');
+    await import('../src/modules/options.js');
   });
 
   test('checkbox should be checked based on stored value', () => {

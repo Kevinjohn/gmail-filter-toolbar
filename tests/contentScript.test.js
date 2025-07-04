@@ -1,9 +1,9 @@
 import { expect, test, describe } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { isCalendarRow, hasAttachmentRow, isFavouriteRow } from '../src/filter.js';
-import { applyFilter } from '../src/filter.js';
-import { MODES, setCurrentMode } from '../src/state.js';
-import { SELECTORS } from '../src/constants.js';
+import { isCalendarRow, hasAttachmentRow, isFavouriteRow } from '../src/modules/filter.js';
+import { applyFilter } from '../src/modules/filter.js';
+import { MODES, setCurrentMode } from '../src/modules/state.js';
+import { SELECTORS } from '../src/modules/constants.js';
 
 // Mock the chrome API and JSDOM
 global.chrome = {
@@ -77,4 +77,3 @@ describe('isFavouriteRow', () => {
     expect(isFavouriteRow(row)).toBe(false);
   });
 });
-

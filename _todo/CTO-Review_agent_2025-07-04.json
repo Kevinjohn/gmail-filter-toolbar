@@ -1,0 +1,486 @@
+{
+  "changeDirectives": [
+    {
+      "directiveId": "CD-001",
+      "dependsOn": [],
+      "targetSystem": "PRD",
+      "priority": "HIGH",
+      "humanReadableDescription": "Insert an update strategy section in README",
+      "payload": {
+        "action": "ADD_TEXT",
+        "targetLocation": {
+          "anchorText": "## Project Structure",
+          "position": "AFTER_ANCHOR",
+          "uniquenessConfidence": "HIGH"
+        },
+        "changeData": {
+          "textToAdd": "## Update Strategy\nDescribe how to maintain selectors when Gmail changes its DOM.\n"
+        }
+      }
+    },
+    {
+      "directiveId": "CD-002",
+      "dependsOn": [],
+      "targetSystem": "CODEBASE",
+      "priority": "MEDIUM",
+      "humanReadableDescription": "Document Gmail DOM selectors",
+      "payload": {
+        "action": "REFACTOR",
+        "targetFile": "src/modules/constants.js",
+        "specifications": {
+          "componentName": "SELECTORS object",
+          "inputs": [],
+          "outputs": {
+            "returnType": "object",
+            "description": "Selector constants with comments"
+          },
+          "logic": [
+            "Add a line comment above each property explaining which Gmail element or attribute the selector refers to"
+          ],
+          "acceptanceCriteria": [
+            "Each key in SELECTORS has an explanatory comment"
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-003",
+      "dependsOn": [],
+      "targetSystem": "CODEBASE",
+      "priority": "HIGH",
+      "humanReadableDescription": "Refactor loadState to return Promise",
+      "payload": {
+        "action": "MODIFY_FUNCTION",
+        "targetFile": "src/modules/state.js",
+        "specifications": {
+          "componentName": "loadState",
+          "inputs": [],
+          "outputs": {
+            "returnType": "Promise<void>",
+            "description": "Resolves when state is loaded"
+          },
+          "logic": [
+            "Return a new Promise",
+            "Call chrome.storage.sync.get to retrieve KEY_MODE and KEY_DEBUG",
+            "If chrome.runtime.lastError is set, assign defaults and reject",
+            "Otherwise assign retrieved values and resolve"
+          ],
+          "acceptanceCriteria": [
+            "Promise resolves with currentMode and debugOn updated when storage succeeds",
+            "Promise rejects with runtime error when storage retrieval fails"
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-004",
+      "dependsOn": [],
+      "targetSystem": "CODEBASE",
+      "priority": "HIGH",
+      "humanReadableDescription": "Refactor saveState to return Promise",
+      "payload": {
+        "action": "MODIFY_FUNCTION",
+        "targetFile": "src/modules/state.js",
+        "specifications": {
+          "componentName": "saveState",
+          "inputs": [],
+          "outputs": {
+            "returnType": "Promise<void>",
+            "description": "Resolves when mode is saved"
+          },
+          "logic": [
+            "Return a new Promise",
+            "Call chrome.storage.sync.set with currentMode",
+            "If chrome.runtime.lastError is set, reject",
+            "Otherwise resolve"
+          ],
+          "acceptanceCriteria": [
+            "Promise resolves when storage succeeds",
+            "Promise rejects with runtime error when storage fails"
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-005",
+      "dependsOn": [],
+      "targetSystem": "CODEBASE",
+      "priority": "MEDIUM",
+      "humanReadableDescription": "Create debounce utility module",
+      "payload": {
+        "action": "CREATE_FILE",
+        "targetFile": "src/modules/utils/debounce.js",
+        "specifications": {
+          "componentName": "debounce",
+          "inputs": [
+            {
+              "name": "func",
+              "type": "Function",
+              "description": "Function to debounce"
+            },
+            {
+              "name": "delay",
+              "type": "number",
+              "description": "Milliseconds to wait"
+            }
+          ],
+          "outputs": {
+            "returnType": "Function",
+            "description": "Debounced wrapper"
+          },
+          "logic": [
+            "Declare a timeout variable in closure",
+            "Return a wrapper that clears the timeout and sets a new one via setTimeout",
+            "Invoke func with original context and arguments when timer expires"
+          ],
+          "acceptanceCriteria": [
+            "Multiple rapid calls result in a single invocation after the delay",
+            "File exports the debounce function",
+            "File includes JSDoc comments describing parameters and return value"
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-006",
+      "dependsOn": ["CD-005"],
+      "targetSystem": "CODEBASE",
+      "priority": "MEDIUM",
+      "humanReadableDescription": "Use debounce module in observers.js",
+      "payload": {
+        "action": "REFACTOR",
+        "targetFile": "src/modules/observers.js",
+        "specifications": {
+          "componentName": "debounce import",
+          "inputs": [],
+          "outputs": {
+            "returnType": "void",
+            "description": "File uses shared debounce"
+          },
+          "logic": [
+            "Remove the local debounce function definition",
+            "Import debounce from './utils/debounce.js'"
+          ],
+          "acceptanceCriteria": [
+            "No local debounce definition remains",
+            "Import statement resolves correctly"
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-007",
+      "dependsOn": [],
+      "targetSystem": "CODEBASE",
+      "priority": "HIGH",
+      "humanReadableDescription": "Add 10-second timeout to waitForGmailChrome",
+      "payload": {
+        "action": "MODIFY_FUNCTION",
+        "targetFile": "src/modules/observers.js",
+        "specifications": {
+          "componentName": "waitForGmailChrome",
+          "inputs": [],
+          "outputs": {
+            "returnType": "Promise<Element>",
+            "description": "Resolves with toolbar header or rejects on timeout"
+          },
+          "logic": [
+            "Return a new Promise",
+            "Start a timer that rejects after 10000 ms with a TimeoutError",
+            "Poll for the toolbar with requestAnimationFrame as currently implemented",
+            "On success clear the timeout and resolve with the header element"
+          ],
+          "acceptanceCriteria": [
+            "Promise resolves when header is found before timeout",
+            "Promise rejects with TimeoutError when 10 seconds elapse without finding toolbar"
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-008",
+      "dependsOn": [],
+      "targetSystem": "CODEBASE",
+      "priority": "MEDIUM",
+      "humanReadableDescription": "Remove debug logging from waitForGmailChrome",
+      "payload": {
+        "action": "REFACTOR",
+        "targetFile": "src/modules/observers.js",
+        "specifications": {
+          "componentName": "waitForGmailChrome",
+          "inputs": [],
+          "outputs": {
+            "returnType": "void",
+            "description": "No console output"
+          },
+          "logic": [
+            "Delete the statement that logs '[GCO] injecting into header →' with the header element"
+          ],
+          "acceptanceCriteria": [
+            "waitForGmailChrome contains no console.log statements"
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-009",
+      "dependsOn": [],
+      "targetSystem": "CODEBASE",
+      "priority": "HIGH",
+      "humanReadableDescription": "Prevent duplicate observers in observeToolbar",
+      "payload": {
+        "action": "MODIFY_FUNCTION",
+        "targetFile": "src/modules/observers.js",
+        "specifications": {
+          "componentName": "observeToolbar",
+          "inputs": [
+            {
+              "name": "doc",
+              "type": "Document",
+              "description": "Document object (optional)"
+            }
+          ],
+          "outputs": {
+            "returnType": "void",
+            "description": "Attach single observer to Gmail toolbar"
+          },
+          "logic": [
+            "Maintain a module-scoped variable to hold the current MutationObserver",
+            "If an observer already exists, disconnect it before creating a new one",
+            "Use doc.querySelector to locate the toolbar header"
+          ],
+          "acceptanceCriteria": [
+            "Calling observeToolbar multiple times results in only one active observer"
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-010",
+      "dependsOn": [],
+      "targetSystem": "CODEBASE",
+      "priority": "MEDIUM",
+      "humanReadableDescription": "Allow observeMessageList to accept document parameter",
+      "payload": {
+        "action": "MODIFY_FUNCTION",
+        "targetFile": "src/modules/observers.js",
+        "specifications": {
+          "componentName": "observeMessageList",
+          "inputs": [
+            {
+              "name": "doc",
+              "type": "Document",
+              "description": "Document object (optional)"
+            }
+          ],
+          "outputs": {
+            "returnType": "void",
+            "description": "Observes message list in provided document"
+          },
+          "logic": [
+            "Add optional doc parameter defaulting to document",
+            "Use doc.querySelector when locating the email list"
+          ],
+          "acceptanceCriteria": [
+            "Unit tests can pass a mock document to observeMessageList"
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-011",
+      "dependsOn": [],
+      "targetSystem": "CODEBASE",
+      "priority": "MEDIUM",
+      "humanReadableDescription": "Define MODE_ICONS mapping in toolbar.js",
+      "payload": {
+        "action": "REFACTOR",
+        "targetFile": "src/modules/toolbar.js",
+        "specifications": {
+          "componentName": "MODE_ICONS constant",
+          "inputs": [],
+          "outputs": {
+            "returnType": "object",
+            "description": "Mapping from mode to icon name"
+          },
+          "logic": [
+            "Create a constant object MODE_ICONS mapping each MODES value to its material icon string"
+          ],
+          "acceptanceCriteria": [
+            "MODE_ICONS is exported or available within the module"
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-012",
+      "dependsOn": ["CD-011"],
+      "targetSystem": "CODEBASE",
+      "priority": "MEDIUM",
+      "humanReadableDescription": "Use MODE_ICONS mapping in injectToolbar",
+      "payload": {
+        "action": "MODIFY_FUNCTION",
+        "targetFile": "src/modules/toolbar.js",
+        "specifications": {
+          "componentName": "injectToolbar",
+          "inputs": [
+            {
+              "name": "doc",
+              "type": "Document",
+              "description": "Document object (optional)"
+            }
+          ],
+          "outputs": {
+            "returnType": "void",
+            "description": "Injects toolbar using icon mapping"
+          },
+          "logic": [
+            "Remove the switch statement assigning iconName",
+            "Assign iconName using MODE_ICONS[mode]"
+          ],
+          "acceptanceCriteria": [
+            "injectToolbar contains no switch statement for icons",
+            "Icons render correctly for each mode"
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-013",
+      "dependsOn": [],
+      "targetSystem": "CODEBASE",
+      "priority": "MEDIUM",
+      "humanReadableDescription": "Internationalize favourite star selector",
+      "payload": {
+        "action": "MODIFY_FUNCTION",
+        "targetFile": "src/modules/filter.js",
+        "specifications": {
+          "componentName": "isFavouriteRow",
+          "inputs": [
+            {
+              "name": "row",
+              "type": "Element",
+              "description": "Email row element"
+            }
+          ],
+          "outputs": {
+            "returnType": "boolean",
+            "description": "True if the row is marked favourite"
+          },
+          "logic": [
+            "Retrieve alt text using chrome.i18n.getMessage('alt_starred')",
+            "Return true when row.querySelector(`img[alt=\"${altText}\"]`) is truthy"
+          ],
+          "acceptanceCriteria": [
+            "Favourite rows are detected correctly in any supported locale"
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-014",
+      "dependsOn": [],
+      "targetSystem": "CODEBASE",
+      "priority": "MEDIUM",
+      "humanReadableDescription": "Add trailing newline to options.js",
+      "payload": {
+        "action": "REFACTOR",
+        "targetFile": "src/modules/options.js",
+        "specifications": {
+          "componentName": "file end newline",
+          "inputs": [],
+          "outputs": {
+            "returnType": "void",
+            "description": "File ends with newline"
+          },
+          "logic": [
+            "Ensure the last line of the file is terminated with a newline character"
+          ],
+          "acceptanceCriteria": [
+            "Git diff shows a single newline character at the end of options.js"
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-015",
+      "dependsOn": [],
+      "targetSystem": "CODEBASE",
+      "priority": "MEDIUM",
+      "humanReadableDescription": "Run Prettier across the codebase",
+      "payload": {
+        "action": "REFACTOR",
+        "targetFile": "./",
+        "specifications": {
+          "componentName": "prettier",
+          "inputs": [],
+          "outputs": {
+            "returnType": "void",
+            "description": "Formatted code"
+          },
+          "logic": [
+            "Execute npm run format to apply Prettier with singleQuote true"
+          ],
+          "acceptanceCriteria": [
+            "No lint errors after formatting"
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-016",
+      "dependsOn": ["CD-007"],
+      "targetSystem": "CODEBASE",
+      "priority": "MEDIUM",
+      "humanReadableDescription": "Add test for waitForGmailChrome timeout",
+      "payload": {
+        "action": "ADD_TEST_CASE",
+        "targetFile": "tests/observers.test.js",
+        "specifications": {
+          "componentName": "waitForGmailChrome timeout",
+          "inputs": [],
+          "outputs": {
+            "returnType": "void",
+            "description": "Jest test"
+          },
+          "logic": [
+            "Mock document so that the toolbar is never found",
+            "Use fake timers to advance past 10000 ms",
+            "Expect waitForGmailChrome to reject"
+          ],
+          "acceptanceCriteria": [
+            "Test fails if waitForGmailChrome does not reject after timeout"
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-017",
+      "dependsOn": [],
+      "targetSystem": "CODEBASE",
+      "priority": "MEDIUM",
+      "humanReadableDescription": "Add test for applyFilter with empty node list",
+      "payload": {
+        "action": "ADD_TEST_CASE",
+        "targetFile": "tests/filter.test.js",
+        "specifications": {
+          "componentName": "applyFilter empty list",
+          "inputs": [],
+          "outputs": {
+            "returnType": "void",
+            "description": "Jest test"
+          },
+          "logic": [
+            "Mock document.querySelectorAll to return an empty array",
+            "Set current mode to MODES.ONLY",
+            "Call applyFilter",
+            "Verify no exception is thrown"
+          ],
+          "acceptanceCriteria": [
+            "Test passes without throwing errors when no rows are present"
+          ]
+        }
+      }
+    }
+  ]
+}

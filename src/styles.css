@@ -84,3 +84,9 @@ span.text-label {
   margin-inline-end: 2px;
 }
 
+.gcal-text-label {
+  font-size: 12px;
+  padding-inline-start: 4px;
+  padding-inline-end: 2px;
+}
+

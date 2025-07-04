@@ -58,11 +58,11 @@ describe('injectToolbar', () => {
     injectToolbar(doc);
     const headerHtml = header.innerHTML;
 
-    expect(headerHtml).toContain('<button data-mode="ALL" data-active="" aria-pressed="true"><i class="material-icons">inbox</i><span>All Email</span></button>');
-    expect(headerHtml).toContain('<button data-mode="HIDE_CAL" aria-pressed="false"><i class="material-icons">mail</i><span>Email only</span></button>');
-    expect(headerHtml).toContain('<button data-mode="ONLY_CAL" aria-pressed="false"><i class="material-icons">calendar_today</i><span>Calendar only</span></button>');
-    expect(headerHtml).toContain('<button data-mode="ONLY_ATTACH" aria-pressed="false"><i class="material-icons">attachment</i><span>Attachments only</span></button>');
-    expect(headerHtml).toContain('<button data-mode="FAVOURITES" aria-pressed="false"><i class="material-icons">star</i><span>Favourites only</span></button>');
+    expect(headerHtml).toContain('<button data-mode="ALL" data-active="" aria-pressed="true"><span class="material-symbols-outlined">inbox</span><span>All Email</span></button>');
+    expect(headerHtml).toContain('<button data-mode="HIDE_CAL" aria-pressed="false"><span class="material-symbols-outlined">mail</span><span>Email only</span></button>');
+    expect(headerHtml).toContain('<button data-mode="ONLY_CAL" aria-pressed="false"><span class="material-symbols-outlined">calendar_today</span><span>Calendar only</span></button>');
+    expect(headerHtml).toContain('<button data-mode="ONLY_ATTACH" aria-pressed="false"><span class="material-symbols-outlined">attachment</span><span>Attachments only</span></button>');
+    expect(headerHtml).toContain('<button data-mode="FAVOURITES" aria-pressed="false"><span class="material-symbols-outlined">star</span><span>Favourites only</span></button>');
   });
 });
 

@@ -27,20 +27,21 @@ function ensureListElement(doc = document) {
   return list;
 }
 
-export function injectToolbar(doc = document) {
-  const header = doc.querySelector(SELECTORS.gmailToolbarHeader);
+export function injectToolbar(doc = document, headerElement) {
+  const header = headerElement || doc.querySelector(SELECTORS.gmailToolbarHeader);
   if (!header) return;
 
-  let wrapper = doc.querySelector(SELECTORS.filterWrapper);
-  if (!wrapper) {
-    wrapper = doc.createElement('div');
-    wrapper.className = 'gcal-filter-wrapper';
-    header.appendChild(wrapper);
-  } else {
-    // If wrapper already exists, clear its children
+  let wrapper = header.nextElementSibling;
+  if (wrapper && wrapper.classList.contains('gcal-filter-wrapper')) {
+    // If wrapper exists and is our filter wrapper, clear its children
     while (wrapper.firstChild) {
       wrapper.removeChild(wrapper.firstChild);
     }
+  } else {
+    // If wrapper doesn't exist or is not our filter wrapper, create a new one
+    wrapper = doc.createElement('div');
+    wrapper.className = 'gcal-filter-wrapper';
+    header.insertAdjacentElement('afterend', wrapper);
   }
 
   // Create the bar element and append it to the wrapper
@@ -81,12 +82,13 @@ export function injectToolbar(doc = document) {
     const button = doc.createElement('button');
     button.dataset.mode = mode;
 
-    const icon = doc.createElement('i');
-    icon.className = 'material-icons';
+    const icon = doc.createElement('span');
+    icon.className = 'material-symbols-outlined';
     icon.textContent = iconName;
     button.appendChild(icon);
 
     const textSpan = doc.createElement('span');
+    textSpan.className = 'gcal-text-label';
     textSpan.textContent = chrome.i18n.getMessage(FILTER_CONFIG[mode].labelKey);
     button.appendChild(textSpan);
 

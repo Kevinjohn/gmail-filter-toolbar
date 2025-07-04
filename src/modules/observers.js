@@ -24,13 +24,24 @@ export function observeMessageList() {
   listObserver.observe(target, { childList: true });
 }
 
-export function observeToolbar() {
-    const header = document.querySelector(SELECTORS.gmailToolbarHeader);
-    const obs = new MutationObserver(() => {
-        injectToolbar(document);
-        if (currentMode !== MODES.ALL) applyFilter();
-    });
-    obs.observe(header, { childList: true });
+
+
+export function setupGmailToolbarObserver() {
+  const bodyObserver = new MutationObserver((mutationsList) => {
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'childList') {
+        const gmailToolbarHeader = document.querySelector(SELECTORS.gmailToolbarHeader);
+        const filterWrapper = document.querySelector(SELECTORS.filterWrapper);
+
+        // If Gmail toolbar header exists but our filter wrapper is missing, re-inject
+        if (gmailToolbarHeader && !filterWrapper) {
+          injectToolbar(document, gmailToolbarHeader);
+          applyFilter();
+        }
+      }
+    }
+  });
+  bodyObserver.observe(document.body, { childList: true, subtree: true });
 }
 
 export function waitForGmailChrome() {

@@ -68,6 +68,7 @@ export function injectToolbar(doc = document) {
     Object.values(MODES).forEach(mode => {
       const button = doc.createElement('button');
       button.dataset.mode = mode;
+      button.id = `gcal-${mode.toLowerCase().replace('_', '-')}-only`;
 
       const iconSpan = doc.createElement('span');
       iconSpan.className = 'material-symbols-outlined';

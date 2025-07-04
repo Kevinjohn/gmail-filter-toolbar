@@ -4,13 +4,15 @@ import { applyFilter } from './modules/filter.js';
 import { injectToolbar, refreshUI } from './modules/toolbar.js';
 import { waitForGmailChrome, waitForMessageTable, observeMessageList, observeToolbar } from './modules/observers.js';
 
-function main() {
-  // Dynamically inject Material Icons CSS
+function injectFont() {
   const link = document.createElement('link');
   link.rel = 'stylesheet';
-  link.href = chrome.runtime.getURL('fonts/material-icons.css');
+  link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@24,400,0';
   document.head.appendChild(link);
+}
 
+function main() {
+  injectFont();
   loadState(() => {
     waitForGmailChrome().then(() => {
       injectToolbar(document);

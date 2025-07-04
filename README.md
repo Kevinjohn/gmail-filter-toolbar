@@ -31,6 +31,7 @@
 | **Attachments Only** | Show **only** e-mails with attachments |
 | **Favourites Only** | Show **only** starred/favourite e-mails |
 
+*   Enhanced visual clarity with Material Icons on toolbar buttons.
 * MV3-compliant (`service_worker` background, no persistent pages).
 * Zero network calls – all filtering happens client-side.
 * **Debug mode** tints hidden rows blue at 50 % opacity.
@@ -144,7 +145,7 @@ src/
 ├─ styles.css             # toolbar styling
 ├─ colours.css            # light/dark/high-contrast theme variables
 ├─ options.html           # debug-mode checkbox
-├─ icons/                 # 16 / 32 / 48 / 128 px PNGs
+├─ icons/                 # 16 / 32 / 48 / 128 px PNGs (for extension icon)
 └─ manifest.json          # extension manifest (MV3)
 
 _locales/                 # message bundles for i18n
@@ -163,6 +164,7 @@ This extension is built on a few core principles: listening for the right moment
     *   The `manifest.json` file defines `contentScript.js` as the entry point, which runs after the Gmail page is idle (`"run_at": "document_idle"`).
     *   The script first polls the DOM using `requestAnimationFrame` inside the `waitForGmailChrome` function until it finds a stable Gmail toolbar element (e.g., `.G-atb .G6`). This ensures the extension doesn't try to inject its UI before Gmail is ready.
     *   Once the anchor element is found, the script injects the filter toolbar HTML. The CSS (`styles.css`) is designed to force Gmail's native toolbar to wrap, making space for the new UI elements.
+*   Additionally, `contentScript.js` dynamically injects the Material Symbols stylesheet from the Google Fonts CDN into the page's `<head>` to enable icon display.
 
 2.  **State Management (`background.js`, `options.js`)**:
     *   User preferences (the selected filter mode and the debug flag) are stored using the `chrome.storage.sync` API. This makes them persist across browser sessions and sync between devices.

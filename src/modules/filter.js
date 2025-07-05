@@ -16,7 +16,7 @@ export function hasAttachmentRow(row) {
 }
 
 export function isFavouriteRow(row) {
-  return !!row.querySelector('img[alt="Starred"]');
+  return !!row.querySelector('span[data-tooltip="Starred"]');
 }
 
 const FILTER_CONFIG = {

@@ -4,6 +4,9 @@ describe('options.js', () => {
   let chrome;
   let mockBox;
   let mockDebugLabel;
+  let mockPageTitle;
+  let mockPageDescription;
+  let mockDebugLegend;
 
   beforeAll(async () => {
     // Mock DOM elements
@@ -15,11 +18,23 @@ describe('options.js', () => {
     mockDebugLabel = {
       textContent: '',
     };
+    mockPageTitle = {
+      textContent: '',
+    };
+    mockPageDescription = {
+      textContent: '',
+    };
+    mockDebugLegend = {
+      textContent: '',
+    };
 
     Object.defineProperty(document, 'getElementById', {
       value: jest.fn((id) => {
         if (id === 'debug') return mockBox;
         if (id === 'debugLabel') return mockDebugLabel;
+        if (id === 'pageTitle') return mockPageTitle;
+        if (id === 'pageDescription') return mockPageDescription;
+        if (id === 'debugLegend') return mockDebugLegend;
         return null;
       }),
       configurable: true,
@@ -51,7 +66,9 @@ describe('options.js', () => {
       i18n: {
         getMessage: jest.fn((key) => {
           if (key === 'page_title') return 'Mock Page Title';
-          if (key === 'options_debug') return 'Mock Debug Label';
+          if (key === 'options_debug_label') return 'Mock Debug Label';
+          if (key === 'options_page_description') return 'Mock Page Description';
+          if (key === 'options_debug_legend') return 'Mock Debug Legend';
           return '';
         }),
       },
@@ -91,6 +108,21 @@ describe('options.js', () => {
 
   test('debug label text should be set from i18n message', () => {
     expect(mockDebugLabel.textContent).toBe('Mock Debug Label');
-    expect(chrome.i18n.getMessage).toHaveBeenCalledWith('options_debug');
+    expect(chrome.i18n.getMessage).toHaveBeenCalledWith('options_debug_label');
+  });
+
+  test('page title should be set from i18n message', () => {
+    expect(mockPageTitle.textContent).toBe('Mock Page Title');
+    expect(chrome.i18n.getMessage).toHaveBeenCalledWith('page_title');
+  });
+
+  test('page description should be set from i18n message', () => {
+    expect(mockPageDescription.textContent).toBe('Mock Page Description');
+    expect(chrome.i18n.getMessage).toHaveBeenCalledWith('options_page_description');
+  });
+
+  test('debug legend should be set from i18n message', () => {
+    expect(mockDebugLegend.textContent).toBe('Mock Debug Legend');
+    expect(chrome.i18n.getMessage).toHaveBeenCalledWith('options_debug_legend');
   });
 });

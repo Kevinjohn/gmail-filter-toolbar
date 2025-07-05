@@ -90,11 +90,11 @@ describe('injectToolbar', () => {
     injectToolbar(doc);
     const headerHtml = wrapper.innerHTML;
 
-    expect(headerHtml).toContain('<button data-mode="ALL" data-active="" aria-pressed="true"><span class="material-symbols-outlined">inbox</span><span class="gcal-text-label">All Email</span></button>');
-    expect(headerHtml).toContain('<button data-mode="EMAIL" aria-pressed="false"><span class="material-symbols-outlined">mail</span><span class="gcal-text-label">Email only</span></button>');
-    expect(headerHtml).toContain('<button data-mode="CALENDAR" aria-pressed="false"><span class="material-symbols-outlined">calendar_today</span><span class="gcal-text-label">Calendar only</span></button>');
-    expect(headerHtml).toContain('<button data-mode="ATTACH" aria-pressed="false"><span class="material-symbols-outlined">attachment</span><span class="gcal-text-label">Attachments only</span></button>');
-    expect(headerHtml).toContain('<button data-mode="FAVOURITES" aria-pressed="false"><span class="material-symbols-outlined">star</span><span class="gcal-text-label">Favourites only</span></button>');
+    expect(headerHtml).toContain('<button data-mode="ALL" role="radio" aria-label="All Email" data-tooltip="All Email" aria-checked="true" tabindex="0"><span class="material-symbols-outlined">inbox</span><span class="gcal-text-label">All Email</span></button>');
+    expect(headerHtml).toContain('<button data-mode="EMAIL" role="radio" aria-label="Email only" data-tooltip="Email only" aria-checked="false" tabindex="-1"><span class="material-symbols-outlined">mail</span><span class="gcal-text-label">Email only</span></button>');
+    expect(headerHtml).toContain('<button data-mode="CALENDAR" role="radio" aria-label="Calendar only" data-tooltip="Calendar only" aria-checked="false" tabindex="-1"><span class="material-symbols-outlined">calendar_today</span><span class="gcal-text-label">Calendar only</span></button>');
+    expect(headerHtml).toContain('<button data-mode="ATTACH" role="radio" aria-label="Attachments only" data-tooltip="Attachments only" aria-checked="false" tabindex="-1"><span class="material-symbols-outlined">attachment</span><span class="gcal-text-label">Attachments only</span></button>');
+    expect(headerHtml).toContain('<button data-mode="FAVOURITES" role="radio" aria-label="Favourites only" data-tooltip="Favourites only" aria-checked="false" tabindex="-1"><span class="material-symbols-outlined">star</span><span class="gcal-text-label">Favourites only</span></button>');
   });
 });
 

@@ -43,6 +43,18 @@
     "message": "Enable debug mode (show filtered rows in blue)",
     "description": "Label for the debug mode checkbox."
   },
+  "options_page_description": {
+    "message": "Settings for the Gmail Calendar Options extension.",
+    "description": "A short summary of the options page."
+  },
+  "options_debug_legend": {
+    "message": "Debugging",
+    "description": "Legend for the debug settings fieldset."
+  },
+  "options_debug_label": {
+    "message": "Enable debug mode (highlights filtered rows in blue instead of hiding them)",
+    "description": "Label for the debug mode checkbox."
+  },
   "alt_calendar_event": {
     "message": "Calendar event",
     "description": "The alt text for the calendar event icon in an email row."
@@ -50,5 +62,9 @@
   "filter_status_update": {
     "message": "Filter set to $1",
     "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
+  },
+  "extension_action_title": {
+    "message": "Calendar filter is embedded on Gmail pages",
+    "description": "The title of the extension's action button in the browser toolbar."
   }
 }

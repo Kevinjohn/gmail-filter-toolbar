@@ -53,10 +53,18 @@
   align-items: center;
 }
 
-.gcal-btn-group button[data-active] {
+.gcal-btn-group button[aria-checked="true"] {
   font-weight: bold;
   color: var(--gcal-active-button-text);
   border-color: var(--gcal-active-button-text);
+}
+
+.visually-hidden {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
 }
 
 .material-symbols-outlined {

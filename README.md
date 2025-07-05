@@ -160,6 +160,10 @@ docs/                     # screenshots & diagrams
 
 This extension is built on a few core principles: listening for the right moment to act, efficiently filtering the DOM, and persisting user choices.
 
+**Important Note:** If you encounter issues with the filter not persisting after navigating between email pages, please consult `_remember_filter_on_pagination.md` for a detailed explanation of how dynamic content loading in Single-Page Applications (SPAs) like Gmail affects extension behaviour, and the architectural patterns used to address it.
+
+**Important Note:**  If toolbar placement issues occur after Gmail pagination, usually with out toolbar appearing above/before the Gmail one, refer to `_remember_toolbar-placement.md` for detailed debugging steps and solutions.
+
 1.  **Entry & Injection (`contentScript.js`)**:
     *   The `manifest.json` file defines `contentScript.js` as the entry point, which runs after the Gmail page is idle (`"run_at": "document_idle"`).
     *   The script first polls the DOM using `requestAnimationFrame` inside the `waitForGmailChrome` function until it finds a stable Gmail toolbar element (e.g., `.G-atb .G6`). This ensures the extension doesn't try to inject its UI before Gmail is ready.

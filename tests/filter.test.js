@@ -33,7 +33,7 @@ function createEmailRow(id, { isCalendar = false, hasAttachment = false, isFavou
         row.innerHTML += `<td><img class="aXk" alt="Attachment" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></td>`;
     }
     if (isFavourite) {
-        row.innerHTML += `<td><img alt="Starred" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></td>`;
+        row.innerHTML += `<td><span data-tooltip="Starred"></span></td>`;
     }
     return row;
 }

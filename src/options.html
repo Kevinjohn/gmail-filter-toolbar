@@ -3,17 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <title></title>
+    <link rel="stylesheet" href="colours.css" />
     <style>
       body {
         font-family: sans-serif;
-        padding: 20px;
+        padding: 1em;
+        background-color: var(--gcal-bg-color);
+        color: var(--gcal-text-color);
+      }
+      fieldset {
+        border: 1px solid var(--gcal-border-color);
+        border-radius: 4px;
+        padding: 1em;
+      }
+      legend {
+        font-weight: bold;
+        padding-inline: 0.5em;
       }
     </style>
   </head>
   <body>
-    <label>
-      <input type="checkbox" id="debug" /> <span id="debugLabel"></span>
-    </label>
+    <h1 id="pageTitle"></h1>
+    <p id="pageDescription"></p>
+    <fieldset>
+      <legend id="debugLegend"></legend>
+      <label>
+        <input type="checkbox" id="debug" /> <span id="debugLabel"></span>
+      </label>
+    </fieldset>
     <script src="modules/options.js"></script>
   </body>
 </html>

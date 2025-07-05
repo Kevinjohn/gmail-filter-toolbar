@@ -13,8 +13,8 @@ function debounce(func, delay) {
 }
 
 export function observeMessageList() {
-  const target = document.querySelector(SELECTORS.emailList)?.parentElement;
-  if (!target) return;
+  const target = document.querySelector(SELECTORS.emailList);
+  if (!target || target.dataset.observerAttached) return;
 
   const debouncedApplyFilter = debounce(() => {
     if (currentMode !== MODES.ALL) applyFilter();
@@ -22,9 +22,8 @@ export function observeMessageList() {
 
   const listObserver = new MutationObserver(debouncedApplyFilter);
   listObserver.observe(target, { childList: true });
+  target.dataset.observerAttached = 'true';
 }
-
-
 
 export function setupGmailToolbarObserver() {
   const bodyObserver = new MutationObserver((mutationsList) => {
@@ -33,11 +32,11 @@ export function setupGmailToolbarObserver() {
         const gmailToolbarHeader = document.querySelector(SELECTORS.gmailToolbarHeader);
         const filterWrapper = document.querySelector(SELECTORS.filterWrapper);
 
-        // If Gmail toolbar header exists but our filter wrapper is missing, re-inject
         if (gmailToolbarHeader && !filterWrapper) {
           injectToolbar(document, gmailToolbarHeader);
-          applyFilter();
         }
+        observeMessageList();
+        applyFilter();
       }
     }
   });

@@ -15,7 +15,8 @@ box.addEventListener('change', () => {
     }
   });
 });
-document.title = chrome.i18n.getMessage('page_title') || 'Calendar Options';
-document.getElementById('debugLabel').textContent =
-  chrome.i18n.getMessage('options_debug') ||
-  'Enable debug mode (show filtered rows in blue)';
+document.title = chrome.i18n.getMessage('page_title');
+document.getElementById('pageTitle').textContent = chrome.i18n.getMessage('page_title');
+document.getElementById('pageDescription').textContent = chrome.i18n.getMessage('options_page_description');
+document.getElementById('debugLegend').textContent = chrome.i18n.getMessage('options_debug_legend');
+document.getElementById('debugLabel').textContent = chrome.i18n.getMessage('options_debug_label');

@@ -49,15 +49,19 @@ export function injectToolbar(doc = document, headerElement) {
   bar.className = 'gcal-filter-bar';
   bar.setAttribute('role', 'toolbar');
   bar.setAttribute('aria-label', chrome.i18n.getMessage('label_toolbar'));
-  wrapper.appendChild(bar); // Append bar to the wrapper
+  wrapper.appendChild(bar);
 
   const btnGroup = doc.createElement('div');
   btnGroup.className = 'gcal-btn-group';
+  btnGroup.setAttribute('role', 'radiogroup');
 
+  const labelId = 'gcal-filter-label';
   const labelSpan = doc.createElement('span');
   labelSpan.className = 'gcal-label';
+  labelSpan.id = labelId;
   labelSpan.textContent = chrome.i18n.getMessage('label_options');
   btnGroup.appendChild(labelSpan);
+  btnGroup.setAttribute('aria-labelledby', labelId);
 
   Object.values(MODES).forEach(mode => {
     let iconName = '';
@@ -81,6 +85,10 @@ export function injectToolbar(doc = document, headerElement) {
 
     const button = doc.createElement('button');
     button.dataset.mode = mode;
+    button.setAttribute('role', 'radio');
+    const buttonText = chrome.i18n.getMessage(FILTER_CONFIG[mode].labelKey);
+    button.setAttribute('aria-label', buttonText);
+    button.dataset.tooltip = buttonText;
 
     const icon = doc.createElement('span');
     icon.className = 'material-symbols-outlined';
@@ -98,10 +106,9 @@ export function injectToolbar(doc = document, headerElement) {
   bar.appendChild(btnGroup);
 
   const liveRegion = doc.createElement('div');
-  liveRegion.className = 'gcal-live-region';
+  liveRegion.className = 'gcal-live-region visually-hidden';
   liveRegion.setAttribute('role', 'status');
   liveRegion.setAttribute('aria-live', 'polite');
-  liveRegion.style.cssText = 'position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;';
   wrapper.appendChild(liveRegion);
 
   refreshUI(doc);
@@ -113,8 +120,31 @@ export function injectToolbar(doc = document, headerElement) {
         list?.focus();
       }
     });
+    btnGroup.addEventListener('keydown', handleArrowNavigation);
     bar.dataset.listenerAdded = 'true';
   }
+}
+
+function handleArrowNavigation(e) {
+  const { key } = e;
+  if (key !== 'ArrowLeft' && key !== 'ArrowRight') return;
+
+  const buttons = Array.from(e.currentTarget.querySelectorAll('button[role="radio"]'));
+  const focusedIndex = buttons.findIndex(btn => btn === document.activeElement);
+
+  if (focusedIndex === -1) return;
+
+  e.preventDefault();
+
+  let nextIndex;
+  if (key === 'ArrowLeft') {
+    nextIndex = (focusedIndex - 1 + buttons.length) % buttons.length;
+  } else {
+    nextIndex = (focusedIndex + 1) % buttons.length;
+  }
+
+  buttons[nextIndex].focus();
+  buttons[nextIndex].click();
 }
 
 export function refreshUI(doc = document) {
@@ -122,8 +152,9 @@ export function refreshUI(doc = document) {
   if (!bar) return;
 
   bar.querySelectorAll('button[data-mode]').forEach((btn) => {
-    btn.toggleAttribute('data-active', btn.dataset.mode === currentMode);
-    btn.setAttribute('aria-pressed', btn.dataset.mode === currentMode);
+    const isChecked = btn.dataset.mode === currentMode;
+    btn.setAttribute('aria-checked', isChecked);
+    btn.setAttribute('tabindex', isChecked ? '0' : '-1');
   });
 
   const liveRegion = doc.querySelector(SELECTORS.liveRegion);

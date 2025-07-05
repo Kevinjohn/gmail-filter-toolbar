@@ -37,6 +37,7 @@ This section aims to improve the robustness, testability, and maintainability of
         ```
 
     *   **Verification:** Confirm the file `src/modules/utils/debounce.js` exists and contains the specified content.
+[x]
 
 #### Sub-task 3.1.2: Replace the debounce implementation in `src/modules/observers.js` with an import from `./utils/debounce.js`.
 
@@ -60,6 +61,7 @@ This section aims to improve the robustness, testability, and maintainability of
         ```
 
     *   **Verification:** Confirm that the `debounce` function is no longer defined locally in `src/modules/observers.js` and the import statement is present.
+[x]
 
 ### Task 3.2: Add timeout to `waitForGmailChrome`
 
@@ -99,6 +101,7 @@ This section aims to improve the robustness, testability, and maintainability of
         ```
 
     *   **Verification:** Review the `waitForGmailChrome` function to ensure the `setTimeout` and `clearTimeout` calls are correctly implemented.
+[x]
 
 #### Sub-task 3.2.2: Remove the `console.log` statement from `waitForGmailChrome`.
 
@@ -115,6 +118,7 @@ This section aims to improve the robustness, testability, and maintainability of
         ```
 
     *   **Verification:** Confirm that the `console.log` statement is no longer present in `waitForGmailChrome`.
+[x]
 
 ### Task 3.3: Prevent duplicate observers
 
@@ -171,6 +175,7 @@ This section aims to improve the robustness, testability, and maintainability of
         ```
 
     *   **Verification:** Review `observeMessageList` and `setupGmailToolbarObserver` to ensure that `messageListObserver` and `gmailToolbarObserver` are declared at the module level, and `disconnect()` is called before creating new instances.
+[x]
 
 ### Task 3.4: Parameterize document access
 
@@ -189,6 +194,7 @@ This section aims to improve the robustness, testability, and maintainability of
         ```
 
     *   **Verification:** Confirm the function signature of `observeMessageList` has been updated.
+[x]
 
 #### Sub-task 3.4.2: Update `setupGmailToolbarObserver` in `src/modules/observers.js` to accept an optional `doc` parameter defaulting to `document`.
 
@@ -205,3 +211,4 @@ This section aims to improve the robustness, testability, and maintainability of
         ```
 
     *   **Verification:** Confirm the function signature of `setupGmailToolbarObserver` has been updated.
+[x]

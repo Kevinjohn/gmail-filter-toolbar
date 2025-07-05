@@ -15,8 +15,9 @@ export function hasAttachmentRow(row) {
   return hasBywClass || hasAttachmentTooltip || hasPaperclipIcon;
 }
 
-export function isFavouriteRow(row) {
-  return !!row.querySelector('span[data-tooltip="Starred"]');
+export function isFavouriteRow(row, chromeApi = chrome) {
+  const starredAltText = chromeApi.i18n.getMessage('alt_starred');
+  return !!row.querySelector(`span[data-tooltip="${starredAltText}"]`);
 }
 
 const FILTER_CONFIG = {
@@ -25,17 +26,17 @@ const FILTER_CONFIG = {
     filterFn: () => false,
   },
   [MODES.EMAIL]: {
-     labelKey: 'btn_mail',
-     filterFn: (row) => isCalendarRow(row),
-   },
+    labelKey: 'btn_mail',
+    filterFn: (row) => isCalendarRow(row),
+  },
   [MODES.CALENDAR]: {
-     labelKey: 'btn_cal',
-     filterFn: (row) => !isCalendarRow(row),
-   },
+    labelKey: 'btn_cal',
+    filterFn: (row) => !isCalendarRow(row),
+  },
   [MODES.ATTACH]: {
-     labelKey: 'btn_attach',
-     filterFn: (row) => !hasAttachmentRow(row) || isCalendarRow(row),
-   },
+    labelKey: 'btn_attach',
+    filterFn: (row) => !hasAttachmentRow(row) || isCalendarRow(row),
+  },
   [MODES.FAVOURITES]: {
     labelKey: 'btn_fav',
     filterFn: (row) => !isFavouriteRow(row),

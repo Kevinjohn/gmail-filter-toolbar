@@ -23,3 +23,4 @@ This section aims to enforce consistent code styling across the entire codebase,
     *   **Expected Output:** The command will run and may output a list of files that were formatted. If no files needed formatting, it might indicate that all files are already correctly formatted.
 
     *   **Verification:** After the command completes, you can use `git status` to see which files have been modified by Prettier. Review some of the modified files (e.g., `src/contentScript.js`, `src/modules/state.js`) to visually confirm that string literals now primarily use single quotes.
+[x]

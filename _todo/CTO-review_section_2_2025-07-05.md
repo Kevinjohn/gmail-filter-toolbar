@@ -34,6 +34,7 @@ This section focuses on refactoring the state management functions (`loadState` 
         ```
 
     *   **Verification:** After the change, ensure that any calls to `loadState` are updated to handle the returned Promise (e.g., using `.then()` and `.catch()`).
+[x]
 
 ### Task 2.2: Refactor `saveState`
 
@@ -59,3 +60,4 @@ This section focuses on refactoring the state management functions (`loadState` 
         ```
 
     *   **Verification:** After the change, ensure that any calls to `saveState` are updated to handle the returned Promise (e.g., using `.then()` and `.catch()`).
+[x]

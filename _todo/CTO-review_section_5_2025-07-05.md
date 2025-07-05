@@ -28,6 +28,7 @@ This section aims to improve the internationalization (i18n) of the filtering lo
         ```
 
     *   **Verification:** After the change, ensure that the `isFavouriteRow` function now uses `chrome.i18n.getMessage('alt_starred')` to construct the selector.
+[x]
 
 2.  **Action:** Add the `alt_starred` message key to the `_locales/en/messages.json` file.
     *   **File:** `/Users/kevinjohngallagher/Documents/GitHub/chome-extension-gmail-calendar-options/src/_locales/en/messages.json`
@@ -44,6 +45,7 @@ This section aims to improve the internationalization (i18n) of the filtering lo
         ```
 
     *   **Verification:** Confirm that the `alt_starred` key is present in `src/_locales/en/messages.json`.
+[x]
 
 3.  **Action:** Add the `alt_starred` message key to the `_locales/en_GB/messages.json` file.
     *   **File:** `/Users/kevinjohngallagher/Documents/GitHub/chome-extension-gmail-calendar-options/src/_locales/en_GB/messages.json`
@@ -60,3 +62,4 @@ This section aims to improve the internationalization (i18n) of the filtering lo
         ```
 
     *   **Verification:** Confirm that the `alt_starred` key is present in `src/_locales/en_GB/messages.json`.
+[x]

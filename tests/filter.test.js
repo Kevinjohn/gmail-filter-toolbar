@@ -14,6 +14,7 @@ global.chrome = {
       if (key === 'btn_cal') return 'Calendar only';
       if (key === 'btn_attach') return 'Attachments only';
       if (key === 'btn_fav') return 'Favourites only';
+      if (key === 'alt_starred') return 'Starred';
       return key;
     },
   },

@@ -2,18 +2,24 @@ import { SELECTORS } from './modules/constants.js';
 import { loadState, saveState, setCurrentMode, setDebugOn, KEY_DEBUG } from './modules/state.js';
 import { applyFilter } from './modules/filter.js';
 import { injectToolbar, refreshUI } from './modules/toolbar.js';
-import { waitForGmailChrome, waitForMessageTable, observeMessageList, setupGmailToolbarObserver } from './modules/observers.js';
+import {
+  waitForGmailChrome,
+  waitForMessageTable,
+  observeMessageList,
+  setupGmailToolbarObserver,
+} from './modules/observers.js';
 
 function injectFont() {
   const link = document.createElement('link');
   link.rel = 'stylesheet';
-  link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@24,400,0';
+  link.href =
+    'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@24,400,0';
   document.head.appendChild(link);
 }
 
 function main() {
   injectFont();
-  loadState(() => {
+  loadState().then(() => {
     waitForGmailChrome().then((gmailToolbarHeader) => {
       injectToolbar(document, gmailToolbarHeader);
       refreshUI(document);
@@ -33,9 +39,14 @@ document.addEventListener('click', (e) => {
   if (!btn) return;
 
   setCurrentMode(btn.dataset.mode);
-  saveState();
-  applyFilter();
-  refreshUI(document);
+  saveState()
+    .then(() => {
+      applyFilter();
+      refreshUI(document);
+    })
+    .catch((error) => {
+      console.error('Error saving state:', error);
+    });
 });
 
 // Listen for storage changes (e.g., debug mode toggled in options.html)

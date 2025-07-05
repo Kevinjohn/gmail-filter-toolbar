@@ -51,6 +51,7 @@ This section aims to enhance the project's documentation by providing clear guid
         ```
 
     *   **Verification:** After the change, open `README.md` and confirm that the "Update Strategy" section is present and correctly positioned after "Project Structure".
+[x]
 
 ### Task 1.2: Annotate selectors
 
@@ -141,3 +142,4 @@ This section aims to enhance the project's documentation by providing clear guid
         ```
 
     *   **Verification:** After the change, open `src/modules/constants.js` and confirm that each property in the `SELECTORS` object has a descriptive comment above it.
+[x]

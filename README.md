@@ -154,6 +154,23 @@ dist/                     # build output (ignored in Git)
 docs/                     # screenshots & diagrams
 ```
 
+## Update Strategy
+
+Gmail's user interface (UI) is dynamic and can change without notice. This extension relies on specific DOM selectors to inject its toolbar and filter email rows. If the extension stops working after a Gmail update, it's likely that one or more of these selectors have changed.
+
+To update the selectors:
+
+1.  **Inspect Gmail's DOM:** Open Gmail in your browser, right-click on the element that is no longer being targeted correctly (e.g., the main toolbar, an email row, or an attachment icon), and select "Inspect" or "Inspect Element".
+2.  **Identify New Selectors:** In the browser's developer tools, examine the HTML structure around the element. Look for unique `id` attributes, `class` names, or `data-*` attributes that are stable and unlikely to change frequently.
+3.  **Update `src/modules/constants.js`:** Open `src/modules/constants.js` and update the corresponding selector string in the `SELECTORS` object with the new, identified selector.
+4.  **Test:** Rebuild the extension (`npm run build`) and load it unpacked in Chrome (`chrome://extensions`). Verify that the functionality is restored.
+5.  **Consider Alternatives:** If a selector proves to be highly unstable, consider alternative approaches such as using `MutationObserver` to detect structural changes or relying on more general, less specific selectors combined with content analysis.
+
+---
+
+## How It Works
+
+
 ---
 
 ## How It Works

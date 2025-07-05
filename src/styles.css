@@ -9,29 +9,29 @@
   border-radius: 0;
   font-size: 12px;
 
-  flex: 0 0 100%;   /* NEW: occupy a whole flex line */
-  width: 100%;      /* belt-and-braces */
-  margin-top: 4px;  /* small gap below Google’s bar */
-  border:1px solid var(--gcal-border-color);
+  flex: 0 0 100%; /* NEW: occupy a whole flex line */
+  width: 100%; /* belt-and-braces */
+  margin-top: 4px; /* small gap below Google’s bar */
+  border: 1px solid var(--gcal-border-color);
   color: var(--gcal-text-color);
 }
 
 /* 1 — let Gmail’s toolbar wrap */
 .G-atb {
   /* Gmail sets display:flex; align-items:center; nowrap  */
-  flex-wrap: wrap !important;     /* NEW: allow a second row */
-  height: auto !important; 
-  padding-top:16px !important;
+  flex-wrap: wrap !important; /* NEW: allow a second row */
+  height: auto !important;
+  padding-top: 16px !important;
 }
 
 /* 2 — make our bar occupy that second row */
 .gcal-filter-bar {
-  flex: 0 0 100%;         /* full-width line in the wrap */
+  flex: 0 0 100%; /* full-width line in the wrap */
   width: 100%;
-  margin-top: 4px;        /* visual gap below icons */
+  margin-top: 4px; /* visual gap below icons */
   /* keep any existing rules such as font, padding, z-index */
-  margin-top:10px;
-  z-index: 4; 
+  margin-top: 10px;
+  z-index: 4;
   position: relative;
 }
 
@@ -53,7 +53,7 @@
   align-items: center;
 }
 
-.gcal-btn-group button[aria-checked="true"] {
+.gcal-btn-group button[aria-checked='true'] {
   font-weight: bold;
   color: var(--gcal-active-button-text);
   border-color: var(--gcal-active-button-text);
@@ -98,4 +98,3 @@ span.text-label {
   padding-inline-start: 4px;
   padding-inline-end: 2px;
 }
-

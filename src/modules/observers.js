@@ -2,75 +2,84 @@ import { SELECTORS } from './constants.js';
 import { applyFilter } from './filter.js';
 import { injectToolbar } from './toolbar.js';
 import { currentMode, MODES } from './state.js';
+import { debounce } from './utils/debounce.js';
 
-function debounce(func, delay) {
-  let timeout;
-  return function(...args) {
-    const context = this;
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(context, args), delay);
-  };
-}
+let messageListObserver = null;
+let gmailToolbarObserver = null;
 
-export function observeMessageList() {
-  const target = document.querySelector(SELECTORS.emailList);
-  if (!target || target.dataset.observerAttached) return;
+export function observeMessageList(doc = document) {
+  const target = doc.querySelector(SELECTORS.emailList);
+  if (!target) return;
+
+  // Disconnect existing observer if it exists
+  if (messageListObserver) {
+    messageListObserver.disconnect();
+  }
 
   const debouncedApplyFilter = debounce(() => {
     if (currentMode !== MODES.ALL) applyFilter();
   }, 200);
 
-  const listObserver = new MutationObserver(debouncedApplyFilter);
-  listObserver.observe(target, { childList: true });
-  target.dataset.observerAttached = 'true';
+  messageListObserver = new MutationObserver(debouncedApplyFilter);
+  messageListObserver.observe(target, { childList: true });
 }
 
-export function setupGmailToolbarObserver() {
-  const bodyObserver = new MutationObserver((mutationsList) => {
+export function setupGmailToolbarObserver(doc = document) {
+  // Disconnect existing observer if it exists
+  if (gmailToolbarObserver) {
+    gmailToolbarObserver.disconnect();
+  }
+
+  gmailToolbarObserver = new MutationObserver((mutationsList) => {
     for (const mutation of mutationsList) {
       if (mutation.type === 'childList') {
-        const gmailToolbarHeader = document.querySelector(SELECTORS.gmailToolbarHeader);
-        const filterWrapper = document.querySelector(SELECTORS.filterWrapper);
+        const gmailToolbarHeader = doc.querySelector(SELECTORS.gmailToolbarHeader);
+        const filterWrapper = doc.querySelector(SELECTORS.filterWrapper);
 
         if (gmailToolbarHeader && !filterWrapper) {
-          injectToolbar(document, gmailToolbarHeader);
+          injectToolbar(doc, gmailToolbarHeader);
         }
-        observeMessageList();
+        observeMessageList(doc);
         applyFilter();
       }
     }
   });
-  bodyObserver.observe(document.body, { childList: true, subtree: true });
+  gmailToolbarObserver.observe(doc.body, { childList: true, subtree: true });
 }
 
 export function waitForGmailChrome() {
-    return new Promise(resolve => {
-      (function poll() {
-        const toolbar = document.querySelector(SELECTORS.gmailToolbar) ||
-                        document.querySelector(SELECTORS.gmailToolbarLegacy) ||
-                        document.querySelector(SELECTORS.gmailToolbarAria);
-  
-        if (toolbar) {
-          const header = toolbar.closest(SELECTORS.gmailToolbarHeader);
-          if (header) {
-            console.log('[GCO] injecting into header →', header);
-            resolve(header);
-          } else {
-            requestAnimationFrame(poll);
-          }
+  return new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error('Gmail toolbar not found within 10 seconds.'));
+    }, 10000); // 10 seconds timeout
+
+    (function poll() {
+      const toolbar =
+        document.querySelector(SELECTORS.gmailToolbar) ||
+        document.querySelector(SELECTORS.gmailToolbarLegacy) ||
+        document.querySelector(SELECTORS.gmailToolbarAria);
+
+      if (toolbar) {
+        clearTimeout(timeoutId); // Clear timeout if toolbar is found
+        const header = toolbar.closest(SELECTORS.gmailToolbarHeader);
+        if (header) {
+          resolve(header);
         } else {
           requestAnimationFrame(poll);
         }
-      })();
-    });
-  }
-  
+      } else {
+        requestAnimationFrame(poll);
+      }
+    })();
+  });
+}
+
 export function waitForMessageTable() {
-    return new Promise((resolve) => {
-        (function poll() {
-            const table = document.querySelector(SELECTORS.emailRow);
-            if (table) resolve();
-            else requestAnimationFrame(poll);
-        })();
-    });
+  return new Promise((resolve) => {
+    (function poll() {
+      const table = document.querySelector(SELECTORS.emailRow);
+      if (table) resolve();
+      else requestAnimationFrame(poll);
+    })();
+  });
 }

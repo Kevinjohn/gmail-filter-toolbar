@@ -8,7 +8,11 @@ import { SELECTORS } from '../src/modules/constants.js';
 // Mock the chrome API and JSDOM
 global.chrome = {
   i18n: {
-    getMessage: (key) => (key === 'alt_calendar_event' ? 'Calendar event' : key),
+    getMessage: (key) => {
+      if (key === 'alt_calendar_event') return 'Calendar event';
+      if (key === 'alt_starred') return 'Starred';
+      return key;
+    },
   },
 };
 

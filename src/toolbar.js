@@ -2,22 +2,22 @@ import { SELECTORS } from './constants.js';
 import { MODES, currentMode } from './state.js';
 
 const FILTER_CONFIG = {
-    [MODES.ALL]: {
-      labelKey: 'btn_all',
-    },
-    [MODES.EMAIL]: {
-      labelKey: 'btn_mail',
-    },
-    [MODES.CALENDAR]: {
-      labelKey: 'btn_cal',
-    },
-    [MODES.ATTACH]: {
-      labelKey: 'btn_attach',
-    },
-    [MODES.FAVOURITES]: {
-      labelKey: 'btn_fav',
-    },
-  };
+  [MODES.ALL]: {
+    labelKey: 'btn_all',
+  },
+  [MODES.EMAIL]: {
+    labelKey: 'btn_mail',
+  },
+  [MODES.CALENDAR]: {
+    labelKey: 'btn_cal',
+  },
+  [MODES.ATTACH]: {
+    labelKey: 'btn_attach',
+  },
+  [MODES.FAVOURITES]: {
+    labelKey: 'btn_fav',
+  },
+};
 
 function ensureListElement(doc = document) {
   const list = doc.querySelector(SELECTORS.emailList);
@@ -65,7 +65,7 @@ export function injectToolbar(doc = document) {
       [MODES.FAVOURITES]: 'star',
     };
 
-    Object.values(MODES).forEach(mode => {
+    Object.values(MODES).forEach((mode) => {
       const button = doc.createElement('button');
       button.dataset.mode = mode;
       button.id = `gcal-${mode.toLowerCase().replace('_', '-')}-only`;
@@ -90,7 +90,8 @@ export function injectToolbar(doc = document) {
     liveRegion.className = 'gcal-live-region';
     liveRegion.setAttribute('role', 'status');
     liveRegion.setAttribute('aria-live', 'polite');
-    liveRegion.style.cssText = 'position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;';
+    liveRegion.style.cssText =
+      'position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;';
     wrapper.appendChild(liveRegion);
   } else if (bar.parentNode !== wrapper) {
     wrapper.appendChild(bar);

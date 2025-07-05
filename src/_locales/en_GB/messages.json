@@ -66,5 +66,9 @@
   "extension_action_title": {
     "message": "Calendar filter is embedded on Gmail pages",
     "description": "The title of the extension's action button in the browser toolbar."
+  },
+  "alt_starred": {
+    "message": "Starred",
+    "description": "Alt text for the starred icon/tooltip"
   }
 }

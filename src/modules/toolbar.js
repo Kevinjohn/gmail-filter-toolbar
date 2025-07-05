@@ -2,22 +2,30 @@ import { SELECTORS } from './constants.js';
 import { MODES, currentMode } from './state.js';
 
 const FILTER_CONFIG = {
-    [MODES.ALL]: {
-      labelKey: 'btn_all',
-    },
-    [MODES.EMAIL]: {
-      labelKey: 'btn_mail',
-    },
-    [MODES.CALENDAR]: {
-      labelKey: 'btn_cal',
-    },
-    [MODES.ATTACH]: {
-      labelKey: 'btn_attach',
-    },
-    [MODES.FAVOURITES]: {
-      labelKey: 'btn_fav',
-    },
-  };
+  [MODES.ALL]: {
+    labelKey: 'btn_all',
+  },
+  [MODES.EMAIL]: {
+    labelKey: 'btn_mail',
+  },
+  [MODES.CALENDAR]: {
+    labelKey: 'btn_cal',
+  },
+  [MODES.ATTACH]: {
+    labelKey: 'btn_attach',
+  },
+  [MODES.FAVOURITES]: {
+    labelKey: 'btn_fav',
+  },
+};
+
+const MODE_ICONS = {
+  [MODES.ALL]: 'inbox',
+  [MODES.EMAIL]: 'mail',
+  [MODES.CALENDAR]: 'calendar_today',
+  [MODES.ATTACH]: 'attachment',
+  [MODES.FAVOURITES]: 'star',
+};
 
 function ensureListElement(doc = document) {
   const list = doc.querySelector(SELECTORS.emailList);
@@ -63,25 +71,8 @@ export function injectToolbar(doc = document, headerElement) {
   btnGroup.appendChild(labelSpan);
   btnGroup.setAttribute('aria-labelledby', labelId);
 
-  Object.values(MODES).forEach(mode => {
-    let iconName = '';
-    switch (mode) {
-      case MODES.ALL:
-        iconName = 'inbox';
-        break;
-      case MODES.EMAIL:
-        iconName = 'mail';
-        break;
-      case MODES.CALENDAR:
-        iconName = 'calendar_today';
-        break;
-      case MODES.ATTACH:
-        iconName = 'attachment';
-        break;
-      case MODES.FAVOURITES:
-        iconName = 'star';
-        break;
-    }
+  Object.values(MODES).forEach((mode) => {
+    const iconName = MODE_ICONS[mode];
 
     const button = doc.createElement('button');
     button.dataset.mode = mode;
@@ -130,7 +121,7 @@ function handleArrowNavigation(e) {
   if (key !== 'ArrowLeft' && key !== 'ArrowRight') return;
 
   const buttons = Array.from(e.currentTarget.querySelectorAll('button[role="radio"]'));
-  const focusedIndex = buttons.findIndex(btn => btn === document.activeElement);
+  const focusedIndex = buttons.findIndex((btn) => btn === document.activeElement);
 
   if (focusedIndex === -1) return;
 

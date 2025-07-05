@@ -47,6 +47,7 @@ This section aims to refactor the `toolbar.js` module to use a more maintainable
         ```
 
     *   **Verification:** Confirm that `MODE_ICONS` is defined correctly in `src/modules/toolbar.js`.
+[x]
 
 #### Sub-task 4.1.2: Replace the `switch` statement in `injectToolbar` with lookups from `MODE_ICONS`.
 
@@ -82,3 +83,4 @@ This section aims to refactor the `toolbar.js` module to use a more maintainable
         ```
 
     *   **Verification:** Confirm that the `switch` statement has been removed and `iconName` is now assigned using `MODE_ICONS[mode]`.
+[x]

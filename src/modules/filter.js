@@ -24,18 +24,18 @@ const FILTER_CONFIG = {
     labelKey: 'btn_all',
     filterFn: () => false,
   },
-  [MODES.HIDE]: {
-    labelKey: 'btn_mail',
-    filterFn: (row) => isCalendarRow(row),
-  },
-  [MODES.ONLY]: {
-    labelKey: 'btn_cal',
-    filterFn: (row) => !isCalendarRow(row),
-  },
-  [MODES.ONLY_ATTACH]: {
-    labelKey: 'btn_attach',
-    filterFn: (row) => !hasAttachmentRow(row) || isCalendarRow(row),
-  },
+  [MODES.EMAIL]: {
+     labelKey: 'btn_mail',
+     filterFn: (row) => isCalendarRow(row),
+   },
+  [MODES.CALENDAR]: {
+     labelKey: 'btn_cal',
+     filterFn: (row) => !isCalendarRow(row),
+   },
+  [MODES.ATTACH]: {
+     labelKey: 'btn_attach',
+     filterFn: (row) => !hasAttachmentRow(row) || isCalendarRow(row),
+   },
   [MODES.FAVOURITES]: {
     labelKey: 'btn_fav',
     filterFn: (row) => !isFavouriteRow(row),

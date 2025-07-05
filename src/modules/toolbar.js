@@ -5,13 +5,13 @@ const FILTER_CONFIG = {
     [MODES.ALL]: {
       labelKey: 'btn_all',
     },
-    [MODES.HIDE]: {
+    [MODES.EMAIL]: {
       labelKey: 'btn_mail',
     },
-    [MODES.ONLY]: {
+    [MODES.CALENDAR]: {
       labelKey: 'btn_cal',
     },
-    [MODES.ONLY_ATTACH]: {
+    [MODES.ATTACH]: {
       labelKey: 'btn_attach',
     },
     [MODES.FAVOURITES]: {
@@ -65,13 +65,13 @@ export function injectToolbar(doc = document, headerElement) {
       case MODES.ALL:
         iconName = 'inbox';
         break;
-      case MODES.HIDE:
+      case MODES.EMAIL:
         iconName = 'mail';
         break;
-      case MODES.ONLY:
+      case MODES.CALENDAR:
         iconName = 'calendar_today';
         break;
-      case MODES.ONLY_ATTACH:
+      case MODES.ATTACH:
         iconName = 'attachment';
         break;
       case MODES.FAVOURITES:

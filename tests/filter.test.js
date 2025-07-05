@@ -86,7 +86,7 @@ describe('applyFilter comprehensive tests', () => {
         expect(row5.style.opacity).toBe('');
     });
 
-    test('should hide calendar rows when MODES.HIDE is selected', () => {
+    test('should hide calendar rows when MODES.EMAIL is selected', () => {
         const row1 = createEmailRow('row1', { isCalendar: true });
         const row2 = createEmailRow('row2', { hasAttachment: true });
         const row3 = createEmailRow('row3', { isFavourite: true });
@@ -99,7 +99,7 @@ describe('applyFilter comprehensive tests', () => {
         messageList.appendChild(row4);
         messageList.appendChild(row5);
 
-        setCurrentMode(MODES.HIDE);
+        setCurrentMode(MODES.EMAIL);
         applyFilter();
 
         expect(row1.style.display).toBe('none');
@@ -114,7 +114,7 @@ describe('applyFilter comprehensive tests', () => {
         });
     });
 
-    test('should show only calendar rows when MODES.ONLY is selected', () => {
+    test('should show only calendar rows when MODES.CALENDAR is selected', () => {
         const row1 = createEmailRow('row1', { isCalendar: true });
         const row2 = createEmailRow('row2', { hasAttachment: true });
         const row3 = createEmailRow('row3', { isFavourite: true });
@@ -127,7 +127,7 @@ describe('applyFilter comprehensive tests', () => {
         messageList.appendChild(row4);
         messageList.appendChild(row5);
 
-        setCurrentMode(MODES.ONLY);
+        setCurrentMode(MODES.CALENDAR);
         applyFilter();
 
         expect(row1.style.display).toBe('');
@@ -142,7 +142,7 @@ describe('applyFilter comprehensive tests', () => {
         });
     });
 
-    test('should show only attachment rows when MODES.ONLY_ATTACH is selected', () => {
+    test('should show only attachment rows when MODES.ATTACH is selected', () => {
         const row1 = createEmailRow('row1', { isCalendar: true });
         const row2 = createEmailRow('row2', { hasAttachment: true });
         const row3 = createEmailRow('row3', { isFavourite: true });
@@ -155,7 +155,7 @@ describe('applyFilter comprehensive tests', () => {
         messageList.appendChild(row4);
         messageList.appendChild(row5);
 
-        setCurrentMode(MODES.ONLY_ATTACH);
+        setCurrentMode(MODES.ATTACH);
         applyFilter();
 
         expect(row1.style.display).toBe('none');
@@ -206,7 +206,7 @@ describe('applyFilter comprehensive tests', () => {
         messageList.appendChild(row2);
 
         setDebugOn(true);
-        setCurrentMode(MODES.HIDE);
+        setCurrentMode(MODES.EMAIL);
         applyFilter();
 
         expect(row1.style.display).toBe('');
@@ -227,7 +227,7 @@ describe('applyFilter comprehensive tests', () => {
 
         // First, enable debug and apply filter to make row1 semi-transparent
         setDebugOn(true);
-        setCurrentMode(MODES.HIDE);
+        setCurrentMode(MODES.EMAIL);
         applyFilter();
 
         // Then, toggle debug off and re-apply filter

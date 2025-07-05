@@ -3,9 +3,9 @@ export const KEY_DEBUG = 'gmailCalDebug';
 
 export const MODES = {
   ALL: 'ALL',
-  HIDE: 'HIDE_CAL',
-  ONLY: 'ONLY_CAL',
-  ONLY_ATTACH: 'ONLY_ATTACH',
+  EMAIL: 'EMAIL',
+  CALENDAR: 'CALENDAR',
+  ATTACH: 'ATTACH',
   FAVOURITES: 'FAVOURITES',
 };
 

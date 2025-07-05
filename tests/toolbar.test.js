@@ -91,9 +91,9 @@ describe('injectToolbar', () => {
     const headerHtml = wrapper.innerHTML;
 
     expect(headerHtml).toContain('<button data-mode="ALL" data-active="" aria-pressed="true"><span class="material-symbols-outlined">inbox</span><span class="gcal-text-label">All Email</span></button>');
-    expect(headerHtml).toContain('<button data-mode="HIDE_CAL" aria-pressed="false"><span class="material-symbols-outlined">mail</span><span class="gcal-text-label">Email only</span></button>');
-    expect(headerHtml).toContain('<button data-mode="ONLY_CAL" aria-pressed="false"><span class="material-symbols-outlined">calendar_today</span><span class="gcal-text-label">Calendar only</span></button>');
-    expect(headerHtml).toContain('<button data-mode="ONLY_ATTACH" aria-pressed="false"><span class="material-symbols-outlined">attachment</span><span class="gcal-text-label">Attachments only</span></button>');
+    expect(headerHtml).toContain('<button data-mode="EMAIL" aria-pressed="false"><span class="material-symbols-outlined">mail</span><span class="gcal-text-label">Email only</span></button>');
+    expect(headerHtml).toContain('<button data-mode="CALENDAR" aria-pressed="false"><span class="material-symbols-outlined">calendar_today</span><span class="gcal-text-label">Calendar only</span></button>');
+    expect(headerHtml).toContain('<button data-mode="ATTACH" aria-pressed="false"><span class="material-symbols-outlined">attachment</span><span class="gcal-text-label">Attachments only</span></button>');
     expect(headerHtml).toContain('<button data-mode="FAVOURITES" aria-pressed="false"><span class="material-symbols-outlined">star</span><span class="gcal-text-label">Favourites only</span></button>');
   });
 });

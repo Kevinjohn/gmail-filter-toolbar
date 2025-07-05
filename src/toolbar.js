@@ -5,13 +5,13 @@ const FILTER_CONFIG = {
     [MODES.ALL]: {
       labelKey: 'btn_all',
     },
-    [MODES.HIDE]: {
+    [MODES.EMAIL]: {
       labelKey: 'btn_mail',
     },
-    [MODES.ONLY]: {
+    [MODES.CALENDAR]: {
       labelKey: 'btn_cal',
     },
-    [MODES.ONLY_ATTACH]: {
+    [MODES.ATTACH]: {
       labelKey: 'btn_attach',
     },
     [MODES.FAVOURITES]: {
@@ -59,9 +59,9 @@ export function injectToolbar(doc = document) {
 
     const ICON_MAP = {
       [MODES.ALL]: 'select_all',
-      [MODES.HIDE]: 'mail',
-      [MODES.ONLY]: 'calendar_month',
-      [MODES.ONLY_ATTACH]: 'attachment',
+      [MODES.EMAIL]: 'mail',
+      [MODES.CALENDAR]: 'calendar_month',
+      [MODES.ATTACH]: 'attachment',
       [MODES.FAVOURITES]: 'star',
     };
 

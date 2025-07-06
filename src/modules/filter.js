@@ -47,7 +47,7 @@ export function applyFilter() {
   const currentFilter = FILTER_CONFIG[currentMode];
   if (!currentFilter) return;
 
-  document.querySelectorAll(SELECTORS.emailRow).forEach((row, index) => {
+  document.querySelectorAll(SELECTORS.emailRow).forEach((row) => {
     const hide = currentFilter.filterFn(row);
 
     if (debugOn) {

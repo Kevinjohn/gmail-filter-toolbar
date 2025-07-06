@@ -1,0 +1,74 @@
+{
+  "extension_name": {
+    "message": "Gmail Agenda Opties",
+    "description": "Name of the extension."
+  },
+  "extension_description": {
+    "message": "Zichtbaarheid van agenda-uitnodigingen in Gmail in- of uitschakelen.",
+    "description": "Description of the extension."
+  },
+  "label_toolbar": {
+    "message": "Kalenderfilter",
+    "description": "ARIA label for the main toolbar."
+  },
+  "label_options": {
+    "message": "E-mailfilter: ",
+    "description": "Label preceding the filter buttons."
+  },
+  "btn_all": {
+    "message": "Alle e-mails",
+    "description": "Button to show all e-mails."
+  },
+  "btn_mail": {
+    "message": "Alleen e-mail",
+    "description": "Button to hide calendar e-mails."
+  },
+  "btn_cal": {
+    "message": "Alleen agenda",
+    "description": "Button to show only calendar e-mails."
+  },
+  "btn_attach": {
+    "message": "Alleen bijlagen",
+    "description": "Button to show only e-mails with attachments."
+  },
+  "btn_fav": {
+    "message": "Alleen favorieten",
+    "description": "Button to show only starred/favourite e-mails."
+  },
+  "page_title": {
+    "message": "Agenda-opties",
+    "description": "Title for the extension's options page."
+  },
+  "options_debug": {
+    "message": "Schakel de debug-modus in (toon gefilterde rijen in blauw)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_page_description": {
+    "message": "Instellingen voor de Gmail Agenda Opties extensie.",
+    "description": "A short summary of the options page."
+  },
+  "options_debug_legend": {
+    "message": "Fouten opsporen",
+    "description": "Legend for the debug settings fieldset."
+  },
+  "options_debug_label": {
+    "message": "Schakel de debug-modus in (gefilterde rijen worden in blauw gemarkeerd in plaats van ze te verbergen)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "alt_calendar_event": {
+    "message": "Agenda-afspraak",
+    "description": "The alt text for the calendar event icon in an email row."
+  },
+  "filter_status_update": {
+    "message": "Filter ingesteld op $1",
+    "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
+  },
+  "extension_action_title": {
+    "message": "Agenda-filter is ingebouwd op Gmail-pagina's",
+    "description": "The title of the extension's action button in the browser toolbar."
+  },
+  "alt_starred": {
+    "message": "Met ster",
+    "description": "Alt text for the starred icon/tooltip"
+  }
+}

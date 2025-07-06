@@ -1,0 +1,74 @@
+{
+  "extension_name": {
+    "message": "Opțiuni calendar Gmail",
+    "description": "Name of the extension."
+  },
+  "extension_description": {
+    "message": "Comutați vizibilitatea invitațiilor din calendar în Gmail.",
+    "description": "Description of the extension."
+  },
+  "label_toolbar": {
+    "message": "Filtru calendar",
+    "description": "ARIA label for the main toolbar."
+  },
+  "label_options": {
+    "message": "Filtru e-mail: ",
+    "description": "Label preceding the filter buttons."
+  },
+  "btn_all": {
+    "message": "Toate e-mailurile",
+    "description": "Button to show all e-mails."
+  },
+  "btn_mail": {
+    "message": "Doar e-mail",
+    "description": "Button to hide calendar e-mails."
+  },
+  "btn_cal": {
+    "message": "Numai calendar",
+    "description": "Button to show only calendar e-mails."
+  },
+  "btn_attach": {
+    "message": "Numai fișiere atașate",
+    "description": "Button to show only e-mails with attachments."
+  },
+  "btn_fav": {
+    "message": "Numai favorite",
+    "description": "Button to show only starred/favourite e-mails."
+  },
+  "page_title": {
+    "message": "Opțiuni calendar",
+    "description": "Title for the extension's options page."
+  },
+  "options_debug": {
+    "message": "Activați modul de depanare (afișați rândurile filtrate în albastru)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_page_description": {
+    "message": "Setări pentru extensia Opțiuni calendar Gmail.",
+    "description": "A short summary of the options page."
+  },
+  "options_debug_legend": {
+    "message": "Depanare",
+    "description": "Legend for the debug settings fieldset."
+  },
+  "options_debug_label": {
+    "message": "Activați modul de depanare (evidențiază rândurile filtrate în albastru în loc să le ascundă)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "alt_calendar_event": {
+    "message": "Eveniment din calendar",
+    "description": "The alt text for the calendar event icon in an email row."
+  },
+  "filter_status_update": {
+    "message": "Filtru setat la $1",
+    "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
+  },
+  "extension_action_title": {
+    "message": "Filtrul calendarului este încorporat în paginile Gmail",
+    "description": "The title of the extension's action button in the browser toolbar."
+  },
+  "alt_starred": {
+    "message": "Marcate cu stea",
+    "description": "Alt text for the starred icon/tooltip"
+  }
+}

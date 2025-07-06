@@ -1,0 +1,74 @@
+{
+  "extension_name": {
+    "message": "Επιλογές ημερολογίου Gmail",
+    "description": "Name of the extension."
+  },
+  "extension_description": {
+    "message": "Εναλλαγή ορατότητας των προσκλήσεων ημερολογίου μέσα στο Gmail.",
+    "description": "Description of the extension."
+  },
+  "label_toolbar": {
+    "message": "Φίλτρο ημερολογίου",
+    "description": "ARIA label for the main toolbar."
+  },
+  "label_options": {
+    "message": "Φίλτρο email: ",
+    "description": "Label preceding the filter buttons."
+  },
+  "btn_all": {
+    "message": "Όλα τα email",
+    "description": "Button to show all e-mails."
+  },
+  "btn_mail": {
+    "message": "Μόνο email",
+    "description": "Button to hide calendar e-mails."
+  },
+  "btn_cal": {
+    "message": "Μόνο ημερολόγιο",
+    "description": "Button to show only calendar e-mails."
+  },
+  "btn_attach": {
+    "message": "Μόνο συνημμένα",
+    "description": "Button to show only e-mails with attachments."
+  },
+  "btn_fav": {
+    "message": "Μόνο αγαπημένα",
+    "description": "Button to show only starred/favourite e-mails."
+  },
+  "page_title": {
+    "message": "Επιλογές ημερολογίου",
+    "description": "Title for the extension's options page."
+  },
+  "options_debug": {
+    "message": "Ενεργοποίηση λειτουργίας εντοπισμού σφαλμάτων (εμφάνιση φιλτραρισμένων γραμμών με μπλε χρώμα)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_page_description": {
+    "message": "Ρυθμίσεις για την επέκταση Επιλογές Ημερολογίου Gmail.",
+    "description": "A short summary of the options page."
+  },
+  "options_debug_legend": {
+    "message": "Εντοπισμός σφαλμάτων",
+    "description": "Legend for the debug settings fieldset."
+  },
+  "options_debug_label": {
+    "message": "Ενεργοποίηση λειτουργίας εντοπισμού σφαλμάτων (επισημαίνει τις φιλτραρισμένες σειρές με μπλε χρώμα αντί να τις αποκρύπτει)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "alt_calendar_event": {
+    "message": "Συμβάν ημερολογίου",
+    "description": "The alt text for the calendar event icon in an email row."
+  },
+  "filter_status_update": {
+    "message": "Το φίλτρο έχει οριστεί σε $1",
+    "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
+  },
+  "extension_action_title": {
+    "message": "Το φίλτρο ημερολογίου είναι ενσωματωμένο στις σελίδες του Gmail",
+    "description": "The title of the extension's action button in the browser toolbar."
+  },
+  "alt_starred": {
+    "message": "Με αστέρι",
+    "description": "Alt text for the starred icon/tooltip"
+  }
+}

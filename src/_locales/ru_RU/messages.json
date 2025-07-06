@@ -1,0 +1,74 @@
+{
+  "extension_name": {
+    "message": "Параметры календаря Gmail",
+    "description": "Name of the extension."
+  },
+  "extension_description": {
+    "message": "Переключение видимости приглашений календаря в Gmail.",
+    "description": "Description of the extension."
+  },
+  "label_toolbar": {
+    "message": "Фильтр календаря",
+    "description": "ARIA label for the main toolbar."
+  },
+  "label_options": {
+    "message": "Фильтр электронной почты: ",
+    "description": "Label preceding the filter buttons."
+  },
+  "btn_all": {
+    "message": "Все письма",
+    "description": "Button to show all e-mails."
+  },
+  "btn_mail": {
+    "message": "Только электронная почта",
+    "description": "Button to hide calendar e-mails."
+  },
+  "btn_cal": {
+    "message": "Только календарь",
+    "description": "Button to show only calendar e-mails."
+  },
+  "btn_attach": {
+    "message": "Только вложения",
+    "description": "Button to show only e-mails with attachments."
+  },
+  "btn_fav": {
+    "message": "Только избранное",
+    "description": "Button to show only starred/favourite e-mails."
+  },
+  "page_title": {
+    "message": "Параметры календаря",
+    "description": "Title for the extension's options page."
+  },
+  "options_debug": {
+    "message": "Включить режим отладки (отображать отфильтрованные строки синим цветом)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_page_description": {
+    "message": "Настройки для расширения параметров календаря Gmail.",
+    "description": "A short summary of the options page."
+  },
+  "options_debug_legend": {
+    "message": "Отладка",
+    "description": "Legend for the debug settings fieldset."
+  },
+  "options_debug_label": {
+    "message": "Включить режим отладки (выделяет отфильтрованные строки синим цветом, а не скрывает их)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "alt_calendar_event": {
+    "message": "Событие календаря",
+    "description": "The alt text for the calendar event icon in an email row."
+  },
+  "filter_status_update": {
+    "message": "Фильтр установлен на $1",
+    "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
+  },
+  "extension_action_title": {
+    "message": "Фильтр календаря встроен в страницы Gmail",
+    "description": "The title of the extension's action button in the browser toolbar."
+  },
+  "alt_starred": {
+    "message": "Помеченные звездочкой",
+    "description": "Alt text for the starred icon/tooltip"
+  }
+}

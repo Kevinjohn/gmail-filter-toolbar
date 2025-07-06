@@ -1,0 +1,74 @@
+{
+  "extension_name": {
+    "message": "Opcje kalendarza Gmail",
+    "description": "Name of the extension."
+  },
+  "extension_description": {
+    "message": "Przełącz widoczność zaproszeń z kalendarza w Gmailu.",
+    "description": "Description of the extension."
+  },
+  "label_toolbar": {
+    "message": "Filtr kalendarza",
+    "description": "ARIA label for the main toolbar."
+  },
+  "label_options": {
+    "message": "Filtr wiadomości e-mail: ",
+    "description": "Label preceding the filter buttons."
+  },
+  "btn_all": {
+    "message": "Wszystkie wiadomości e-mail",
+    "description": "Button to show all e-mails."
+  },
+  "btn_mail": {
+    "message": "Tylko e-mail",
+    "description": "Button to hide calendar e-mails."
+  },
+  "btn_cal": {
+    "message": "Tylko kalendarz",
+    "description": "Button to show only calendar e-mails."
+  },
+  "btn_attach": {
+    "message": "Tylko załączniki",
+    "description": "Button to show only e-mails with attachments."
+  },
+  "btn_fav": {
+    "message": "Tylko ulubione",
+    "description": "Button to show only starred/favourite e-mails."
+  },
+  "page_title": {
+    "message": "Opcje kalendarza",
+    "description": "Title for the extension's options page."
+  },
+  "options_debug": {
+    "message": "Włącz trybie debugowania (wiersze filtrowane są wyświetlane w kolorze niebieskim)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_page_description": {
+    "message": "Ustawienia rozszerzenia opcji kalendarza Gmail.",
+    "description": "A short summary of the options page."
+  },
+  "options_debug_legend": {
+    "message": "Debugowanie",
+    "description": "Legend for the debug settings fieldset."
+  },
+  "options_debug_label": {
+    "message": "Włącz tryb debugowania (wyróżnia filtrowane wiersze na niebiesko zamiast je ukrywać)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "alt_calendar_event": {
+    "message": "Wydarzenie w kalendarzu",
+    "description": "The alt text for the calendar event icon in an email row."
+  },
+  "filter_status_update": {
+    "message": "Filtr ustawiony na $1",
+    "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
+  },
+  "extension_action_title": {
+    "message": "Filtr kalendarza jest osadzony na stronach Gmail",
+    "description": "The title of the extension's action button in the browser toolbar."
+  },
+  "alt_starred": {
+    "message": "Oznaczone gwiazdką",
+    "description": "Alt text for the starred icon/tooltip"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "extension_name": {
+    "message": "Gmail kalenderalternativer",
+    "description": "Name of the extension."
+  },
+  "extension_description": {
+    "message": "Veksle synlighet av kalenderinvitasjoner i Gmail.",
+    "description": "Description of the extension."
+  },
+  "label_toolbar": {
+    "message": "Kalenderfilter",
+    "description": "ARIA label for the main toolbar."
+  },
+  "label_options": {
+    "message": "E-postfilter: ",
+    "description": "Label preceding the filter buttons."
+  },
+  "btn_all": {
+    "message": "Alle e-poster",
+    "description": "Button to show all e-mails."
+  },
+  "btn_mail": {
+    "message": "Kun e-post",
+    "description": "Button to hide calendar e-mails."
+  },
+  "btn_cal": {
+    "message": "Kun kalender",
+    "description": "Button to show only calendar e-mails."
+  },
+  "btn_attach": {
+    "message": "Kun vedlegg",
+    "description": "Button to show only e-mails with attachments."
+  },
+  "btn_fav": {
+    "message": "Kun favoritter",
+    "description": "Button to show only starred/favourite e-mails."
+  },
+  "page_title": {
+    "message": "Kalenderalternativer",
+    "description": "Title for the extension's options page."
+  },
+  "options_debug": {
+    "message": "Aktiver feilsøkingsmodus (vis filtrerte rader i blått)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_page_description": {
+    "message": "Innstillinger for Gmail Kalender Alternativer utvidelse.",
+    "description": "A short summary of the options page."
+  },
+  "options_debug_legend": {
+    "message": "Feilsøking",
+    "description": "Legend for the debug settings fieldset."
+  },
+  "options_debug_label": {
+    "message": "Aktiver feilsøkingsmodus (fremhever filtrerte rader i blått i stedet for å skjule dem)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "alt_calendar_event": {
+    "message": "Kalenderhendelse",
+    "description": "The alt text for the calendar event icon in an email row."
+  },
+  "filter_status_update": {
+    "message": "Filter satt til $1",
+    "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
+  },
+  "extension_action_title": {
+    "message": "Kalenderfilter er innebygd på Gmail-sider",
+    "description": "The title of the extension's action button in the browser toolbar."
+  },
+  "alt_starred": {
+    "message": "Stjernemerket",
+    "description": "Alt text for the starred icon/tooltip"
+  }
+}

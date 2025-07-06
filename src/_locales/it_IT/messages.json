@@ -1,0 +1,74 @@
+{
+  "extension_name": {
+    "message": "Opzioni del calendario di Gmail",
+    "description": "Name of the extension."
+  },
+  "extension_description": {
+    "message": "Attiva o disattiva la visibilità degli inviti del calendario all'interno di Gmail.",
+    "description": "Description of the extension."
+  },
+  "label_toolbar": {
+    "message": "Filtro calendario",
+    "description": "ARIA label for the main toolbar."
+  },
+  "label_options": {
+    "message": "Filtro e-mail: ",
+    "description": "Label preceding the filter buttons."
+  },
+  "btn_all": {
+    "message": "Tutte le e-mail",
+    "description": "Button to show all e-mails."
+  },
+  "btn_mail": {
+    "message": "Solo e-mail",
+    "description": "Button to hide calendar e-mails."
+  },
+  "btn_cal": {
+    "message": "Solo calendario",
+    "description": "Button to show only calendar e-mails."
+  },
+  "btn_attach": {
+    "message": "Solo allegati",
+    "description": "Button to show only e-mails with attachments."
+  },
+  "btn_fav": {
+    "message": "Solo preferiti",
+    "description": "Button to show only starred/favourite e-mails."
+  },
+  "page_title": {
+    "message": "Opzioni del calendario",
+    "description": "Title for the extension's options page."
+  },
+  "options_debug": {
+    "message": "Abilita la modalità di debug (mostra le righe filtrate in blu)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_page_description": {
+    "message": "Impostazioni per l'estensione delle opzioni del calendario di Gmail.",
+    "description": "A short summary of the options page."
+  },
+  "options_debug_legend": {
+    "message": "Debug",
+    "description": "Legend for the debug settings fieldset."
+  },
+  "options_debug_label": {
+    "message": "Abilita la modalità di debug (evidenzia le righe filtrate in blu invece di nasconderle)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "alt_calendar_event": {
+    "message": "Evento del calendario",
+    "description": "The alt text for the calendar event icon in an email row."
+  },
+  "filter_status_update": {
+    "message": "Filtro impostato su $1",
+    "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
+  },
+  "extension_action_title": {
+    "message": "Il filtro del calendario è incorporato nelle pagine di Gmail",
+    "description": "The title of the extension's action button in the browser toolbar."
+  },
+  "alt_starred": {
+    "message": "Contrassegnato con una stella",
+    "description": "Alt text for the starred icon/tooltip"
+  }
+}

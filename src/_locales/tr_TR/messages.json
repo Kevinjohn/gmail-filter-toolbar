@@ -1,0 +1,74 @@
+{
+  "extension_name": {
+    "message": "Gmail Takvim Seçenekleri",
+    "description": "Name of the extension."
+  },
+  "extension_description": {
+    "message": "Gmail içindeki takvim davetlerinin görünürlüğünü değiştirin.",
+    "description": "Description of the extension."
+  },
+  "label_toolbar": {
+    "message": "Takvim filtresi",
+    "description": "ARIA label for the main toolbar."
+  },
+  "label_options": {
+    "message": "E-posta filtresi: ",
+    "description": "Label preceding the filter buttons."
+  },
+  "btn_all": {
+    "message": "Tüm E-postalar",
+    "description": "Button to show all e-mails."
+  },
+  "btn_mail": {
+    "message": "Sadece e-posta",
+    "description": "Button to hide calendar e-mails."
+  },
+  "btn_cal": {
+    "message": "Sadece takvim",
+    "description": "Button to show only calendar e-mails."
+  },
+  "btn_attach": {
+    "message": "Yalnızca ekler",
+    "description": "Button to show only e-mails with attachments."
+  },
+  "btn_fav": {
+    "message": "Yalnızca favoriler",
+    "description": "Button to show only starred/favourite e-mails."
+  },
+  "page_title": {
+    "message": "Takvim Seçenekleri",
+    "description": "Title for the extension's options page."
+  },
+  "options_debug": {
+    "message": "Hata ayıklama modunu etkinleştir (filtrelenmiş satırları mavi göster)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_page_description": {
+    "message": "Gmail Takvim Seçenekleri uzantısı için ayarlar.",
+    "description": "A short summary of the options page."
+  },
+  "options_debug_legend": {
+    "message": "Hata ayıklama",
+    "description": "Legend for the debug settings fieldset."
+  },
+  "options_debug_label": {
+    "message": "Hata ayıklama modunu etkinleştir (filtrelenen satırları gizlemek yerine mavi renkle vurgular)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "alt_calendar_event": {
+    "message": "Takvim etkinliği",
+    "description": "The alt text for the calendar event icon in an email row."
+  },
+  "filter_status_update": {
+    "message": "Filtre $1 olarak ayarlandı",
+    "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
+  },
+  "extension_action_title": {
+    "message": "Takvim filtresi Gmail sayfalarına gömülüdür",
+    "description": "The title of the extension's action button in the browser toolbar."
+  },
+  "alt_starred": {
+    "message": "Yıldızlı",
+    "description": "Alt text for the starred icon/tooltip"
+  }
+}

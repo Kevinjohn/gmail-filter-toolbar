@@ -1,0 +1,74 @@
+{
+  "extension_name": {
+    "message": "Gmail Naptár beállítások",
+    "description": "Name of the extension."
+  },
+  "extension_description": {
+    "message": "A naptár meghívásainak láthatóságának beállítása a Gmailben.",
+    "description": "Description of the extension."
+  },
+  "label_toolbar": {
+    "message": "Naptárszűrő",
+    "description": "ARIA label for the main toolbar."
+  },
+  "label_options": {
+    "message": "E-mail szűrő: ",
+    "description": "Label preceding the filter buttons."
+  },
+  "btn_all": {
+    "message": "Minden e-mail",
+    "description": "Button to show all e-mails."
+  },
+  "btn_mail": {
+    "message": "Csak e-mail",
+    "description": "Button to hide calendar e-mails."
+  },
+  "btn_cal": {
+    "message": "Csak naptár",
+    "description": "Button to show only calendar e-mails."
+  },
+  "btn_attach": {
+    "message": "Csak mellékletek",
+    "description": "Button to show only e-mails with attachments."
+  },
+  "btn_fav": {
+    "message": "Csak kedvencek",
+    "description": "Button to show only starred/favourite e-mails."
+  },
+  "page_title": {
+    "message": "Naptár beállításai",
+    "description": "Title for the extension's options page."
+  },
+  "options_debug": {
+    "message": "Hibakeresési mód engedélyezése (a szűrt sorok kék színnel jelennek meg)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_page_description": {
+    "message": "A Gmail Naptár beállítások bővítmény beállításai.",
+    "description": "A short summary of the options page."
+  },
+  "options_debug_legend": {
+    "message": "Hibakeresés",
+    "description": "Legend for the debug settings fieldset."
+  },
+  "options_debug_label": {
+    "message": "Hibakeresési mód engedélyezése (a szűrt sorokat kék színnel emeli ki ahelyett, hogy elrejtené őket)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "alt_calendar_event": {
+    "message": "Naptáresemény",
+    "description": "The alt text for the calendar event icon in an email row."
+  },
+  "filter_status_update": {
+    "message": "Szűrő beállítva $1 értékre",
+    "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
+  },
+  "extension_action_title": {
+    "message": "A naptárszűrő be van ágyazva a Gmail oldalakba",
+    "description": "The title of the extension's action button in the browser toolbar."
+  },
+  "alt_starred": {
+    "message": "Csillagozott",
+    "description": "Alt text for the starred icon/tooltip"
+  }
+}

@@ -41,6 +41,10 @@ If you find a bug, please open an issue using the "Bug Report" template. Provide
 
 If you have an idea for a new feature or an improvement, please open an issue using the "Feature Request" template. Describe your idea clearly and explain why it would be beneficial.
 
+## Localisation
+
+If you would like to contribute translations, please use the "Localisation Request" issue template. You can either submit a pull request with the translated `messages.json` file or raise an issue with the translated text.
+
 ## Questions?
 
 If you have any questions about contributing, feel free to open an issue or reach out to the maintainers.

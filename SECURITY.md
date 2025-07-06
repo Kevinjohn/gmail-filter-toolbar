@@ -2,20 +2,13 @@
 
 ## Reporting a Vulnerability
 
-We take the security of our project seriously. If you discover a security vulnerability within this project, please report it to us as soon as possible.
+We take the security of our project seriously. If you discover a security vulnerability, please report it to us privately through GitHub's security vulnerability reporting feature.
 
-**Please DO NOT open a public issue.** Publicly disclosing vulnerabilities can put the project and its users at risk.
+**Please DO NOT open a public issue.**
 
-Instead, please report it privately by sending an email to [your-security-email@example.com](mailto:your-security-email@example.com). Replace `your-security-email@example.com` with the actual security contact email for your project.
+To report a vulnerability, please go to the "Security" tab of our GitHub repository and click on "Report a vulnerability". This will allow you to submit a report privately.
 
-In your report, please include:
-
-*   A clear and concise description of the vulnerability.
-*   Steps to reproduce the vulnerability.
-*   The potential impact of the vulnerability.
-*   Any suggested mitigations or fixes (if you have them).
-
-We will acknowledge your email within 24 hours and aim to provide a more detailed response within 72 hours. We will keep you informed about the progress of the fix and will notify you when the vulnerability has been addressed.
+We will acknowledge your report within 24 hours and aim to provide a more detailed response within 72 hours. We will keep you informed about the progress of the fix and will notify you when the vulnerability has been addressed.
 
 ## Disclosure Policy
 

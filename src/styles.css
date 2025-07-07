@@ -71,7 +71,6 @@
   direction: ltr;
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
-  margin-inline-end: 4px; /* Space between icon and text */
 }
 
 span.gcal-label {
@@ -87,4 +86,9 @@ span.text-label {
   font-size: 12px;
   padding-inline-start: 4px;
   padding-inline-end: 2px;
+  margin-inline-start: 4px;
+}
+
+.gcal-filter-bar.show-icon-only .gcal-text-label {
+  display: none;
 }

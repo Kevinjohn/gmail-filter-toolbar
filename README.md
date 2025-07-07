@@ -30,6 +30,7 @@
 | **Calendar Only** | Show **only** calendar invites |
 | **Attachments Only** | Show **only** e-mails with attachments |
 | **Favourites Only** | Show **only** starred/favourite e-mails |
+| **Show/Hide Button Text** | Toggle visibility of text labels on filter buttons. |
 
 *   Enhanced visual clarity with Material Icons on toolbar buttons.
 * MV3-compliant (`service_worker` background, no persistent pages).

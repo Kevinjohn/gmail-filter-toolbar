@@ -1,0 +1,15 @@
+body {
+  font-family: sans-serif;
+  padding: 1em;
+  background-color: var(--gcal-bg-color);
+  color: var(--gcal-text-color);
+}
+fieldset {
+  border: 1px solid var(--gcal-border-color);
+  border-radius: 4px;
+  padding: 1em;
+}
+legend {
+  font-weight: bold;
+  padding-inline: 0.5em;
+}

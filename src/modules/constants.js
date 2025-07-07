@@ -1,3 +1,5 @@
+export const SHOW_BUTTON_TEXT_KEY = 'showButtonText';
+
 export const SELECTORS = {
   /**
    * Selector for the primary Gmail toolbar (newer versions).

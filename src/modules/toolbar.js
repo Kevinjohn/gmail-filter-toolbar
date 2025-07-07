@@ -138,6 +138,13 @@ function handleArrowNavigation(e) {
   buttons[nextIndex].click();
 }
 
+export function updateButtonTextView(showText, doc = document) {
+  const bar = doc.querySelector(SELECTORS.filterBar);
+  if (bar) {
+    bar.classList.toggle('show-icon-only', !showText);
+  }
+}
+
 export function refreshUI(doc = document) {
   const bar = doc.querySelector(SELECTORS.filterBar);
   if (!bar) return;

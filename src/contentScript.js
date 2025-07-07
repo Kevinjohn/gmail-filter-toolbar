@@ -1,7 +1,7 @@
-import { SELECTORS } from './modules/constants.js';
-import { loadState, saveState, setCurrentMode, setDebugOn, KEY_DEBUG } from './modules/state.js';
+import { SELECTORS, SHOW_BUTTON_TEXT_KEY } from './modules/constants.js';
+import { loadState, saveState, setCurrentMode, setDebugOn, showButtonText, KEY_DEBUG } from './modules/state.js';
 import { applyFilter } from './modules/filter.js';
-import { injectToolbar, refreshUI } from './modules/toolbar.js';
+import { injectToolbar, refreshUI, updateButtonTextView } from './modules/toolbar.js';
 import {
   waitForGmailChrome,
   waitForMessageTable,
@@ -22,6 +22,7 @@ function main() {
   loadState().then(() => {
     waitForGmailChrome().then((gmailToolbarHeader) => {
       injectToolbar(document, gmailToolbarHeader);
+      updateButtonTextView(showButtonText); // Apply initial state
       refreshUI(document);
 
       waitForMessageTable().then(() => {
@@ -49,11 +50,14 @@ document.addEventListener('click', (e) => {
     });
 });
 
-// Listen for storage changes (e.g., debug mode toggled in options.html)
+// Listen for storage changes (e.g., debug mode or showButtonText toggled in options.html)
 chrome.storage.onChanged.addListener((changes) => {
   if (KEY_DEBUG in changes) {
     setDebugOn(changes[KEY_DEBUG].newValue);
     applyFilter();
+  }
+  if (SHOW_BUTTON_TEXT_KEY in changes) {
+    updateButtonTextView(changes[SHOW_BUTTON_TEXT_KEY].newValue);
   }
 });
 

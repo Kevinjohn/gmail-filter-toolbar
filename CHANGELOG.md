@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.13] - 2025-07-07
+- feat: Add option to show/hide text on filter buttons.
+- chore: Version bump to 0.0.13
+
 ## [0.0.12] - 2025-07-07
 - chore: Version bump to 0.0.12
 

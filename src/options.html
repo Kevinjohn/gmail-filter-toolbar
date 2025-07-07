@@ -4,23 +4,7 @@
     <meta charset="UTF-8" />
     <title></title>
     <link rel="stylesheet" href="colours.css" />
-    <style>
-      body {
-        font-family: sans-serif;
-        padding: 1em;
-        background-color: var(--gcal-bg-color);
-        color: var(--gcal-text-color);
-      }
-      fieldset {
-        border: 1px solid var(--gcal-border-color);
-        border-radius: 4px;
-        padding: 1em;
-      }
-      legend {
-        font-weight: bold;
-        padding-inline: 0.5em;
-      }
-    </style>
+    <link rel="stylesheet" href="options.css" />
   </head>
   <body>
     <h1 id="pageTitle"></h1>
@@ -29,6 +13,11 @@
       <legend id="debugLegend"></legend>
       <label> <input type="checkbox" id="debug" /> <span id="debugLabel"></span> </label>
     </fieldset>
-    <script src="modules/options.js"></script>
+    <fieldset>
+      <legend id="showButtonTextLegend"></legend>
+      <label for="show-button-text-checkbox" id="showButtonTextLabel"></label>
+      <input type="checkbox" id="show-button-text-checkbox">
+    </fieldset>
+    <script type="module" src="modules/options.js"></script>
   </body>
 </html>

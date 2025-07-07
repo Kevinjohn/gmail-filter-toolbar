@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.12] - 2025-07-07
+- chore: Version bump to 0.0.12
+
+## [0.0.11] - 2025-07-07
+- feat: Add new languages and linting for language files.
+- refactor: Remove redundant files and clean up CSS.
+- docs: Enhance contribution and security guidelines.
+
 ## [0.0.10] - 2025-07-05
 - feat: Implement CTO review feedback up to Section 7 and revert Section 8 changes.
 

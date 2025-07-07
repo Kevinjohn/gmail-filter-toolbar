@@ -11,12 +11,17 @@
     <p id="pageDescription"></p>
     <fieldset>
       <legend id="debugLegend"></legend>
-      <label> <input type="checkbox" id="debug" /> <span id="debugLabel"></span> </label>
+      <div class="option-row">
+        <label for="debug" id="debugLabel"></label>
+        <input type="checkbox" id="debug" />
+      </div>
     </fieldset>
     <fieldset>
       <legend id="showButtonTextLegend"></legend>
-      <label for="show-button-text-checkbox" id="showButtonTextLabel"></label>
-      <input type="checkbox" id="show-button-text-checkbox">
+      <div class="option-row">
+        <label for="show-button-text-checkbox" id="showButtonTextLabel"></label>
+        <input type="checkbox" id="show-button-text-checkbox">
+      </div>
     </fieldset>
     <script type="module" src="modules/options.js"></script>
   </body>

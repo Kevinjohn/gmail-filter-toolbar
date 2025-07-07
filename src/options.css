@@ -13,3 +13,15 @@ legend {
   font-weight: bold;
   padding-inline: 0.5em;
 }
+
+.option-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.option-row label {
+  flex-grow: 1;
+  margin-right: 10px;
+}

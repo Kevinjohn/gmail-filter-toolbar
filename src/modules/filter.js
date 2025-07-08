@@ -78,23 +78,23 @@ const FILTER_CONFIG = {
   },
   [MODES.IMAGE]: {
     labelKey: 'button_filter_images',
-    filterFn: (row) => !hasAttachmentRow(row) || !hasSpecificAttachmentType(row, MODES.IMAGE),
+    filterFn: (row) => !hasSpecificAttachmentType(row, MODES.IMAGE),
   },
   [MODES.PDF]: {
     labelKey: 'button_filter_pdfs',
-    filterFn: (row) => !hasAttachmentRow(row) || !hasSpecificAttachmentType(row, MODES.PDF),
+    filterFn: (row) => !hasSpecificAttachmentType(row, MODES.PDF),
   },
   [MODES.DOCUMENT]: {
     labelKey: 'button_filter_documents',
-    filterFn: (row) => !hasAttachmentRow(row) || !hasSpecificAttachmentType(row, MODES.DOCUMENT),
+    filterFn: (row) => !hasSpecificAttachmentType(row, MODES.DOCUMENT),
   },
   [MODES.SPREADSHEET]: {
     labelKey: 'button_filter_spreadsheets',
-    filterFn: (row) => !hasAttachmentRow(row) || !hasSpecificAttachmentType(row, MODES.SPREADSHEET),
+    filterFn: (row) => !hasSpecificAttachmentType(row, MODES.SPREADSHEET),
   },
   [MODES.PRESENTATION]: {
     labelKey: 'button_filter_presentations',
-    filterFn: (row) => !hasAttachmentRow(row) || !hasSpecificAttachmentType(row, MODES.PRESENTATION),
+    filterFn: (row) => !hasSpecificAttachmentType(row, MODES.PRESENTATION),
   },
 };
 

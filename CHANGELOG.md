@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.1.0] - 2025-07-08
+- feat: Implement granular attachment filtering (images, PDFs, documents, spreadsheets, presentations).
+- feat: Move Favourites button to the end of the toolbar.
+- fix: Refine Google Drive attachment identification to prevent false positives.
+- fix: Include Google Docs in the general attachment filter.
+- refactor: Remove "only" from all button labels in locales JSON.
+
 ## [0.0.13] - 2025-07-07
 - feat: Add option to show/hide text on filter buttons.
 - chore: Version bump to 0.0.13

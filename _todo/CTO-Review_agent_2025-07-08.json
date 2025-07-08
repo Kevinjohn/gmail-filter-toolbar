@@ -1,0 +1,229 @@
+{
+  "changeDirectives": [
+    {
+      "directiveId": "CD-001",
+      "dependsOn": [],
+      "targetSystem": "CODEBASE",
+      "priority": "BLOCKER",
+      "humanReadableDescription": "Define attachment filter categories and selectors in constants file.",
+      "payload": {
+        "action": "REFACTOR",
+        "targetFile": "src/modules/constants.js",
+        "specifications": {
+          "componentName": "Constants",
+          "logic": [
+            "Create and export a new object constant 'ATTACHMENT_TYPE_CONFIG'.",
+            "Populate 'ATTACHMENT_TYPE_CONFIG' with keys for IMAGE, PDF, DOCUMENT, SPREADSHEET, and PRESENTATION.",
+            "Each key's value must be an object containing 'extensions' (array of strings), 'icon' (string), and 'labelKey' (string).",
+            "Add 'attachmentRow: 'div.brd'' to the existing 'SELECTORS' object."
+          ],
+          "acceptanceCriteria": [
+            "Given the file is imported, when 'ATTACHMENT_TYPE_CONFIG.IMAGE.icon' is accessed, then it must return 'image'.",
+            "Given the file is imported, when 'SELECTORS.attachmentRow' is accessed, then it must return 'div.brd'."
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-002",
+      "dependsOn": [],
+      "targetSystem": "CODEBASE",
+      "priority": "HIGH",
+      "humanReadableDescription": "Add internationalisation keys for new filter buttons.",
+      "payload": {
+        "action": "REFACTOR",
+        "targetFile": "src/_locales/en/messages.json",
+        "specifications": {
+          "componentName": "messages.json",
+          "logic": [
+            "Add JSON keys 'button_filter_images', 'button_filter_pdfs', 'button_filter_documents', 'button_filter_spreadsheets', 'button_filter_presentations'.",
+            "Each key's value must be an object with a 'message' key and the corresponding English text (e.g., 'Images Only')."
+          ],
+          "acceptanceCriteria": [
+            "Given the JSON is parsed, when the value for key 'button_filter_images' is accessed, then it must be an object '{ \"message\": \"Images Only\" }'."
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-003",
+      "dependsOn": [],
+      "targetSystem": "CODEBASE",
+      "priority": "MEDIUM",
+      "humanReadableDescription": "Update state management to include new filter modes.",
+      "payload": {
+        "action": "REFACTOR",
+        "targetFile": "src/modules/state.js",
+        "specifications": {
+          "componentName": "FILTER_MODES",
+          "logic": [
+            "Append the strings 'IMAGE', 'PDF', 'DOCUMENT', 'SPREADSHEET', 'PRESENTATION' to the 'FILTER_MODES' array."
+          ],
+          "acceptanceCriteria": [
+            "Given the file is imported, when 'FILTER_MODES.includes(\"IMAGE\")' is checked, then it must return true."
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-004",
+      "dependsOn": [
+        "CD-001"
+      ],
+      "targetSystem": "CODEBASE",
+      "priority": "BLOCKER",
+      "humanReadableDescription": "Implement the core logic for identifying specific attachment types in an email row.",
+      "payload": {
+        "action": "MODIFY_FUNCTION",
+        "targetFile": "src/modules/filter.js",
+        "specifications": {
+          "componentName": "hasSpecificAttachmentType",
+          "inputs": [
+            {
+              "name": "row",
+              "type": "HTMLElement",
+              "description": "The DOM element for the email row."
+            },
+            {
+              "name": "attachmentType",
+              "type": "string",
+              "description": "A key from ATTACHMENT_TYPE_CONFIG (e.g., 'IMAGE')."
+            }
+          ],
+          "outputs": {
+            "returnType": "boolean",
+            "description": "True if a matching attachment is found, otherwise false."
+          },
+          "logic": [
+            "Query the row for all attachment chips using the 'SELECTORS.attachmentChip' selector.",
+            "Get the list of valid extensions from 'ATTACHMENT_TYPE_CONFIG[attachmentType].extensions'.",
+            "Iterate through each chip.",
+            "Extract filename from the chip's 'title' attribute or the 'textContent' of its title span.",
+            "Extract the file extension and normalize to lowercase.",
+            "Check if the extension is in the list of valid extensions.",
+            "Also check the chip's 'data-tooltip' attribute for Google Drive file identifiers.",
+            "If a match is found, return true immediately.",
+            "If the loop finishes, return false."
+          ],
+          "acceptanceCriteria": [
+            "Given a row with an attachment titled 'report.pdf', when called with attachmentType 'PDF', then it must return true.",
+            "Given a row with an attachment titled 'image.jpg', when called with attachmentType 'PDF', then it must return false.",
+            "Given a row with a Google Doc attachment, when called with attachmentType 'DOCUMENT', then it must return true."
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-005",
+      "dependsOn": [
+        "CD-004"
+      ],
+      "targetSystem": "CODEBASE",
+      "priority": "BLOCKER",
+      "humanReadableDescription": "Update the main applyFilter function to use the new specific attachment logic.",
+      "payload": {
+        "action": "MODIFY_FUNCTION",
+        "targetFile": "src/modules/filter.js",
+        "specifications": {
+          "componentName": "applyFilter",
+          "inputs": [
+            {
+              "name": "mode",
+              "type": "string",
+              "description": "The current filter mode."
+            }
+          ],
+          "outputs": {
+            "returnType": "void",
+            "description": "Applies the filter to the DOM."
+          },
+          "logic": [
+            "In the main loop that iterates through email rows, add cases for the new filter modes ('IMAGE', 'PDF', etc.).",
+            "For these cases, the condition to show a row is 'hasAttachmentRow(row) && hasSpecificAttachmentType(row, mode)'.",
+            "Set the row's 'style.display' based on the outcome of this condition."
+          ],
+          "acceptanceCriteria": [
+            "Given the mode is 'PDF', when applyFilter is run, then only rows with PDF attachments must be visible."
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-006",
+      "dependsOn": [
+        "CD-001",
+        "CD-002"
+      ],
+      "targetSystem": "CODEBASE",
+      "priority": "HIGH",
+      "humanReadableDescription": "Dynamically generate new filter buttons in the toolbar.",
+      "payload": {
+        "action": "MODIFY_FUNCTION",
+        "targetFile": "src/modules/toolbar.js",
+        "specifications": {
+          "componentName": "createToolbar",
+          "logic": [
+            "Import 'ATTACHMENT_TYPE_CONFIG' from constants.",
+            "Iterate over the keys of 'ATTACHMENT_TYPE_CONFIG'.",
+            "For each key, create a new button element.",
+            "Set the button's id, icon, title, and aria-label based on the configuration for that key.",
+            "Append the new buttons to the toolbar DOM element in the correct order."
+          ],
+          "acceptanceCriteria": [
+            "Given createToolbar is called, when the DOM is inspected, then a button with id 'filter-IMAGE' must exist.",
+            "Given createToolbar is called, when the DOM is inspected, then the button with id 'filter-PDF' must have the title 'PDFs Only'."
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-007",
+      "dependsOn": [
+        "CD-004"
+      ],
+      "targetSystem": "CODEBASE",
+      "priority": "HIGH",
+      "humanReadableDescription": "Add unit tests for the hasSpecificAttachmentType function.",
+      "payload": {
+        "action": "ADD_TEST_CASE",
+        "targetFile": "tests/filter.test.js",
+        "specifications": {
+          "componentName": "hasSpecificAttachmentType",
+          "logic": [],
+          "acceptanceCriteria": [
+            "Given a mock row with a '.jpg' attachment, when hasSpecificAttachmentType(row, 'IMAGE') is called, then it must return true.",
+            "Given a mock row with a '.docx' attachment, when hasSpecificAttachmentType(row, 'DOCUMENT') is called, then it must return true.",
+            "Given a mock row with a '.gsheet' attachment, when hasSpecificAttachmentType(row, 'SPREADSHEET') is called, then it must return true.",
+            "Given a mock row with a '.zip' attachment, when hasSpecificAttachmentType(row, 'IMAGE') is called, then it must return false.",
+            "Given a mock row with multiple attachments including a '.pdf', when hasSpecificAttachmentType(row, 'PDF') is called, then it must return true."
+          ]
+        }
+      }
+    },
+    {
+      "directiveId": "CD-008",
+      "dependsOn": [
+        "CD-006"
+      ],
+      "targetSystem": "CODEBASE",
+      "priority": "MEDIUM",
+      "humanReadableDescription": "Add unit tests for the updated toolbar creation logic.",
+      "payload": {
+        "action": "ADD_TEST_CASE",
+        "targetFile": "tests/toolbar.test.js",
+        "specifications": {
+          "componentName": "createToolbar",
+          "logic": [
+            "Mock 'chrome.i18n.getMessage' to return predictable labels.",
+            "Call 'createToolbar' on a mock DOM element.",
+            "Assert that five new buttons have been added.",
+            "Assert that a button with id 'filter-SPREADSHEET' exists and has the correct icon and mocked label."
+          ],
+          "acceptanceCriteria": [
+            "Given createToolbar is executed, when the number of child buttons is counted, then it must equal the original number plus five."
+          ]
+        }
+      }
+    }
+  ]
+}

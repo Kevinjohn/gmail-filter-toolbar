@@ -11,31 +11,31 @@ export const SHOW_BUTTON_TEXT_KEY = 'showButtonText';
 export const ATTACHMENT_TYPE_CONFIG = {
   IMAGE: {
     extensions: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'],
-    gdriveIdentifier: 'image',
+    gdriveIdentifier: 'icon_1_image',
     icon: 'image',
     labelKey: 'button_filter_images',
   },
   PDF: {
     extensions: ['pdf'],
-    gdriveIdentifier: 'pdf',
+    gdriveIdentifier: 'icon_1_pdf',
     icon: 'picture_as_pdf',
     labelKey: 'button_filter_pdfs',
   },
   DOCUMENT: {
     extensions: ['doc', 'docx', 'rtf', 'txt', 'odt'],
-    gdriveIdentifier: 'document',
+    gdriveIdentifier: 'icon_1_document',
     icon: 'article',
     labelKey: 'button_filter_documents',
   },
   SPREADSHEET: {
     extensions: ['xls', 'xlsx', 'csv', 'ods'],
-    gdriveIdentifier: 'spreadsheet',
+    gdriveIdentifier: 'icon_1_spreadsheet',
     icon: 'assessment',
     labelKey: 'button_filter_spreadsheets',
   },
   PRESENTATION: {
     extensions: ['ppt', 'pptx', 'odp'],
-    gdriveIdentifier: 'presentation',
+    gdriveIdentifier: 'icon_1_presentation',
     icon: 'slideshow',
     labelKey: 'button_filter_presentations',
   },

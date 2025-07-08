@@ -1,5 +1,5 @@
 import { MODES, currentMode, debugOn } from './state.js';
-import { SELECTORS } from './constants.js';
+import { SELECTORS, ATTACHMENT_TYPE_CONFIG } from './constants.js';
 
 export function isCalendarRow(row, chromeApi = chrome) {
   const hasIcs = !!row.querySelector(SELECTORS.icsImage);
@@ -18,6 +18,41 @@ export function hasAttachmentRow(row) {
 export function isFavouriteRow(row, chromeApi = chrome) {
   const starredAltText = chromeApi.i18n.getMessage('alt_starred');
   return !!row.querySelector(`span[data-tooltip="${starredAltText}"]`);
+}
+
+/**
+ * Checks if an email row contains a specific type of attachment.
+ * @param {HTMLElement} row - The DOM element for the email row.
+ * @param {string} attachmentType - The key from ATTACHMENT_TYPE_CONFIG (e.g., 'IMAGE').
+ * @returns {boolean} True if a matching attachment is found, otherwise false.
+ */
+export function hasSpecificAttachmentType(row, attachmentType) {
+  const config = ATTACHMENT_TYPE_CONFIG[attachmentType];
+  if (!config) return false;
+
+  const attachmentChips = row.querySelectorAll(SELECTORS.attachmentChip);
+
+  for (const chip of attachmentChips) {
+    // Check for standard attachments by file extension
+    const title = chip.getAttribute('title') || chip.querySelector('span')?.textContent;
+    if (title) {
+      const parts = title.split('.');
+      const extension = parts.length > 1 ? parts.pop().toLowerCase() : '';
+      if (config.extensions.includes(extension)) {
+        return true;
+      }
+    }
+
+    // Check for Google Drive attachments by image src
+    const gdriveLink = chip.getAttribute('data-docurl');
+    if (gdriveLink && gdriveLink.includes('google.com')) {
+      const img = chip.querySelector('img');
+      if (img && img.src.includes(config.gdriveIdentifier)) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 const FILTER_CONFIG = {
@@ -40,6 +75,26 @@ const FILTER_CONFIG = {
   [MODES.FAVOURITES]: {
     labelKey: 'btn_fav',
     filterFn: (row) => !isFavouriteRow(row),
+  },
+  [MODES.IMAGE]: {
+    labelKey: 'button_filter_images',
+    filterFn: (row) => !hasAttachmentRow(row) || !hasSpecificAttachmentType(row, MODES.IMAGE),
+  },
+  [MODES.PDF]: {
+    labelKey: 'button_filter_pdfs',
+    filterFn: (row) => !hasAttachmentRow(row) || !hasSpecificAttachmentType(row, MODES.PDF),
+  },
+  [MODES.DOCUMENT]: {
+    labelKey: 'button_filter_documents',
+    filterFn: (row) => !hasAttachmentRow(row) || !hasSpecificAttachmentType(row, MODES.DOCUMENT),
+  },
+  [MODES.SPREADSHEET]: {
+    labelKey: 'button_filter_spreadsheets',
+    filterFn: (row) => !hasAttachmentRow(row) || !hasSpecificAttachmentType(row, MODES.SPREADSHEET),
+  },
+  [MODES.PRESENTATION]: {
+    labelKey: 'button_filter_presentations',
+    filterFn: (row) => !hasAttachmentRow(row) || !hasSpecificAttachmentType(row, MODES.PRESENTATION),
   },
 };
 

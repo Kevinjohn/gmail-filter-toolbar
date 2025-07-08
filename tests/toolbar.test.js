@@ -17,6 +17,11 @@ global.chrome = {
       if (key === 'btn_cal') return 'Calendar only';
       if (key === 'btn_attach') return 'Attachments only';
       if (key === 'btn_fav') return 'Favourites only';
+      if (key === 'button_filter_images') return 'Images Only';
+      if (key === 'button_filter_pdfs') return 'PDFs Only';
+      if (key === 'button_filter_documents') return 'Documents Only';
+      if (key === 'button_filter_spreadsheets') return 'Spreadsheets Only';
+      if (key === 'button_filter_presentations') return 'Presentations Only';
       return `Mocked ${key}`;
     }),
   },
@@ -90,11 +95,74 @@ describe('injectToolbar', () => {
     injectToolbar(doc);
     const headerHtml = wrapper.innerHTML;
 
-    expect(headerHtml).toContain('<button data-mode="ALL" role="radio" aria-label="All Email" data-tooltip="All Email" aria-checked="true" tabindex="0"><span class="material-symbols-outlined">inbox</span><span class="gcal-text-label">All Email</span></button>');
-    expect(headerHtml).toContain('<button data-mode="EMAIL" role="radio" aria-label="Email only" data-tooltip="Email only" aria-checked="false" tabindex="-1"><span class="material-symbols-outlined">mail</span><span class="gcal-text-label">Email only</span></button>');
-    expect(headerHtml).toContain('<button data-mode="CALENDAR" role="radio" aria-label="Calendar only" data-tooltip="Calendar only" aria-checked="false" tabindex="-1"><span class="material-symbols-outlined">calendar_today</span><span class="gcal-text-label">Calendar only</span></button>');
-    expect(headerHtml).toContain('<button data-mode="ATTACH" role="radio" aria-label="Attachments only" data-tooltip="Attachments only" aria-checked="false" tabindex="-1"><span class="material-symbols-outlined">attachment</span><span class="gcal-text-label">Attachments only</span></button>');
-    expect(headerHtml).toContain('<button data-mode="FAVOURITES" role="radio" aria-label="Favourites only" data-tooltip="Favourites only" aria-checked="false" tabindex="-1"><span class="material-symbols-outlined">star</span><span class="gcal-text-label">Favourites only</span></button>');
+    expect(headerHtml).toContain('<button id="filter-ALL" data-mode="ALL" role="radio" aria-label="All Email" data-tooltip="All Email" aria-checked="true" tabindex="0"><span class="material-symbols-outlined">inbox</span><span class="gcal-text-label">All Email</span></button>');
+    expect(headerHtml).toContain('<button id="filter-EMAIL" data-mode="EMAIL" role="radio" aria-label="Email only" data-tooltip="Email only" aria-checked="false" tabindex="-1"><span class="material-symbols-outlined">mail</span><span class="gcal-text-label">Email only</span></button>');
+    expect(headerHtml).toContain('<button id="filter-CALENDAR" data-mode="CALENDAR" role="radio" aria-label="Calendar only" data-tooltip="Calendar only" aria-checked="false" tabindex="-1"><span class="material-symbols-outlined">calendar_today</span><span class="gcal-text-label">Calendar only</span></button>');
+    expect(headerHtml).toContain('<button id="filter-ATTACH" data-mode="ATTACH" role="radio" aria-label="Attachments only" data-tooltip="Attachments only" aria-checked="false" tabindex="-1"><span class="material-symbols-outlined">attachment</span><span class="gcal-text-label">Attachments only</span></button>');
+    expect(headerHtml).toContain('<button id="filter-FAVOURITES" data-mode="FAVOURITES" role="radio" aria-label="Favourites only" data-tooltip="Favourites only" aria-checked="false" tabindex="-1"><span class="material-symbols-outlined">star</span><span class="gcal-text-label">Favourites only</span></button>');
+  });
+});
+
+describe('createToolbar', () => {
+  let header;
+  let doc;
+  let wrapper;
+
+  beforeEach(() => {
+    document.body.innerHTML = ''; // Clear the DOM completely
+    document.body.innerHTML = '<div class="gb_Id gb_Hd gb_Id"></div>'; // Establish a clean, consistent Gmail-like header
+    doc = document;
+    header = doc.querySelector('.gb_Id');
+    injectToolbar(doc, header);
+    wrapper = header.nextElementSibling;
+
+    chrome.storage.sync.set.mockClear();
+    chrome.i18n.getMessage.mockClear(); // Clear i18n mock calls as well
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  test('should add five new attachment filter buttons', () => {
+    const buttons = wrapper.querySelectorAll('button[data-mode]');
+    // Original 5 buttons + 5 new attachment buttons
+    expect(buttons.length).toBe(10);
+  });
+
+  test('should create a button with id filter-IMAGE', () => {
+    const imageButton = wrapper.querySelector('button#filter-IMAGE');
+    expect(imageButton).not.toBeNull();
+    expect(imageButton.getAttribute('aria-label')).toBe('Images Only');
+    expect(imageButton.querySelector('.material-symbols-outlined').textContent).toBe('image');
+  });
+
+  test('should create a button with id filter-PDF', () => {
+    const pdfButton = wrapper.querySelector('button#filter-PDF');
+    expect(pdfButton).not.toBeNull();
+    expect(pdfButton.getAttribute('aria-label')).toBe('PDFs Only');
+    expect(pdfButton.querySelector('.material-symbols-outlined').textContent).toBe('picture_as_pdf');
+  });
+
+  test('should create a button with id filter-DOCUMENT', () => {
+    const documentButton = wrapper.querySelector('button#filter-DOCUMENT');
+    expect(documentButton).not.toBeNull();
+    expect(documentButton.getAttribute('aria-label')).toBe('Documents Only');
+    expect(documentButton.querySelector('.material-symbols-outlined').textContent).toBe('article');
+  });
+
+  test('should create a button with id filter-SPREADSHEET', () => {
+    const spreadsheetButton = wrapper.querySelector('button#filter-SPREADSHEET');
+    expect(spreadsheetButton).not.toBeNull();
+    expect(spreadsheetButton.getAttribute('aria-label')).toBe('Spreadsheets Only');
+    expect(spreadsheetButton.querySelector('.material-symbols-outlined').textContent).toBe('assessment');
+  });
+
+  test('should create a button with id filter-PRESENTATION', () => {
+    const presentationButton = wrapper.querySelector('button#filter-PRESENTATION');
+    expect(presentationButton).not.toBeNull();
+    expect(presentationButton.getAttribute('aria-label')).toBe('Presentations Only');
+    expect(presentationButton.querySelector('.material-symbols-outlined').textContent).toBe('slideshow');
   });
 });
 

@@ -1,5 +1,46 @@
 export const SHOW_BUTTON_TEXT_KEY = 'showButtonText';
 
+/**
+ * Configuration for different attachment types.
+ * Each key represents a filter mode.
+ * - extensions: List of file extensions for standard attachments.
+ * - gdriveIdentifier: String to identify Google Drive file types from the icon src.
+ * - icon: Material Icon name for the filter button.
+ * - labelKey: i18n message key for the button's label.
+ */
+export const ATTACHMENT_TYPE_CONFIG = {
+  IMAGE: {
+    extensions: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'],
+    gdriveIdentifier: 'image',
+    icon: 'image',
+    labelKey: 'button_filter_images',
+  },
+  PDF: {
+    extensions: ['pdf'],
+    gdriveIdentifier: 'pdf',
+    icon: 'picture_as_pdf',
+    labelKey: 'button_filter_pdfs',
+  },
+  DOCUMENT: {
+    extensions: ['doc', 'docx', 'rtf', 'txt', 'odt'],
+    gdriveIdentifier: 'document',
+    icon: 'article',
+    labelKey: 'button_filter_documents',
+  },
+  SPREADSHEET: {
+    extensions: ['xls', 'xlsx', 'csv', 'ods'],
+    gdriveIdentifier: 'spreadsheet',
+    icon: 'assessment',
+    labelKey: 'button_filter_spreadsheets',
+  },
+  PRESENTATION: {
+    extensions: ['ppt', 'pptx', 'odp'],
+    gdriveIdentifier: 'presentation',
+    icon: 'slideshow',
+    labelKey: 'button_filter_presentations',
+  },
+};
+
 export const SELECTORS = {
   /**
    * Selector for the primary Gmail toolbar (newer versions).
@@ -36,6 +77,15 @@ export const SELECTORS = {
    * This is the `div` element that holds all the email rows.
    */
   emailList: '.UI',
+  /**
+   * Selector for the container of all attachments in a row.
+   * Note: A fallback to the second div in the parent td may be needed.
+   */
+  attachmentRow: 'div.brd',
+  /**
+   * Selector for an individual attachment "chip" within an attachment row.
+   */
+  attachmentChip: 'div.brc',
   /**
    * Selector for the attachment icon within an email row.
    * Targets the `img` element that indicates an email has an attachment.

@@ -35,6 +35,26 @@
     "message": "Favourites only",
     "description": "Button to show only starred/favourite e-mails."
   },
+  "button_filter_images": {
+    "message": "Images Only",
+    "description": "Button to show only emails with image attachments."
+  },
+  "button_filter_pdfs": {
+    "message": "PDFs Only",
+    "description": "Button to show only emails with PDF attachments."
+  },
+  "button_filter_documents": {
+    "message": "Documents Only",
+    "description": "Button to show only emails with document attachments."
+  },
+  "button_filter_spreadsheets": {
+    "message": "Spreadsheets Only",
+    "description": "Button to show only emails with spreadsheet attachments."
+  },
+  "button_filter_presentations": {
+    "message": "Presentations Only",
+    "description": "Button to show only emails with presentation attachments."
+  },
   "page_title": {
     "message": "Calendar Options",
     "description": "Title for the extension's options page."

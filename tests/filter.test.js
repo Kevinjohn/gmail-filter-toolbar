@@ -1,5 +1,5 @@
 import { expect, test, describe, beforeEach, jest } from '@jest/globals';
-import { applyFilter, isCalendarRow, hasAttachmentRow, isFavouriteRow } from '../src/modules/filter.js';
+import { applyFilter, isCalendarRow, hasAttachmentRow, isFavouriteRow, hasSpecificAttachmentType } from '../src/modules/filter.js';
 import { MODES, setCurrentMode, setDebugOn } from '../src/modules/state.js';
 
 // Mock the chrome API
@@ -15,29 +15,160 @@ global.chrome = {
       if (key === 'btn_attach') return 'Attachments only';
       if (key === 'btn_fav') return 'Favourites only';
       if (key === 'alt_starred') return 'Starred';
+      if (key === 'button_filter_images') return 'Images Only';
+      if (key === 'button_filter_pdfs') return 'PDFs Only';
+      if (key === 'button_filter_documents') return 'Documents Only';
+      if (key === 'button_filter_spreadsheets') return 'Spreadsheets Only';
+      if (key === 'button_filter_presentations') return 'Presentations Only';
       return key;
     },
   },
 };
 
 // Helper function for creating mock email rows
-function createEmailRow(id, { isCalendar = false, hasAttachment = false, isFavourite = false, text = 'Test Email' } = {}) {
+function createEmailRow(id, { isCalendar = false, hasAttachment = false, isFavourite = false, text = 'Test Email', attachmentChips = [] } = {}) {
     const row = document.createElement('tr');
     row.classList.add('zA'); // Gmail's class for email rows
     row.dataset.testId = id; // Custom data attribute for easy selection
     row.innerHTML = `<td>${text}</td>`;
+
     if (isCalendar) {
         row.innerHTML += `<td><img class="aXk" alt=".ics" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></td>`;
     }
-    if (hasAttachment) {
+
+    let attachmentHtml = '';
+    if (hasAttachment || attachmentChips.length > 0) {
         row.classList.add('byw'); // Gmail's class for attachment rows
-        row.innerHTML += `<td><img class="aXk" alt="Attachment" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></td>`;
+        attachmentHtml += `<td class="brd">`; // Use brd for the attachment row container
+        attachmentChips.forEach(chip => {
+            attachmentHtml += `<div class="brc" title="${chip.title || ''}" data-docurl="${chip.dataDocurl || ''}">${chip.imgSrc ? `<img src="${chip.imgSrc}">` : ''}<span>${chip.text || ''}</span></div>`;
+        });
+        attachmentHtml += `</td>`;
     }
+    row.innerHTML += attachmentHtml;
+
     if (isFavourite) {
         row.innerHTML += `<td><span data-tooltip="Starred"></span></td>`;
     }
     return row;
 }
+
+describe('hasSpecificAttachmentType', () => {
+    test('should return true for a row with a JPG image attachment', () => {
+        const row = createEmailRow('row1', {
+            attachmentChips: [{ title: 'my_image.jpg' }]
+        });
+        expect(hasSpecificAttachmentType(row, MODES.IMAGE)).toBe(true);
+    });
+
+    test('should return true for a row with a PNG image attachment', () => {
+        const row = createEmailRow('row1', {
+            attachmentChips: [{ title: 'another_image.png' }]
+        });
+        expect(hasSpecificAttachmentType(row, MODES.IMAGE)).toBe(true);
+    });
+
+    test('should return true for a row with a PDF attachment', () => {
+        const row = createEmailRow('row1', {
+            attachmentChips: [{ title: 'document.pdf' }]
+        });
+        expect(hasSpecificAttachmentType(row, MODES.PDF)).toBe(true);
+    });
+
+    test('should return true for a row with a DOCX document attachment', () => {
+        const row = createEmailRow('row1', {
+            attachmentChips: [{ title: 'report.docx' }]
+        });
+        expect(hasSpecificAttachmentType(row, MODES.DOCUMENT)).toBe(true);
+    });
+
+    test('should return true for a row with a CSV spreadsheet attachment', () => {
+        const row = createEmailRow('row1', {
+            attachmentChips: [{ title: 'data.csv' }]
+        });
+        expect(hasSpecificAttachmentType(row, MODES.SPREADSHEET)).toBe(true);
+    });
+
+    test('should return true for a row with a PPTX presentation attachment', () => {
+        const row = createEmailRow('row1', {
+            attachmentChips: [{ title: 'slides.pptx' }]
+        });
+        expect(hasSpecificAttachmentType(row, MODES.PRESENTATION)).toBe(true);
+    });
+
+    test('should return false for a row with a PDF when checking for IMAGE', () => {
+        const row = createEmailRow('row1', {
+            attachmentChips: [{ title: 'document.pdf' }]
+        });
+        expect(hasSpecificAttachmentType(row, MODES.IMAGE)).toBe(false);
+    });
+
+    test('should return true for a row with a Google Drive document (icon check)', () => {
+        const row = createEmailRow('row1', {
+            attachmentChips: [{
+                dataDocurl: 'https://docs.google.com/document/d/abc',
+                imgSrc: '//ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_document_x16.png'
+            }]
+        });
+        expect(hasSpecificAttachmentType(row, MODES.DOCUMENT)).toBe(true);
+    });
+
+    test('should return true for a row with a Google Drive spreadsheet (icon check)', () => {
+        const row = createEmailRow('row1', {
+            attachmentChips: [{
+                dataDocurl: 'https://docs.google.com/spreadsheets/d/abc',
+                imgSrc: '//ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_spreadsheet_x16.png'
+            }]
+        });
+        expect(hasSpecificAttachmentType(row, MODES.SPREADSHEET)).toBe(true);
+    });
+
+    test('should return true for a row with a Google Drive presentation (icon check)', () => {
+        const row = createEmailRow('row1', {
+            attachmentChips: [{
+                dataDocurl: 'https://docs.google.com/presentation/d/abc',
+                imgSrc: '//ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_presentation_x16.png'
+            }]
+        });
+        expect(hasSpecificAttachmentType(row, MODES.PRESENTATION)).toBe(true);
+    });
+
+    test('should return false for a Google Drive document when checking for PDF', () => {
+        const row = createEmailRow('row1', {
+            attachmentChips: [{
+                dataDocurl: 'https://docs.google.com/document/d/abc',
+                imgSrc: '//ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_document_x16.png'
+            }]
+        });
+        expect(hasSpecificAttachmentType(row, MODES.PDF)).toBe(false);
+    });
+
+    test('should return true if one of multiple attachments matches', () => {
+        const row = createEmailRow('row1', {
+            attachmentChips: [
+                { title: 'image.jpg' },
+                { title: 'report.pdf' },
+                { title: 'document.docx' }
+            ]
+        });
+        expect(hasSpecificAttachmentType(row, MODES.PDF)).toBe(true);
+    });
+
+    test('should return false if no attachments match', () => {
+        const row = createEmailRow('row1', {
+            attachmentChips: [
+                { title: 'archive.zip' },
+                { title: 'audio.mp3' }
+            ]
+        });
+        expect(hasSpecificAttachmentType(row, MODES.IMAGE)).toBe(false);
+    });
+
+    test('should return false if no attachment chips are present', () => {
+        const row = createEmailRow('row1', {});
+        expect(hasSpecificAttachmentType(row, MODES.IMAGE)).toBe(false);
+    });
+});
 
 describe('applyFilter comprehensive tests', () => {
     let messageList;

@@ -1,30 +1,28 @@
-import { SELECTORS } from './constants.js';
+import { SELECTORS, ATTACHMENT_TYPE_CONFIG } from './constants.js';
 import { MODES, currentMode } from './state.js';
 
-const FILTER_CONFIG = {
+// Define the base filter configurations for non-attachment modes
+const BASE_FILTER_CONFIG = {
   [MODES.ALL]: {
+    icon: 'inbox',
     labelKey: 'btn_all',
   },
   [MODES.EMAIL]: {
+    icon: 'mail',
     labelKey: 'btn_mail',
   },
   [MODES.CALENDAR]: {
+    icon: 'calendar_today',
     labelKey: 'btn_cal',
   },
   [MODES.ATTACH]: {
+    icon: 'attachment',
     labelKey: 'btn_attach',
   },
   [MODES.FAVOURITES]: {
+    icon: 'star',
     labelKey: 'btn_fav',
   },
-};
-
-const MODE_ICONS = {
-  [MODES.ALL]: 'inbox',
-  [MODES.EMAIL]: 'mail',
-  [MODES.CALENDAR]: 'calendar_today',
-  [MODES.ATTACH]: 'attachment',
-  [MODES.FAVOURITES]: 'star',
 };
 
 function ensureListElement(doc = document) {
@@ -71,26 +69,17 @@ export function injectToolbar(doc = document, headerElement) {
   btnGroup.appendChild(labelSpan);
   btnGroup.setAttribute('aria-labelledby', labelId);
 
-  Object.values(MODES).forEach((mode) => {
-    const iconName = MODE_ICONS[mode];
+  // Add base filter buttons
+  Object.keys(BASE_FILTER_CONFIG).forEach((mode) => {
+    const config = BASE_FILTER_CONFIG[mode];
+    const button = createFilterButton(doc, mode, config.icon, config.labelKey);
+    btnGroup.appendChild(button);
+  });
 
-    const button = doc.createElement('button');
-    button.dataset.mode = mode;
-    button.setAttribute('role', 'radio');
-    const buttonText = chrome.i18n.getMessage(FILTER_CONFIG[mode].labelKey);
-    button.setAttribute('aria-label', buttonText);
-    button.dataset.tooltip = buttonText;
-
-    const icon = doc.createElement('span');
-    icon.className = 'material-symbols-outlined';
-    icon.textContent = iconName;
-    button.appendChild(icon);
-
-    const textSpan = doc.createElement('span');
-    textSpan.className = 'gcal-text-label';
-    textSpan.textContent = chrome.i18n.getMessage(FILTER_CONFIG[mode].labelKey);
-    button.appendChild(textSpan);
-
+  // Add attachment filter buttons dynamically
+  Object.keys(ATTACHMENT_TYPE_CONFIG).forEach((mode) => {
+    const config = ATTACHMENT_TYPE_CONFIG[mode];
+    const button = createFilterButton(doc, mode, config.icon, config.labelKey);
     btnGroup.appendChild(button);
   });
 
@@ -114,6 +103,35 @@ export function injectToolbar(doc = document, headerElement) {
     btnGroup.addEventListener('keydown', handleArrowNavigation);
     bar.dataset.listenerAdded = 'true';
   }
+}
+
+/**
+ * Helper function to create a filter button.
+ * @param {string} mode - The filter mode (e.g., MODES.ALL, MODES.IMAGE).
+ * @param {string} iconName - The Material Icon name.
+ * @param {string} labelKey - The i18n key for the button's label.
+ * @returns {HTMLButtonElement} The created button element.
+ */
+function createFilterButton(doc, mode, iconName, labelKey) {
+  const button = doc.createElement('button');
+  button.id = `filter-${mode}`;
+  button.dataset.mode = mode;
+  button.setAttribute('role', 'radio');
+  const buttonText = chrome.i18n.getMessage(labelKey);
+  button.setAttribute('aria-label', buttonText);
+  button.dataset.tooltip = buttonText;
+
+  const icon = doc.createElement('span');
+  icon.className = 'material-symbols-outlined';
+  icon.textContent = iconName;
+  button.appendChild(icon);
+
+  const textSpan = doc.createElement('span');
+  textSpan.className = 'gcal-text-label';
+  textSpan.textContent = chrome.i18n.getMessage(labelKey);
+  button.appendChild(textSpan);
+
+  return button;
 }
 
 function handleArrowNavigation(e) {
@@ -157,7 +175,17 @@ export function refreshUI(doc = document) {
 
   const liveRegion = doc.querySelector(SELECTORS.liveRegion);
   if (liveRegion) {
-    const currentModeLabel = chrome.i18n.getMessage(FILTER_CONFIG[currentMode].labelKey);
+    // Determine the label key based on whether it's a base mode or an attachment mode
+    let labelKey;
+    if (BASE_FILTER_CONFIG[currentMode]) {
+      labelKey = BASE_FILTER_CONFIG[currentMode].labelKey;
+    } else if (ATTACHMENT_TYPE_CONFIG[currentMode]) {
+      labelKey = ATTACHMENT_TYPE_CONFIG[currentMode].labelKey;
+    } else {
+      // Fallback for unknown modes, though this should ideally not happen
+      labelKey = 'btn_all'; // Default to 'All Email'
+    }
+    const currentModeLabel = chrome.i18n.getMessage(labelKey);
     liveRegion.textContent = chrome.i18n.getMessage('filter_status_update', [currentModeLabel]);
   }
 }

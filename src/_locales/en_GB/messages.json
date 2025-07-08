@@ -20,20 +20,20 @@
     "description": "Button to show all e-mails."
   },
   "btn_mail": {
-    "message": "Email only",
+    "message": "Email",
     "description": "Button to hide calendar e-mails."
   },
   "btn_cal": {
-    "message": "Calendar only",
-    "description": "Button to show only calendar e-mails."
+    "message": "Calendar",
+    "description": "Button to show calendar e-mails."
   },
   "btn_attach": {
-    "message": "Attachments only",
-    "description": "Button to show only e-mails with attachments."
+    "message": "Attachments",
+    "description": "Button to show e-mails with attachments."
   },
   "btn_fav": {
-    "message": "Favourites only",
-    "description": "Button to show only starred/favourite e-mails."
+    "message": "Favourites",
+    "description": "Button to show starred/favourite e-mails."
   },
   "page_title": {
     "message": "Calendar Options",

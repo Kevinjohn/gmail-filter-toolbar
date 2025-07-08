@@ -8,11 +8,22 @@ export function isCalendarRow(row, chromeApi = chrome) {
   return hasIcs || hasCalendarEventIcon;
 }
 
+export function isGoogleDocAttachment(row) {
+  const attachmentChips = row.querySelectorAll(SELECTORS.attachmentChip);
+  for (const chip of attachmentChips) {
+    const gdriveLink = chip.getAttribute('data-docurl');
+    if (gdriveLink && gdriveLink.includes('google.com')) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export function hasAttachmentRow(row) {
   const hasBywClass = row.classList.contains(SELECTORS.attachmentRowClass);
   const hasAttachmentTooltip = !!row.querySelector(SELECTORS.attachmentTooltip);
   const hasPaperclipIcon = !!row.querySelector(SELECTORS.attachmentIcon);
-  return hasBywClass || hasAttachmentTooltip || hasPaperclipIcon;
+  return hasBywClass || hasAttachmentTooltip || hasPaperclipIcon || isGoogleDocAttachment(row);
 }
 
 export function isFavouriteRow(row, chromeApi = chrome) {

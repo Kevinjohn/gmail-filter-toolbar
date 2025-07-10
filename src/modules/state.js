@@ -1,3 +1,13 @@
+/**
+ * State Module - Legacy State Management Integration with StateManager
+ *
+ * This module provides backward compatibility while migrating to the new StateManager.
+ * All state operations now route through the centralized StateManager.
+ */
+
+import { stateManager } from './stateManager.js';
+
+// Export state constants (these are still needed by other modules)
 export const KEY_MODE = 'gmailCalMode';
 export const KEY_DEBUG = 'gmailCalDebug';
 
@@ -14,48 +24,68 @@ export const MODES = {
   PRESENTATION: 'PRESENTATION',
 };
 
-export let currentMode = MODES.ALL;
-export let debugOn = false;
-export let showButtonText = true;
-
-export function setCurrentMode(mode) {
-  currentMode = mode;
+// State debugging utilities
+export function logStateChange(path, oldValue, newValue) {
+  if (stateManager.get('debugMode')) {
+    console.log(`[StateDebug] ${path}: ${oldValue} → ${newValue}`);
+  }
 }
 
-export function setDebugOn(value) {
-  debugOn = value;
+export function validateCurrentState() {
+  const status = stateManager.getValidationStatus();
+  if (!status.isValid) {
+    console.warn('State validation failed:', status);
+  }
+  return status;
 }
 
-import { SHOW_BUTTON_TEXT_KEY } from './constants.js';
+/**
+ * Legacy function - now routes through StateManager
+ * @deprecated Use stateManager.set('filterMode', mode) instead
+ */
+export async function setCurrentMode(mode) {
+  await stateManager.set('filterMode', mode);
+}
 
-export function loadState() {
-  return new Promise((resolve, reject) => {
-    chrome.storage.sync.get([KEY_MODE, KEY_DEBUG, SHOW_BUTTON_TEXT_KEY], (res) => {
-      if (chrome.runtime.lastError) {
-        console.error('Error retrieving storage data:', chrome.runtime.lastError);
-        currentMode = MODES.ALL;
-        debugOn = false;
-        showButtonText = true; // Default to true on error
-        reject(chrome.runtime.lastError); // Reject the promise on error
-      } else {
-        currentMode = res[KEY_MODE] || MODES.ALL;
-        debugOn = !!res[KEY_DEBUG];
-        showButtonText = res[SHOW_BUTTON_TEXT_KEY] !== undefined ? res[SHOW_BUTTON_TEXT_KEY] : true; // Default to true if not set
-        resolve(); // Resolve the promise on success
-      }
+/**
+ * Legacy function - now routes through StateManager
+ * @deprecated Use stateManager.set('debugMode', value) instead
+ */
+export async function setDebugOn(value) {
+  await stateManager.set('debugMode', value);
+}
+
+/**
+ * Legacy function - now routes through StateManager
+ * @deprecated Use stateManager.initialize() instead
+ */
+export async function loadState() {
+  await stateManager.initialize();
+}
+
+/**
+ * Legacy function - state is now automatically persisted
+ * @deprecated State is automatically saved by StateManager
+ */
+export async function saveState() {
+  // StateManager automatically persists changes, but we can force a save
+  // The StateManager handles persistence automatically, so this is effectively a no-op
+  return Promise.resolve();
+}
+
+// Add state debugging utilities
+stateManager.subscribe('stateChanged', ({ path, value, previousState, newState }) => {
+  if (stateManager.get('debugMode')) {
+    console.log(`[StateManager] Changed ${path}:`, {
+      from: previousState,
+      to: newState,
+      newValue: value
     });
-  });
-}
+  }
+});
 
-export function saveState() {
-  return new Promise((resolve, reject) => {
-    chrome.storage.sync.set({ [KEY_MODE]: currentMode }, () => {
-      if (chrome.runtime.lastError) {
-        console.error('Error saving mode:', chrome.runtime.lastError);
-        reject(chrome.runtime.lastError); // Reject the promise on error
-      } else {
-        resolve(); // Resolve the promise on success
-      }
-    });
-  });
+// Export debugging function for development
+export function dumpState() {
+  console.log('Current State:', stateManager.exportState());
+  console.log('Validation Status:', stateManager.getValidationStatus());
 }

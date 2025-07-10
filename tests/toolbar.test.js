@@ -1,7 +1,8 @@
 import { expect, test, describe, beforeEach, afterEach, jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { injectToolbar, refreshUI } from '../src/modules/toolbar.js';
-import { MODES, setCurrentMode, saveState, currentMode } from '../src/modules/state.js';
+import { MODES, setCurrentMode } from '../src/modules/state.js';
+import { stateManager } from '../src/modules/stateManager.js';
 import { SELECTORS } from '../src/modules/constants.js';
 import { applyFilter } from '../src/modules/filter.js';
 

@@ -19,7 +19,7 @@
       "matches": ["https://mail.google.com/*"],
       "js": ["contentScript.js"],
       "type": "module",
-      "css": ["styles.css", "colours.css"],
+      "css": ["styles.css", "colours.css", "fonts/material-icons.css"],
       "run_at": "document_idle"
     }
   ],
@@ -40,8 +40,8 @@
   },
 
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com;",
+    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self';",
 
-    "sandbox": "sandbox allow-scripts; script-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; object-src 'self';"
+    "sandbox": "sandbox allow-scripts; script-src 'self'; object-src 'self';"
   }
 }

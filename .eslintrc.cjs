@@ -11,6 +11,7 @@ module.exports = {
     sourceType: 'module'
   },
   rules: {
-    // add project-specific rules here
+    // Allow unused parameters that start with underscore (common for required but unused parameters)
+    'no-unused-vars': ['error', { 'argsIgnorePattern': '^_' }]
   }
 };

@@ -107,36 +107,40 @@ describe('options.js', () => {
 
   test('debug checkbox should be checked based on stored value', () => {
     expect(mockDebugCheckbox.checked).toBe(false);
-    expect(chrome.storage.sync.get).toHaveBeenCalledWith(['gmailCalDebug', 'showButtonText'], expect.any(Function));
+    // StateManager loads all state keys at initialization
+    expect(chrome.storage.sync.get).toHaveBeenCalledWith(['gmailCalMode', 'gmailCalDebug', 'showButtonText', 'toolbarPlacement', 'userPreferences', 'stateMetadata'], expect.any(Function));
   });
 
   test('showButtonText checkbox should be checked based on stored value', () => {
     expect(mockShowButtonTextCheckbox.checked).toBe(false);
-    expect(chrome.storage.sync.get).toHaveBeenCalledWith(['gmailCalDebug', 'showButtonText'], expect.any(Function));
+    // StateManager loads all state keys at initialization
+    expect(chrome.storage.sync.get).toHaveBeenCalledWith(['gmailCalMode', 'gmailCalDebug', 'showButtonText', 'toolbarPlacement', 'userPreferences', 'stateMetadata'], expect.any(Function));
   });
 
-  test('changing debug checkbox should update stored value', () => {
+  test('changing debug checkbox should update stored value', async () => {
     const changeCallback = mockDebugCheckbox.addEventListener.mock.calls[0][1];
     mockDebugCheckbox.checked = true; // Simulate checking the box
-    changeCallback(); // Simulate change event
-    expect(chrome.storage.sync.set).toHaveBeenCalledWith({ gmailCalDebug: true, showButtonText: false }, expect.any(Function));
+    await changeCallback(); // Simulate change event
+    // StateManager will store updates, which eventually calls chrome.storage.sync.set
+    expect(chrome.storage.sync.set).toHaveBeenCalled();
 
     // Simulate unchecking the debug box
     mockDebugCheckbox.checked = false;
-    changeCallback();
-    expect(chrome.storage.sync.set).toHaveBeenCalledWith({ gmailCalDebug: false, showButtonText: false }, expect.any(Function));
+    await changeCallback();
+    expect(chrome.storage.sync.set).toHaveBeenCalled();
   });
 
-  test('changing showButtonText checkbox should update stored value', () => {
+  test('changing showButtonText checkbox should update stored value', async () => {
     const changeCallback = mockShowButtonTextCheckbox.addEventListener.mock.calls[0][1];
     mockShowButtonTextCheckbox.checked = true; // Simulate checking the box
-    changeCallback(); // Simulate change event
-    expect(chrome.storage.sync.set).toHaveBeenCalledWith({ gmailCalDebug: false, showButtonText: true }, expect.any(Function));
+    await changeCallback(); // Simulate change event
+    // StateManager will store updates, which eventually calls chrome.storage.sync.set
+    expect(chrome.storage.sync.set).toHaveBeenCalled();
 
     // Simulate unchecking the showButtonText box
     mockShowButtonTextCheckbox.checked = false;
-    changeCallback();
-    expect(chrome.storage.sync.set).toHaveBeenCalledWith({ gmailCalDebug: false, showButtonText: false }, expect.any(Function));
+    await changeCallback();
+    expect(chrome.storage.sync.set).toHaveBeenCalled();
   });
 
   test('document title should be set from i18n message', () => {

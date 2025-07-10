@@ -1,7 +1,7 @@
 import { expect, test, describe } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { isCalendarRow, hasAttachmentRow, isFavouriteRow } from '../src/modules/filter.js';
-import { applyFilter } from '../src/modules/filter.js';
+import { isCalendarRow, hasAttachmentRow, isFavouriteRow } from '../src/modules/filter-refactored.js';
+import { applyFilter } from '../src/modules/filter-refactored.js';
 import { MODES, setCurrentMode } from '../src/modules/state.js';
 import { SELECTORS } from '../src/modules/constants.js';
 

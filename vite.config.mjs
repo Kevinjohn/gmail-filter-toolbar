@@ -5,12 +5,21 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-
+    
     rollupOptions: {
-      /* ONE real entry stops the error */
-      input: { background: 'src/modules/background.js', contentScript: 'src/contentScript.js' },
-      /* keep the default file-naming */
-      output: { entryFileNames: '[name].js' }
+      input: {
+        background: 'src/modules/background.js',
+        contentScript: 'src/contentScript.js'
+      },
+      output: {
+        entryFileNames: '[name].js',
+        chunkFileNames: '[name].js',
+        assetFileNames: '[name].[ext]',
+        manualChunks: (id) => {
+          // Force everything to be included in the main entry files
+          return null;
+        }
+      }
     },
 
     copyPublicDir: false

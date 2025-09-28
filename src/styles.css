@@ -10,6 +10,7 @@
   font-size: 12px;
   flex: 0 0 100%; /* NEW: occupy a whole flex line */
   width: 100%; /* belt-and-braces */
+  box-sizing: border-box; /* ensure padding/border stay within Gmail column */
   border: 1px solid var(--gcal-border-color);
   color: var(--gcal-text-color);
   margin-top: 10px;

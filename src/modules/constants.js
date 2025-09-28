@@ -1,4 +1,10 @@
 export const SHOW_BUTTON_TEXT_KEY = 'showButtonText';
+export const THEME_KEY = 'gmailCalTheme';
+export const THEMES = {
+  SYSTEM: 'system',
+  LIGHT: 'light',
+  DARK: 'dark',
+};
 
 /**
  * Configuration for different attachment types.

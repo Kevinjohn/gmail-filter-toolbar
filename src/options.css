@@ -25,3 +25,11 @@ legend {
   flex-grow: 1;
   margin-right: 10px;
 }
+
+.option-row select {
+  padding: 4px 8px;
+  border: 1px solid var(--gcal-border-color);
+  border-radius: 4px;
+  background-color: var(--gcal-bg-color);
+  color: var(--gcal-text-color);
+}

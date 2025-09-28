@@ -7,16 +7,46 @@
   --gcal-text-color: #202124;
   --gcal-active-button-text: #1a73e8; /* Google Blue */
   --gcal-debug-overlay: rgba(0, 123, 255, 0.15); /* Light blue for debug */
+  color-scheme: light;
+}
+
+:root[data-gcal-theme='light'] {
+  --gcal-bg-color: #f1f3f4;
+  --gcal-border-color: #dadce0;
+  --gcal-text-color: #202124;
+  --gcal-active-button-text: #1a73e8; /* Google Blue */
+  --gcal-debug-overlay: rgba(0, 123, 255, 0.15); /* Light blue for debug */
+  color-scheme: light;
+}
+
+:root[data-gcal-theme='dark'] {
+  --gcal-bg-color: #3c4043;
+  --gcal-border-color: #5f6368;
+  --gcal-text-color: #e8eaed;
+  --gcal-active-button-text: #8ab4f8; /* Lighter Google Blue */
+  --gcal-debug-overlay: rgba(138, 180, 248, 0.25); /* Lighter blue for debug */
+  color-scheme: dark;
+}
+
+:root[data-gcal-theme='system'] {
+  --gcal-bg-color: #f1f3f4;
+  --gcal-border-color: #dadce0;
+  --gcal-text-color: #202124;
+  --gcal-active-button-text: #1a73e8; /* Google Blue */
+  --gcal-debug-overlay: rgba(0, 123, 255, 0.15); /* Light blue for debug */
+  color-scheme: light;
 }
 
 /* Dark Mode */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-gcal-theme]),
+  :root[data-gcal-theme='system'] {
     --gcal-bg-color: #3c4043;
     --gcal-border-color: #5f6368;
     --gcal-text-color: #e8eaed;
     --gcal-active-button-text: #8ab4f8; /* Lighter Google Blue */
     --gcal-debug-overlay: rgba(138, 180, 248, 0.25); /* Lighter blue for debug */
+    color-scheme: dark;
   }
 }
 

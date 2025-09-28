@@ -1,5 +1,14 @@
-import { SELECTORS, SHOW_BUTTON_TEXT_KEY } from './modules/constants.js';
-import { loadState, saveState, setCurrentMode, setDebugOn, showButtonText, KEY_DEBUG } from './modules/state.js';
+import { SELECTORS, SHOW_BUTTON_TEXT_KEY, THEME_KEY } from './modules/constants.js';
+import {
+  loadState,
+  saveState,
+  setCurrentMode,
+  setDebugOn,
+  showButtonText,
+  KEY_DEBUG,
+  themePreference,
+  setThemePreference,
+} from './modules/state.js';
 import { applyFilter } from './modules/filter.js';
 import { injectToolbar, refreshUI, updateButtonTextView } from './modules/toolbar.js';
 import {
@@ -8,6 +17,7 @@ import {
   observeMessageList,
   setupGmailToolbarObserver,
 } from './modules/observers.js';
+import { applyTheme } from './modules/theme.js';
 
 function injectFont() {
   const link = document.createElement('link');
@@ -20,6 +30,7 @@ function injectFont() {
 function main() {
   injectFont();
   loadState().then(() => {
+    applyTheme(document, themePreference);
     waitForGmailChrome().then((gmailToolbarHeader) => {
       injectToolbar(document, gmailToolbarHeader);
       updateButtonTextView(showButtonText); // Apply initial state
@@ -58,6 +69,10 @@ chrome.storage.onChanged.addListener((changes) => {
   }
   if (SHOW_BUTTON_TEXT_KEY in changes) {
     updateButtonTextView(changes[SHOW_BUTTON_TEXT_KEY].newValue);
+  }
+  if (THEME_KEY in changes) {
+    setThemePreference(changes[THEME_KEY].newValue);
+    applyTheme(document, themePreference);
   }
 });
 

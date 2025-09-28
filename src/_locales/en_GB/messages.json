@@ -16,8 +16,8 @@
     "description": "Label preceding the filter buttons."
   },
   "btn_all": {
-    "message": "All Email",
-    "description": "Button to show all e-mails."
+    "message": "Everything",
+    "description": "Button to show every e-mail."
   },
   "btn_mail": {
     "message": "Email",
@@ -61,7 +61,7 @@
   },
   "filter_status_update": {
     "message": "Filter set to $1",
-    "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
+    "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., Everything, Mail Only)"
   },
   "extension_action_title": {
     "message": "Calendar filter is embedded on Gmail pages",

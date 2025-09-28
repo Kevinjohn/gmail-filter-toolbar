@@ -12,7 +12,7 @@ global.chrome = {
       if (key === 'label_toolbar') return 'Calendar filter';
       if (key === 'label_options') return 'Calendar options:';
       if (key === 'filter_status_update') return `Filter set to ${substitutions ? substitutions[0] : ''}`;
-      if (key === 'btn_all') return 'All Email';
+      if (key === 'btn_all') return 'Everything';
       if (key === 'btn_mail') return 'Email only';
       if (key === 'btn_cal') return 'Calendar only';
       if (key === 'btn_attach') return 'Attachments only';
@@ -95,11 +95,11 @@ describe('injectToolbar', () => {
     injectToolbar(doc);
     const headerHtml = wrapper.innerHTML;
 
-    expect(headerHtml).toContain('<button id="filter-ALL" data-mode="ALL" role="radio" aria-label="All Email" data-tooltip="All Email" aria-checked="true" tabindex="0"><span class="material-symbols-outlined">inbox</span><span class="gcal-text-label">All Email</span></button>');
+    expect(headerHtml).toContain('<button id="filter-ALL" data-mode="ALL" role="radio" aria-label="Everything" data-tooltip="Everything" aria-checked="true" tabindex="0"><span class="material-symbols-outlined">inbox</span><span class="gcal-text-label">Everything</span></button>');
     expect(headerHtml).toContain('<button id="filter-EMAIL" data-mode="EMAIL" role="radio" aria-label="Email only" data-tooltip="Email only" aria-checked="false" tabindex="-1"><span class="material-symbols-outlined">mail</span><span class="gcal-text-label">Email only</span></button>');
     expect(headerHtml).toContain('<button id="filter-CALENDAR" data-mode="CALENDAR" role="radio" aria-label="Calendar only" data-tooltip="Calendar only" aria-checked="false" tabindex="-1"><span class="material-symbols-outlined">calendar_today</span><span class="gcal-text-label">Calendar only</span></button>');
-    expect(headerHtml).toContain('<button id="filter-ATTACH" data-mode="ATTACH" role="radio" aria-label="Attachments only" data-tooltip="Attachments only" aria-checked="false" tabindex="-1"><span class="material-symbols-outlined">attachment</span><span class="gcal-text-label">Attachments only</span></button>');
     expect(headerHtml).toContain('<button id="filter-FAVOURITES" data-mode="FAVOURITES" role="radio" aria-label="Favourites only" data-tooltip="Favourites only" aria-checked="false" tabindex="-1"><span class="material-symbols-outlined">star</span><span class="gcal-text-label">Favourites only</span></button>');
+    expect(headerHtml).toContain('<button id="filter-ATTACH" data-mode="ATTACH" role="radio" aria-label="Attachments only" data-tooltip="Attachments only" aria-checked="false" tabindex="-1"><span class="material-symbols-outlined">attachment</span><span class="gcal-text-label">Attachments only</span></button>');
   });
 });
 
@@ -194,7 +194,7 @@ describe('refreshUI', () => {
     setCurrentMode(MODES.ALL);
     refreshUI(doc);
     const liveRegion = wrapper.querySelector(SELECTORS.liveRegion);
-    expect(liveRegion.textContent).toBe('Filter set to All Email');
+    expect(liveRegion.textContent).toBe('Filter set to Everything');
   });
 
   test('should update the live region text for FAVOURITES mode', () => {

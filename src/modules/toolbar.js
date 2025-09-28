@@ -15,13 +15,13 @@ const BASE_FILTER_CONFIG = {
     icon: 'calendar_today',
     labelKey: 'btn_cal',
   },
-  [MODES.ATTACH]: {
-    icon: 'attachment',
-    labelKey: 'btn_attach',
-  },
   [MODES.FAVOURITES]: {
     icon: 'star',
     labelKey: 'btn_fav',
+  },
+  [MODES.ATTACH]: {
+    icon: 'attachment',
+    labelKey: 'btn_attach',
   },
 };
 
@@ -183,7 +183,7 @@ export function refreshUI(doc = document) {
       labelKey = ATTACHMENT_TYPE_CONFIG[currentMode].labelKey;
     } else {
       // Fallback for unknown modes, though this should ideally not happen
-      labelKey = 'btn_all'; // Default to 'All Email'
+      labelKey = 'btn_all'; // Default to the Everything mode
     }
     const currentModeLabel = chrome.i18n.getMessage(labelKey);
     liveRegion.textContent = chrome.i18n.getMessage('filter_status_update', [currentModeLabel]);

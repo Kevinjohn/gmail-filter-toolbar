@@ -9,7 +9,7 @@ global.chrome = {
       if (key === 'label_toolbar') return 'Calendar filter';
       if (key === 'label_options') return 'Calendar options:';
       if (key === 'filter_status_update') return `Filter set to ${substitutions[0]}`;
-      if (key === 'btn_all') return 'All Email';
+      if (key === 'btn_all') return 'Everything';
       if (key === 'btn_mail') return 'Email only';
       if (key === 'btn_cal') return 'Calendar only';
       if (key === 'btn_attach') return 'Attachments only';

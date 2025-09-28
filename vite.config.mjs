@@ -27,6 +27,7 @@ export default defineConfig({
         { src: 'src/options.css',       dest: '.' },
         { src: 'src/modules/options.js', dest: 'modules' },
         { src: 'src/modules/constants.js', dest: 'modules' },
+        { src: 'src/modules/theme.js', dest: 'modules' },
         { src: 'src/icons',             dest: '.' },
         { src: 'src/_locales',          dest: '.' }, // if present
         { src: 'src/assets/fonts',          dest: '.' }

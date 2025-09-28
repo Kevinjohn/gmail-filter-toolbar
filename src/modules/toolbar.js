@@ -1,5 +1,5 @@
-import { SELECTORS, ATTACHMENT_TYPE_CONFIG } from './constants.js';
-import { MODES, currentMode } from './state.js';
+import { ALIGNMENTS, ATTACHMENT_TYPE_CONFIG, SELECTORS } from './constants.js';
+import { MODES, currentMode, showFavouritesButton, toolbarAlignment } from './state.js';
 
 // Define the base filter configurations for non-attachment modes
 const BASE_FILTER_CONFIG = {
@@ -24,6 +24,14 @@ const BASE_FILTER_CONFIG = {
     labelKey: 'btn_attach',
   },
 };
+
+const BASE_FILTER_ORDER = [
+  MODES.ALL,
+  MODES.EMAIL,
+  MODES.CALENDAR,
+  MODES.FAVOURITES,
+  MODES.ATTACH,
+];
 
 function ensureListElement(doc = document) {
   const list = doc.querySelector(SELECTORS.emailList);
@@ -70,9 +78,14 @@ export function injectToolbar(doc = document, headerElement) {
   btnGroup.setAttribute('aria-labelledby', labelId);
 
   // Add base filter buttons
-  Object.keys(BASE_FILTER_CONFIG).forEach((mode) => {
+  BASE_FILTER_ORDER.forEach((mode) => {
     const config = BASE_FILTER_CONFIG[mode];
     const button = createFilterButton(doc, mode, config.icon, config.labelKey);
+    if (mode === MODES.FAVOURITES && !showFavouritesButton) {
+      button.hidden = true;
+      button.setAttribute('aria-hidden', 'true');
+      button.setAttribute('tabindex', '-1');
+    }
     btnGroup.appendChild(button);
   });
 
@@ -91,6 +104,8 @@ export function injectToolbar(doc = document, headerElement) {
   liveRegion.setAttribute('aria-live', 'polite');
   wrapper.appendChild(liveRegion);
 
+  updateAlignmentView(toolbarAlignment, doc);
+  updateFavouritesVisibility(showFavouritesButton, doc);
   refreshUI(doc);
 
   if (!bar.dataset.listenerAdded) {
@@ -163,11 +178,46 @@ export function updateButtonTextView(showText, doc = document) {
   }
 }
 
+export function updateAlignmentView(alignment, doc = document) {
+  const bar = doc.querySelector(SELECTORS.filterBar);
+  if (!bar) {
+    return;
+  }
+
+  const group = bar.querySelector('.gcal-btn-group');
+  const isCenter = alignment === ALIGNMENTS.CENTER;
+  bar.classList.toggle('gcal-align-center', isCenter);
+  if (group) {
+    group.classList.toggle('gcal-align-center', isCenter);
+  }
+}
+
+export function updateFavouritesVisibility(show, doc = document) {
+  const button = doc.querySelector('#filter-FAVOURITES');
+  if (!button) {
+    return;
+  }
+
+  button.hidden = !show;
+  if (show) {
+    button.removeAttribute('aria-hidden');
+  } else {
+    button.setAttribute('aria-hidden', 'true');
+    button.setAttribute('aria-checked', 'false');
+    button.setAttribute('tabindex', '-1');
+  }
+}
+
 export function refreshUI(doc = document) {
   const bar = doc.querySelector(SELECTORS.filterBar);
   if (!bar) return;
 
   bar.querySelectorAll('button[data-mode]').forEach((btn) => {
+    if (btn.hidden) {
+      btn.setAttribute('aria-checked', 'false');
+      btn.setAttribute('tabindex', '-1');
+      return;
+    }
     const isChecked = btn.dataset.mode === currentMode;
     btn.setAttribute('aria-checked', isChecked);
     btn.setAttribute('tabindex', isChecked ? '0' : '-1');

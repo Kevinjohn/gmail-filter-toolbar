@@ -1,4 +1,10 @@
-import { SELECTORS, SHOW_BUTTON_TEXT_KEY, THEME_KEY } from './modules/constants.js';
+import {
+  ALIGNMENT_KEY,
+  SELECTORS,
+  SHOW_BUTTON_TEXT_KEY,
+  SHOW_FAVOURITES_KEY,
+  THEME_KEY,
+} from './modules/constants.js';
 import {
   loadState,
   saveState,
@@ -6,11 +12,23 @@ import {
   setDebugOn,
   showButtonText,
   KEY_DEBUG,
+  currentMode,
+  toolbarAlignment,
+  setToolbarAlignment,
+  showFavouritesButton,
+  setShowFavouritesButton,
+  MODES,
   themePreference,
   setThemePreference,
 } from './modules/state.js';
 import { applyFilter } from './modules/filter.js';
-import { injectToolbar, refreshUI, updateButtonTextView } from './modules/toolbar.js';
+import {
+  injectToolbar,
+  refreshUI,
+  updateAlignmentView,
+  updateButtonTextView,
+  updateFavouritesVisibility,
+} from './modules/toolbar.js';
 import {
   waitForGmailChrome,
   waitForMessageTable,
@@ -34,6 +52,8 @@ function main() {
     waitForGmailChrome().then((gmailToolbarHeader) => {
       injectToolbar(document, gmailToolbarHeader);
       updateButtonTextView(showButtonText); // Apply initial state
+      updateAlignmentView(toolbarAlignment);
+      updateFavouritesVisibility(showFavouritesButton);
       refreshUI(document);
 
       waitForMessageTable().then(() => {
@@ -69,6 +89,28 @@ chrome.storage.onChanged.addListener((changes) => {
   }
   if (SHOW_BUTTON_TEXT_KEY in changes) {
     updateButtonTextView(changes[SHOW_BUTTON_TEXT_KEY].newValue);
+  }
+  if (ALIGNMENT_KEY in changes) {
+    setToolbarAlignment(changes[ALIGNMENT_KEY].newValue);
+    updateAlignmentView(toolbarAlignment);
+  }
+  if (SHOW_FAVOURITES_KEY in changes) {
+    const nextValue = !!changes[SHOW_FAVOURITES_KEY].newValue;
+    setShowFavouritesButton(nextValue);
+    updateFavouritesVisibility(nextValue);
+    if (!nextValue && currentMode === MODES.FAVOURITES) {
+      setCurrentMode(MODES.ALL);
+      saveState()
+        .then(() => {
+          applyFilter();
+          refreshUI(document);
+        })
+        .catch((error) => {
+          console.error('Error saving mode:', error);
+        });
+    } else {
+      refreshUI(document);
+    }
   }
   if (THEME_KEY in changes) {
     setThemePreference(changes[THEME_KEY].newValue);

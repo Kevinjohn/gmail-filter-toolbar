@@ -20,7 +20,7 @@
     "description": "Button to show every e-mail."
   },
   "btn_mail": {
-    "message": "Email",
+    "message": "Emails",
     "description": "Button to hide calendar e-mails."
   },
   "btn_cal": {
@@ -54,6 +54,26 @@
   "options_debug_label": {
     "message": "Enable debug mode (highlights filtered rows in blue instead of hiding them)",
     "description": "Label for the debug mode checkbox."
+  },
+  "options_alignment_legend": {
+    "message": "Toolbar layout",
+    "description": "Legend heading for toolbar layout options."
+  },
+  "options_alignment_label": {
+    "message": "Toolbar alignment",
+    "description": "Label for the toolbar alignment control."
+  },
+  "options_alignment_start": {
+    "message": "Start",
+    "description": "Option to align the toolbar buttons to the start."
+  },
+  "options_alignment_center": {
+    "message": "Centre",
+    "description": "Option to align the toolbar buttons to the centre."
+  },
+  "options_show_favourites_label": {
+    "message": "Show Favourites button",
+    "description": "Label for the option to display the Favourites filter button."
   },
   "alt_calendar_event": {
     "message": "Calendar event",

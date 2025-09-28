@@ -10,6 +10,14 @@ describe('options.js', () => {
   let mockPageTitle;
   let mockPageDescription;
   let mockDebugLegend;
+  let mockAlignmentLegend;
+  let mockAlignmentLabel;
+  let mockAlignmentSelect;
+  let mockAlignmentOptionStart;
+  let mockAlignmentOptionCenter;
+  let alignmentSelectValue;
+  let mockShowFavouritesCheckbox;
+  let mockShowFavouritesLabel;
   let mockThemeSelect;
   let mockThemeLegend;
   let mockThemeLabel;
@@ -26,6 +34,22 @@ describe('options.js', () => {
       dispatchEvent: jest.fn(),
     };
     mockShowButtonTextCheckbox = {
+      checked: false,
+      addEventListener: jest.fn(),
+      dispatchEvent: jest.fn(),
+    };
+    alignmentSelectValue = 'start';
+    mockAlignmentSelect = {
+      addEventListener: jest.fn(),
+      dispatchEvent: jest.fn(),
+      get value() {
+        return alignmentSelectValue;
+      },
+      set value(newValue) {
+        alignmentSelectValue = newValue;
+      },
+    };
+    mockShowFavouritesCheckbox = {
       checked: false,
       addEventListener: jest.fn(),
       dispatchEvent: jest.fn(),
@@ -59,6 +83,21 @@ describe('options.js', () => {
     mockDebugLegend = {
       textContent: '',
     };
+    mockAlignmentLegend = {
+      textContent: '',
+    };
+    mockAlignmentLabel = {
+      textContent: '',
+    };
+    mockAlignmentOptionStart = {
+      textContent: '',
+    };
+    mockAlignmentOptionCenter = {
+      textContent: '',
+    };
+    mockShowFavouritesLabel = {
+      textContent: '',
+    };
     mockThemeLegend = {
       textContent: '',
     };
@@ -85,6 +124,13 @@ describe('options.js', () => {
         if (id === 'pageTitle') return mockPageTitle;
         if (id === 'pageDescription') return mockPageDescription;
         if (id === 'debugLegend') return mockDebugLegend;
+        if (id === 'alignmentLegend') return mockAlignmentLegend;
+        if (id === 'alignmentLabel') return mockAlignmentLabel;
+        if (id === 'alignment-select') return mockAlignmentSelect;
+        if (id === 'alignmentOptionStart') return mockAlignmentOptionStart;
+        if (id === 'alignmentOptionCenter') return mockAlignmentOptionCenter;
+        if (id === 'show-favourites-checkbox') return mockShowFavouritesCheckbox;
+        if (id === 'showFavouritesLabel') return mockShowFavouritesLabel;
         if (id === 'themeLegend') return mockThemeLegend;
         if (id === 'themeLabel') return mockThemeLabel;
         if (id === 'theme-select') return mockThemeSelect;
@@ -116,6 +162,12 @@ describe('options.js', () => {
               if (keys.includes('showButtonText')) {
                 result.showButtonText = false; // Simulate showButtonText being off initially
               }
+              if (keys.includes('showFavourites')) {
+                result.showFavourites = false;
+              }
+              if (keys.includes('toolbarAlignment')) {
+                result.toolbarAlignment = 'start';
+              }
               if (keys.includes('gmailCalTheme')) {
                 result.gmailCalTheme = 'system';
               }
@@ -137,6 +189,11 @@ describe('options.js', () => {
           if (key === 'options_debug_legend') return 'Mock Debug Legend';
           if (key === 'optionShowButtonText') return 'Mock Show Button Text Label';
           if (key === 'options_show_text_legend') return 'Mock Show Button Text Legend';
+          if (key === 'options_alignment_legend') return 'Mock Alignment Legend';
+          if (key === 'options_alignment_label') return 'Mock Alignment Label';
+          if (key === 'options_alignment_start') return 'Mock Alignment Start';
+          if (key === 'options_alignment_center') return 'Mock Alignment Center';
+          if (key === 'options_show_favourites_label') return 'Mock Show Favourites Label';
           if (key === 'options_theme_legend') return 'Mock Theme Legend';
           if (key === 'options_theme_label') return 'Mock Theme Label';
           if (key === 'options_theme_system') return 'Mock Theme System';
@@ -161,7 +218,7 @@ describe('options.js', () => {
   test('debug checkbox should be checked based on stored value', () => {
     expect(mockDebugCheckbox.checked).toBe(false);
     expect(chrome.storage.sync.get).toHaveBeenCalledWith(
-      ['gmailCalDebug', 'showButtonText', 'gmailCalTheme'],
+      ['gmailCalDebug', 'showButtonText', 'showFavourites', 'toolbarAlignment', 'gmailCalTheme'],
       expect.any(Function),
     );
   });
@@ -169,7 +226,7 @@ describe('options.js', () => {
   test('showButtonText checkbox should be checked based on stored value', () => {
     expect(mockShowButtonTextCheckbox.checked).toBe(false);
     expect(chrome.storage.sync.get).toHaveBeenCalledWith(
-      ['gmailCalDebug', 'showButtonText', 'gmailCalTheme'],
+      ['gmailCalDebug', 'showButtonText', 'showFavourites', 'toolbarAlignment', 'gmailCalTheme'],
       expect.any(Function),
     );
   });
@@ -179,7 +236,13 @@ describe('options.js', () => {
     mockDebugCheckbox.checked = true; // Simulate checking the box
     changeCallback(); // Simulate change event
     expect(chrome.storage.sync.set).toHaveBeenCalledWith(
-      expect.objectContaining({ gmailCalDebug: true, showButtonText: false, gmailCalTheme: 'system' }),
+      expect.objectContaining({
+        gmailCalDebug: true,
+        showButtonText: false,
+        showFavourites: false,
+        toolbarAlignment: 'start',
+        gmailCalTheme: 'system',
+      }),
       expect.any(Function),
     );
 
@@ -187,7 +250,13 @@ describe('options.js', () => {
     mockDebugCheckbox.checked = false;
     changeCallback();
     expect(chrome.storage.sync.set).toHaveBeenCalledWith(
-      expect.objectContaining({ gmailCalDebug: false, showButtonText: false, gmailCalTheme: 'system' }),
+      expect.objectContaining({
+        gmailCalDebug: false,
+        showButtonText: false,
+        showFavourites: false,
+        toolbarAlignment: 'start',
+        gmailCalTheme: 'system',
+      }),
       expect.any(Function),
     );
   });
@@ -197,7 +266,13 @@ describe('options.js', () => {
     mockShowButtonTextCheckbox.checked = true; // Simulate checking the box
     changeCallback(); // Simulate change event
     expect(chrome.storage.sync.set).toHaveBeenCalledWith(
-      expect.objectContaining({ gmailCalDebug: false, showButtonText: true, gmailCalTheme: 'system' }),
+      expect.objectContaining({
+        gmailCalDebug: false,
+        showButtonText: true,
+        showFavourites: false,
+        toolbarAlignment: 'start',
+        gmailCalTheme: 'system',
+      }),
       expect.any(Function),
     );
 
@@ -205,7 +280,48 @@ describe('options.js', () => {
     mockShowButtonTextCheckbox.checked = false;
     changeCallback();
     expect(chrome.storage.sync.set).toHaveBeenCalledWith(
-      expect.objectContaining({ gmailCalDebug: false, showButtonText: false, gmailCalTheme: 'system' }),
+      expect.objectContaining({
+        gmailCalDebug: false,
+        showButtonText: false,
+        showFavourites: false,
+        toolbarAlignment: 'start',
+        gmailCalTheme: 'system',
+      }),
+      expect.any(Function),
+    );
+  });
+
+  test('showFavourites checkbox should be unchecked by default', () => {
+    expect(mockShowFavouritesCheckbox.checked).toBe(false);
+  });
+
+  test('changing showFavourites checkbox should update stored value', () => {
+    const favouritesChange = mockShowFavouritesCheckbox.addEventListener.mock.calls[0][1];
+    mockShowFavouritesCheckbox.checked = true;
+    favouritesChange();
+    expect(chrome.storage.sync.set).toHaveBeenCalledWith(
+      expect.objectContaining({ showFavourites: true }),
+      expect.any(Function),
+    );
+
+    mockShowFavouritesCheckbox.checked = false;
+    favouritesChange();
+    expect(chrome.storage.sync.set).toHaveBeenCalledWith(
+      expect.objectContaining({ showFavourites: false }),
+      expect.any(Function),
+    );
+  });
+
+  test('alignment select should default to stored value', () => {
+    expect(alignmentSelectValue).toBe('start');
+  });
+
+  test('changing alignment select should update stored value', () => {
+    const alignmentChange = mockAlignmentSelect.addEventListener.mock.calls[0][1];
+    alignmentSelectValue = 'center';
+    alignmentChange();
+    expect(chrome.storage.sync.set).toHaveBeenCalledWith(
+      expect.objectContaining({ toolbarAlignment: 'center' }),
       expect.any(Function),
     );
   });
@@ -265,5 +381,13 @@ describe('options.js', () => {
     expect(mockThemeOptionSystem.textContent).toBe('Mock Theme System');
     expect(mockThemeOptionLight.textContent).toBe('Mock Theme Light');
     expect(mockThemeOptionDark.textContent).toBe('Mock Theme Dark');
+  });
+
+  test('alignment controls should be localized', () => {
+    expect(mockAlignmentLegend.textContent).toBe('Mock Alignment Legend');
+    expect(mockAlignmentLabel.textContent).toBe('Mock Alignment Label');
+    expect(mockAlignmentOptionStart.textContent).toBe('Mock Alignment Start');
+    expect(mockAlignmentOptionCenter.textContent).toBe('Mock Alignment Center');
+    expect(mockShowFavouritesLabel.textContent).toBe('Mock Show Favourites Label');
   });
 });

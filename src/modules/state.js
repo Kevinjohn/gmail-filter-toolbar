@@ -1,4 +1,11 @@
-import { SHOW_BUTTON_TEXT_KEY, THEME_KEY, THEMES } from './constants.js';
+import {
+  ALIGNMENT_KEY,
+  ALIGNMENTS,
+  SHOW_BUTTON_TEXT_KEY,
+  SHOW_FAVOURITES_KEY,
+  THEME_KEY,
+  THEMES,
+} from './constants.js';
 
 export const KEY_MODE = 'gmailCalMode';
 export const KEY_DEBUG = 'gmailCalDebug';
@@ -22,6 +29,8 @@ export let currentMode = MODES.ALL;
 export let debugOn = false;
 export let showButtonText = true;
 export let themePreference = THEMES.SYSTEM;
+export let showFavouritesButton = false;
+export let toolbarAlignment = ALIGNMENTS.START;
 
 export function setCurrentMode(mode) {
   currentMode = mode;
@@ -35,25 +44,42 @@ export function setThemePreference(value) {
   themePreference = THEME_VALUES.has(value) ? value : THEMES.SYSTEM;
 }
 
+export function setShowFavouritesButton(value) {
+  showFavouritesButton = !!value;
+}
+
+const ALIGNMENT_VALUES = new Set(Object.values(ALIGNMENTS));
+
+export function setToolbarAlignment(value) {
+  toolbarAlignment = ALIGNMENT_VALUES.has(value) ? value : ALIGNMENTS.START;
+}
+
 export function loadState() {
   return new Promise((resolve, reject) => {
-    chrome.storage.sync.get([KEY_MODE, KEY_DEBUG, SHOW_BUTTON_TEXT_KEY, THEME_KEY], (res) => {
-      if (chrome.runtime.lastError) {
-        console.error('Error retrieving storage data:', chrome.runtime.lastError);
-        currentMode = MODES.ALL;
-        debugOn = false;
-        showButtonText = true; // Default to true on error
-        themePreference = THEMES.SYSTEM;
-        reject(chrome.runtime.lastError); // Reject the promise on error
-      } else {
-        currentMode = res[KEY_MODE] || MODES.ALL;
-        debugOn = !!res[KEY_DEBUG];
-        showButtonText =
-          res[SHOW_BUTTON_TEXT_KEY] !== undefined ? res[SHOW_BUTTON_TEXT_KEY] : true; // Default to true if not set
-        setThemePreference(res[THEME_KEY]);
-        resolve(); // Resolve the promise on success
-      }
-    });
+    chrome.storage.sync.get(
+      [KEY_MODE, KEY_DEBUG, SHOW_BUTTON_TEXT_KEY, SHOW_FAVOURITES_KEY, ALIGNMENT_KEY, THEME_KEY],
+      (res) => {
+        if (chrome.runtime.lastError) {
+          console.error('Error retrieving storage data:', chrome.runtime.lastError);
+          currentMode = MODES.ALL;
+          debugOn = false;
+          showButtonText = true; // Default to true on error
+          themePreference = THEMES.SYSTEM;
+          showFavouritesButton = false;
+          toolbarAlignment = ALIGNMENTS.START;
+          reject(chrome.runtime.lastError); // Reject the promise on error
+        } else {
+          currentMode = res[KEY_MODE] || MODES.ALL;
+          debugOn = !!res[KEY_DEBUG];
+          showButtonText =
+            res[SHOW_BUTTON_TEXT_KEY] !== undefined ? res[SHOW_BUTTON_TEXT_KEY] : true; // Default to true if not set
+          setThemePreference(res[THEME_KEY]);
+          setShowFavouritesButton(res[SHOW_FAVOURITES_KEY]);
+          setToolbarAlignment(res[ALIGNMENT_KEY]);
+          resolve(); // Resolve the promise on success
+        }
+      },
+    );
   });
 }
 

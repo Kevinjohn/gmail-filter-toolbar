@@ -10,10 +10,10 @@ global.chrome = {
       if (key === 'label_options') return 'Calendar options:';
       if (key === 'filter_status_update') return `Filter set to ${substitutions[0]}`;
       if (key === 'btn_all') return 'Everything';
-      if (key === 'btn_mail') return 'Email only';
-      if (key === 'btn_cal') return 'Calendar only';
-      if (key === 'btn_attach') return 'Attachments only';
-      if (key === 'btn_fav') return 'Favourites only';
+      if (key === 'btn_mail') return 'Emails';
+      if (key === 'btn_cal') return 'Calendar';
+      if (key === 'btn_attach') return 'Attachments';
+      if (key === 'btn_fav') return 'Favourites';
       if (key === 'alt_starred') return 'Starred';
       if (key === 'button_filter_images') return 'Images Only';
       if (key === 'button_filter_pdfs') return 'PDFs Only';

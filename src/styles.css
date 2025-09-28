@@ -1,6 +1,6 @@
 .gcal-filter-bar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin-block: 4px;
   margin-inline: 0;
   padding-block: 2px;
@@ -29,6 +29,15 @@
 .gcal-btn-group {
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.gcal-btn-group.gcal-align-center {
+  justify-content: center;
+}
+
+.gcal-filter-bar.gcal-align-center {
+  justify-content: center;
 }
 
 .gcal-btn-group button {
@@ -42,6 +51,10 @@
   margin-block: 6px;
   display: flex;
   align-items: center;
+}
+
+.gcal-btn-group button[hidden] {
+  display: none !important;
 }
 
 .gcal-btn-group button[aria-checked='true'] {

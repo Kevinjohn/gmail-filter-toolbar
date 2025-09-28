@@ -1,9 +1,16 @@
 export const SHOW_BUTTON_TEXT_KEY = 'showButtonText';
+export const SHOW_FAVOURITES_KEY = 'showFavourites';
+export const ALIGNMENT_KEY = 'toolbarAlignment';
 export const THEME_KEY = 'gmailCalTheme';
 export const THEMES = {
   SYSTEM: 'system',
   LIGHT: 'light',
   DARK: 'dark',
+};
+
+export const ALIGNMENTS = {
+  START: 'start',
+  CENTER: 'center',
 };
 
 /**

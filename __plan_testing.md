@@ -52,9 +52,9 @@
 3. Include accessibility checklist in PR template; require zero violations before merge.
 
 ## Internationalisation Safeguards
-1. Extend `i18nMessages.test.js` to assert all locales contain keys for new strings (including alignment/favourites).
-2. Automate locale linting: script cross-checks placeholders and plural forms across `src/_locales/**`.
-3. Add Playwright smoke tests loading extension under non-English locale to verify label rendering.
+1. Extend `i18nMessages.test.js` to assert all locales contain keys for new strings (including alignment/favourites). - COMPLETED
+2. Automate locale linting: script cross-checks placeholders and plural forms across `src/_locales/**`. - COMPLETED
+3. Add Playwright smoke tests loading extension under non-English locale to verify label rendering. - COMPLETED
 
 ## Continuous Integration Workflow
 1. Create `.github/workflows/ci.yml` with matrix (node 18/20) running: install, lint, format check, unit, integration, e2e (headed=false), coverage upload.

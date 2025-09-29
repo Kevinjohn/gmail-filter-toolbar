@@ -109,11 +109,11 @@ const FILTER_CONFIG = {
   },
 };
 
-export function applyFilter() {
+export function applyFilter(doc = document) {
   const currentFilter = FILTER_CONFIG[currentMode];
   if (!currentFilter) return;
 
-  document.querySelectorAll(SELECTORS.emailRow).forEach((row) => {
+  doc.querySelectorAll(SELECTORS.emailRow).forEach((row) => {
     const hide = currentFilter.filterFn(row);
 
     if (debugOn) {

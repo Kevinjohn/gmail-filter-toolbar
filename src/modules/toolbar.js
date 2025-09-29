@@ -149,7 +149,7 @@ function createFilterButton(doc, mode, iconName, labelKey) {
   return button;
 }
 
-function handleArrowNavigation(e) {
+export function handleArrowNavigation(e) {
   const { key } = e;
   if (key !== 'ArrowLeft' && key !== 'ArrowRight') return;
 

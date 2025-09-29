@@ -89,9 +89,8 @@ describe('isFavouriteRow', () => {
 describe('applyFilter', () => {
   test('leaves display unchanged for ALL mode', () => {
     const doc = setupDOM('<div class="UI"><div class="zA"></div></div>');
-    global.document = doc;
     setCurrentMode(MODES.ALL);
-    applyFilter();
+    applyFilter(doc);
     expect(doc.querySelector('.zA').style.display).toBe('');
   });
 });

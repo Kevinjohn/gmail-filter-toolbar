@@ -17,7 +17,7 @@ export function observeMessageList(doc = document) {
   }
 
   const debouncedApplyFilter = debounce(() => {
-    if (currentMode !== MODES.ALL) applyFilter();
+    if (currentMode !== MODES.ALL) applyFilter(doc);
   }, 200);
 
   messageListObserver = new MutationObserver(debouncedApplyFilter);
@@ -40,7 +40,7 @@ export function setupGmailToolbarObserver(doc = document) {
           injectToolbar(doc, gmailToolbarHeader);
         }
         observeMessageList(doc);
-        applyFilter();
+        applyFilter(doc);
       }
     }
   });

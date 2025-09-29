@@ -20,11 +20,11 @@
 6. Schedule `npm run test:unit` script alias that runs Jest with `--runInBand` for deterministic CI. - COMPLETED
 
 ## Integration Testing (DOM + Message Passing)
-1. Create `tests/integration/` folder with suites that mount toolbar + content script via JSDOM.
-2. Stub Chrome message passing; simulate background/content communication for filter updates.
-3. Validate options changes persist to `chrome.storage.sync` and propagate to content script listeners.
-4. Add tests ensuring alignment and favourites visibility react to storage changes without reload.
-5. Mock failures (storage quota, message timeouts) and assert graceful degradation.
+1. Create `tests/integration/` folder with suites that mount toolbar + content script via JSDOM. - COMPLETED
+2. Stub Chrome message passing; simulate background/content communication for filter updates. - COMPLETED
+3. Validate options changes persist to `chrome.storage.sync` and propagate to content script listeners. - COMPLETED
+4. Add tests ensuring alignment and favourites visibility react to storage changes without reload. - COMPLETED
+5. Mock failures (storage quota, message timeouts) and assert graceful degradation. - COMPLETED
 
 ## End-to-End (Playwright)
 1. Generate Playwright fixtures that spin up a Chromium profile with the unpacked extension.

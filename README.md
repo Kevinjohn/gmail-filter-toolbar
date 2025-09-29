@@ -212,26 +212,35 @@ This extension is built on a few core principles: listening for the right moment
 |---------|---------|
 | `npm run build` | Vite build → `dist/` |
 | `npm run zip` | Zip `dist/` for store upload |
-| `npm test` | Run Jest unit tests |
-| `npm run lint` | ESLint source files |
-| `npm run format` | Prettier auto-format (optional) |
+| `npm run validate:env` | Sanity-check required Playwright/Chrome binaries |
+| `npm run test:unit` | Jest unit+integration suites (serial for CI stability) |
+| `npm test` | Jest runner (watch mode locally) |
+| `npm run e2e` | Playwright specs (install browsers with `npx playwright install`) |
+| `npm run lint` | ESLint with autofix for source modules |
+| `npm run lint:locales` | Lints i18n message files for key/placeholder parity |
+| `npm run format` | Prettier auto-format (JS/CSS/HTML/JSON under `src/`) |
 
 ---
 
 ## Testing
 
-### Unit
-* Jest covers unit tests for core filtering logic (runs in JSDOM).
+See `docs/testing-playbook.md` for the full test pyramid, fixtures, and debugging recipes. Quick reference commands:
+
+* `npm run validate:env` ensures Playwright browsers and Chrome binaries are available before e2e runs.
+* `npm run test:unit` executes the Jest unit and integration suites in-band; use `npm test` for watch mode while iterating locally.
+* `npm run e2e` drives Playwright UI flows. Run `npx playwright install` once per machine and prefer `--reporter=line` for fast feedback.
+* `npm run lint:locales` validates that every locale matches the English key set and placeholder structure.
+* `npm run lint` and `npm run format` keep source files consistent before committing.
 
 ### Manual Smoke
-1. Load unpacked extension.
-2. Verify all four filter modes work as expected.
-3. Toggle debug mode – hidden rows tint blue.
-4. Test keyboard navigation & Esc focus return.
-5. Force RTL (`dir="rtl"`) in DevTools – toolbar mirrors.
+1. Load the unpacked extension and confirm the toolbar injects beneath Gmail’s action bar.
+2. Exercise all filter modes (All Mail, Mail Only, Calendar Only, Attachments Only, Favourites Only).
+3. Toggle debug mode from the options page – filtered rows should tint blue at 50 % opacity.
+4. Check keyboard navigation and ensure <kbd>Esc</kbd> returns focus to Gmail’s message list.
+5. Force RTL (`dir="rtl"`) in DevTools and confirm icons/text mirror correctly.
 
 ### Accessibility
-* Run Axe DevTools; expect **0 violations**.
+* Run Axe DevTools (or `npm run e2e -- tests/e2e/axe.spec.js` when it lands); expect **0 violations** on options and toolbar surfaces.
 
 ---
 

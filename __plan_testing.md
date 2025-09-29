@@ -63,10 +63,10 @@
 4. Fail PR builds if coverage thresholds dip or accessibility tests report violations.
 
 ## Developer Ergonomics and Documentation
-1. Update `README.md` testing section to describe new commands, required setup, and troubleshooting.
-2. Add `docs/testing-playbook.md` detailing test pyramid, data fixtures, and debugging tips.
-3. Introduce pre-commit hook (Husky) to run lint + unit tests on staged files.
-4. Provide VS Code recommendations (`.vscode/extensions.json`) for Jest and Playwright debugging.
+1. Update `README.md` testing section to describe new commands, required setup, and troubleshooting. - COMPLETED
+2. Add `docs/testing-playbook.md` detailing test pyramid, data fixtures, and debugging tips. - COMPLETED
+3. Introduce pre-commit hook (Husky) to run lint + unit tests on staged files. - COMPLETED
+4. Provide VS Code recommendations (`.vscode/extensions.json`) for Jest and Playwright debugging. - COMPLETED
 
 ## Maintenance Cadence
 1. Schedule quarterly dependency audit; track issues in `_todo/testing-maintenance.md`.

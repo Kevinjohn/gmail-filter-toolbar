@@ -1,393 +1,216 @@
-import { jest, describe, beforeAll, test, expect } from '@jest/globals';
+import { describe, afterEach, test, expect, jest } from '@jest/globals';
+import { makeOptionsPayload } from './factories/index.js';
 
-describe('options.js', () => {
-  let chrome;
-  let mockDebugCheckbox;
-  let mockShowButtonTextCheckbox;
-  let mockDebugLabel;
-  let mockShowButtonTextLabel;
-  let mockShowButtonTextLegend;
-  let mockPageTitle;
-  let mockPageDescription;
-  let mockDebugLegend;
-  let mockAlignmentLegend;
-  let mockAlignmentLabel;
-  let mockAlignmentSelect;
-  let mockAlignmentOptionStart;
-  let mockAlignmentOptionCenter;
-  let alignmentSelectValue;
-  let mockShowFavouritesCheckbox;
-  let mockShowFavouritesLabel;
-  let mockThemeSelect;
-  let mockThemeLegend;
-  let mockThemeLabel;
-  let mockThemeOptionSystem;
-  let mockThemeOptionLight;
-  let mockThemeOptionDark;
-  let themeSelectValue;
+const { useChromeMock, resetChromeMock } = global;
 
-  beforeAll(async () => {
-    // Mock DOM elements
-    mockDebugCheckbox = {
-      checked: false,
-      addEventListener: jest.fn(),
-      dispatchEvent: jest.fn(),
-    };
-    mockShowButtonTextCheckbox = {
-      checked: false,
-      addEventListener: jest.fn(),
-      dispatchEvent: jest.fn(),
-    };
-    alignmentSelectValue = 'start';
-    mockAlignmentSelect = {
-      addEventListener: jest.fn(),
-      dispatchEvent: jest.fn(),
-      get value() {
-        return alignmentSelectValue;
-      },
-      set value(newValue) {
-        alignmentSelectValue = newValue;
-      },
-    };
-    mockShowFavouritesCheckbox = {
-      checked: false,
-      addEventListener: jest.fn(),
-      dispatchEvent: jest.fn(),
-    };
-    themeSelectValue = 'system';
-    mockThemeSelect = {
-      addEventListener: jest.fn(),
-      dispatchEvent: jest.fn(),
-      get value() {
-        return themeSelectValue;
-      },
-      set value(newValue) {
-        themeSelectValue = newValue;
-      },
-    };
-    mockDebugLabel = {
-      textContent: '',
-    };
-    mockShowButtonTextLabel = {
-      textContent: '',
-    };
-    mockShowButtonTextLegend = {
-      textContent: '',
-    };
-    mockPageTitle = {
-      textContent: '',
-    };
-    mockPageDescription = {
-      textContent: '',
-    };
-    mockDebugLegend = {
-      textContent: '',
-    };
-    mockAlignmentLegend = {
-      textContent: '',
-    };
-    mockAlignmentLabel = {
-      textContent: '',
-    };
-    mockAlignmentOptionStart = {
-      textContent: '',
-    };
-    mockAlignmentOptionCenter = {
-      textContent: '',
-    };
-    mockShowFavouritesLabel = {
-      textContent: '',
-    };
-    mockThemeLegend = {
-      textContent: '',
-    };
-    mockThemeLabel = {
-      textContent: '',
-    };
-    mockThemeOptionSystem = {
-      textContent: '',
-    };
-    mockThemeOptionLight = {
-      textContent: '',
-    };
-    mockThemeOptionDark = {
-      textContent: '',
-    };
+const baseMessages = {
+  page_title: 'Mock Page Title',
+  options_page_description: 'Mock Page Description',
+  options_debug_legend: 'Debug Legend',
+  options_debug_label: 'Debug Label',
+  optionShowButtonText: 'Show Text Label',
+  options_show_text_legend: 'Display Legend',
+  options_alignment_legend: 'Alignment Legend',
+  options_alignment_label: 'Alignment Label',
+  options_alignment_start: 'Align Start',
+  options_alignment_center: 'Align Center',
+  options_show_favourites_label: 'Show Favourites Label',
+  options_theme_legend: 'Theme Legend',
+  options_theme_label: 'Theme Label',
+  options_theme_system: 'System Theme',
+  options_theme_light: 'Light Theme',
+  options_theme_dark: 'Dark Theme',
+};
 
-    Object.defineProperty(document, 'getElementById', {
-      value: jest.fn((id) => {
-        if (id === 'debug') return mockDebugCheckbox;
-        if (id === 'show-button-text-checkbox') return mockShowButtonTextCheckbox;
-        if (id === 'debugLabel') return mockDebugLabel;
-        if (id === 'showButtonTextLabel') return mockShowButtonTextLabel;
-        if (id === 'showButtonTextLegend') return mockShowButtonTextLegend;
-        if (id === 'pageTitle') return mockPageTitle;
-        if (id === 'pageDescription') return mockPageDescription;
-        if (id === 'debugLegend') return mockDebugLegend;
-        if (id === 'alignmentLegend') return mockAlignmentLegend;
-        if (id === 'alignmentLabel') return mockAlignmentLabel;
-        if (id === 'alignment-select') return mockAlignmentSelect;
-        if (id === 'alignmentOptionStart') return mockAlignmentOptionStart;
-        if (id === 'alignmentOptionCenter') return mockAlignmentOptionCenter;
-        if (id === 'show-favourites-checkbox') return mockShowFavouritesCheckbox;
-        if (id === 'showFavouritesLabel') return mockShowFavouritesLabel;
-        if (id === 'themeLegend') return mockThemeLegend;
-        if (id === 'themeLabel') return mockThemeLabel;
-        if (id === 'theme-select') return mockThemeSelect;
-        if (id === 'themeOptionSystem') return mockThemeOptionSystem;
-        if (id === 'themeOptionLight') return mockThemeOptionLight;
-        if (id === 'themeOptionDark') return mockThemeOptionDark;
-        return null;
-      }),
-      configurable: true,
-    });
+const getTextContent = (id) => document.getElementById(id)?.textContent ?? null;
 
-    let docTitle = '';
-    Object.defineProperty(document, 'title', {
-      set: jest.fn((value) => { docTitle = value; }),
-      get: jest.fn(() => docTitle),
-      configurable: true,
-    });
+const serializeOptionsUi = () => ({
+  documentTitle: document.title,
+  pageTitle: getTextContent('pageTitle'),
+  pageDescription: getTextContent('pageDescription'),
+  debug: {
+    legend: getTextContent('debugLegend'),
+    label: getTextContent('debugLabel'),
+    checked: document.getElementById('debug')?.checked ?? false,
+  },
+  showButtonText: {
+    legend: getTextContent('showButtonTextLegend'),
+    label: getTextContent('showButtonTextLabel'),
+    checked: document.getElementById('show-button-text-checkbox')?.checked ?? false,
+  },
+  alignment: {
+    legend: getTextContent('alignmentLegend'),
+    label: getTextContent('alignmentLabel'),
+    value: document.getElementById('alignment-select')?.value ?? null,
+    options: Array.from(document.querySelectorAll('#alignment-select option')).map((option) => ({
+      value: option.value,
+      text: option.textContent,
+    })),
+  },
+  showFavourites: {
+    label: getTextContent('showFavouritesLabel'),
+    checked: document.getElementById('show-favourites-checkbox')?.checked ?? false,
+  },
+  theme: {
+    legend: getTextContent('themeLegend'),
+    label: getTextContent('themeLabel'),
+    value: document.getElementById('theme-select')?.value ?? null,
+    options: Array.from(document.querySelectorAll('#theme-select option')).map((option) => ({
+      value: option.value,
+      text: option.textContent,
+    })),
+  },
+});
 
-    // Mock chrome API
-    chrome = {
-      storage: {
-        sync: {
-          get: jest.fn((keys, callback) => {
-            const result = {};
-            if (Array.isArray(keys)) {
-              if (keys.includes('gmailCalDebug')) {
-                result.gmailCalDebug = false; // Simulate debug mode being off initially
-              }
-              if (keys.includes('showButtonText')) {
-                result.showButtonText = false; // Simulate showButtonText being off initially
-              }
-              if (keys.includes('showFavourites')) {
-                result.showFavourites = false;
-              }
-              if (keys.includes('toolbarAlignment')) {
-                result.toolbarAlignment = 'start';
-              }
-              if (keys.includes('gmailCalTheme')) {
-                result.gmailCalTheme = 'system';
-              }
-            } else if (keys === 'gmailCalDebug') {
-              result.gmailCalDebug = false;
-            }
-            callback(result);
-          }),
-          set: jest.fn((data, callback) => {
-            if (callback) callback();
-          }),
-        },
-      },
-      i18n: {
-        getMessage: jest.fn((key) => {
-          if (key === 'page_title') return 'Mock Page Title';
-          if (key === 'options_debug_label') return 'Mock Debug Label';
-          if (key === 'options_page_description') return 'Mock Page Description';
-          if (key === 'options_debug_legend') return 'Mock Debug Legend';
-          if (key === 'optionShowButtonText') return 'Mock Show Button Text Label';
-          if (key === 'options_show_text_legend') return 'Mock Show Button Text Legend';
-          if (key === 'options_alignment_legend') return 'Mock Alignment Legend';
-          if (key === 'options_alignment_label') return 'Mock Alignment Label';
-          if (key === 'options_alignment_start') return 'Mock Alignment Start';
-          if (key === 'options_alignment_center') return 'Mock Alignment Center';
-          if (key === 'options_show_favourites_label') return 'Mock Show Favourites Label';
-          if (key === 'options_theme_legend') return 'Mock Theme Legend';
-          if (key === 'options_theme_label') return 'Mock Theme Label';
-          if (key === 'options_theme_system') return 'Mock Theme System';
-          if (key === 'options_theme_light') return 'Mock Theme Light';
-          if (key === 'options_theme_dark') return 'Mock Theme Dark';
-          return '';
+const renderHtml = () => {
+  document.body.innerHTML = `
+    <h1 id="pageTitle"></h1>
+    <p id="pageDescription"></p>
+    <fieldset>
+      <legend id="debugLegend"></legend>
+      <label for="debug" id="debugLabel"></label>
+      <input type="checkbox" id="debug" />
+    </fieldset>
+    <fieldset>
+      <legend id="showButtonTextLegend"></legend>
+      <label for="show-button-text-checkbox" id="showButtonTextLabel"></label>
+      <input type="checkbox" id="show-button-text-checkbox" />
+    </fieldset>
+    <fieldset>
+      <legend id="alignmentLegend"></legend>
+      <label for="alignment-select" id="alignmentLabel"></label>
+      <select id="alignment-select">
+        <option id="alignmentOptionStart" value="start"></option>
+        <option id="alignmentOptionCenter" value="center"></option>
+      </select>
+      <label for="show-favourites-checkbox" id="showFavouritesLabel"></label>
+      <input type="checkbox" id="show-favourites-checkbox" />
+    </fieldset>
+    <fieldset>
+      <legend id="themeLegend"></legend>
+      <label for="theme-select" id="themeLabel"></label>
+      <select id="theme-select">
+        <option id="themeOptionSystem" value="system"></option>
+        <option id="themeOptionLight" value="light"></option>
+        <option id="themeOptionDark" value="dark"></option>
+      </select>
+    </fieldset>
+  `;
+};
+
+async function loadModule({ storageValues = makeOptionsPayload(), getError, setError } = {}) {
+  jest.resetModules();
+  const chrome = useChromeMock({
+    i18n: {
+      getMessage: jest.fn((key) => baseMessages[key] ?? ''),
+    },
+    storage: {
+      sync: {
+        get: jest.fn((keys, callback) => {
+          if (getError) {
+            chrome.runtime.lastError = new Error(getError);
+          } else {
+            chrome.runtime.lastError = null;
+          }
+          callback(storageValues);
+        }),
+        set: jest.fn((payload, callback) => {
+          if (setError) {
+            chrome.runtime.lastError = new Error(setError);
+          } else {
+            chrome.runtime.lastError = null;
+          }
+          callback?.();
         }),
       },
-      runtime: {
-        lastError: undefined,
-      },
-    };
-    Object.defineProperty(global, 'chrome', { value: chrome, writable: true });
-
-    // Import the script after mocks are set up
+    },
+    runtime: {
+      lastError: null,
+    },
+  });
+  renderHtml();
+  await jest.isolateModulesAsync(async () => {
     await import('../src/modules/options.js');
+  });
+  document.dispatchEvent(new Event('DOMContentLoaded'));
+  return chrome;
+}
 
-    // Manually trigger DOMContentLoaded after the script is imported
-    document.dispatchEvent(new Event('DOMContentLoaded'));
+describe('options module', () => {
+  afterEach(() => {
+    resetChromeMock();
+    document.body.innerHTML = '';
   });
 
-  test('debug checkbox should be checked based on stored value', () => {
-    expect(mockDebugCheckbox.checked).toBe(false);
+  test('restores state from storage and localises labels', async () => {
+    const chrome = await loadModule();
+
     expect(chrome.storage.sync.get).toHaveBeenCalledWith(
       ['gmailCalDebug', 'showButtonText', 'showFavourites', 'toolbarAlignment', 'gmailCalTheme'],
       expect.any(Function),
     );
-  });
-
-  test('showButtonText checkbox should be checked based on stored value', () => {
-    expect(mockShowButtonTextCheckbox.checked).toBe(false);
-    expect(chrome.storage.sync.get).toHaveBeenCalledWith(
-      ['gmailCalDebug', 'showButtonText', 'showFavourites', 'toolbarAlignment', 'gmailCalTheme'],
-      expect.any(Function),
-    );
-  });
-
-  test('changing debug checkbox should update stored value', () => {
-    const changeCallback = mockDebugCheckbox.addEventListener.mock.calls[0][1];
-    mockDebugCheckbox.checked = true; // Simulate checking the box
-    changeCallback(); // Simulate change event
-    expect(chrome.storage.sync.set).toHaveBeenCalledWith(
-      expect.objectContaining({
-        gmailCalDebug: true,
-        showButtonText: false,
-        showFavourites: false,
-        toolbarAlignment: 'start',
-        gmailCalTheme: 'system',
-      }),
-      expect.any(Function),
-    );
-
-    // Simulate unchecking the debug box
-    mockDebugCheckbox.checked = false;
-    changeCallback();
-    expect(chrome.storage.sync.set).toHaveBeenCalledWith(
-      expect.objectContaining({
-        gmailCalDebug: false,
-        showButtonText: false,
-        showFavourites: false,
-        toolbarAlignment: 'start',
-        gmailCalTheme: 'system',
-      }),
-      expect.any(Function),
-    );
-  });
-
-  test('changing showButtonText checkbox should update stored value', () => {
-    const changeCallback = mockShowButtonTextCheckbox.addEventListener.mock.calls[0][1];
-    mockShowButtonTextCheckbox.checked = true; // Simulate checking the box
-    changeCallback(); // Simulate change event
-    expect(chrome.storage.sync.set).toHaveBeenCalledWith(
-      expect.objectContaining({
-        gmailCalDebug: false,
-        showButtonText: true,
-        showFavourites: false,
-        toolbarAlignment: 'start',
-        gmailCalTheme: 'system',
-      }),
-      expect.any(Function),
-    );
-
-    // Simulate unchecking the showButtonText box
-    mockShowButtonTextCheckbox.checked = false;
-    changeCallback();
-    expect(chrome.storage.sync.set).toHaveBeenCalledWith(
-      expect.objectContaining({
-        gmailCalDebug: false,
-        showButtonText: false,
-        showFavourites: false,
-        toolbarAlignment: 'start',
-        gmailCalTheme: 'system',
-      }),
-      expect.any(Function),
-    );
-  });
-
-  test('showFavourites checkbox should be unchecked by default', () => {
-    expect(mockShowFavouritesCheckbox.checked).toBe(false);
-  });
-
-  test('changing showFavourites checkbox should update stored value', () => {
-    const favouritesChange = mockShowFavouritesCheckbox.addEventListener.mock.calls[0][1];
-    mockShowFavouritesCheckbox.checked = true;
-    favouritesChange();
-    expect(chrome.storage.sync.set).toHaveBeenCalledWith(
-      expect.objectContaining({ showFavourites: true }),
-      expect.any(Function),
-    );
-
-    mockShowFavouritesCheckbox.checked = false;
-    favouritesChange();
-    expect(chrome.storage.sync.set).toHaveBeenCalledWith(
-      expect.objectContaining({ showFavourites: false }),
-      expect.any(Function),
-    );
-  });
-
-  test('alignment select should default to stored value', () => {
-    expect(alignmentSelectValue).toBe('start');
-  });
-
-  test('changing alignment select should update stored value', () => {
-    const alignmentChange = mockAlignmentSelect.addEventListener.mock.calls[0][1];
-    alignmentSelectValue = 'center';
-    alignmentChange();
-    expect(chrome.storage.sync.set).toHaveBeenCalledWith(
-      expect.objectContaining({ toolbarAlignment: 'center' }),
-      expect.any(Function),
-    );
-  });
-
-  test('theme selection should default to stored value', () => {
-    expect(themeSelectValue).toBe('system');
-  });
-
-  test('changing theme selection should update stored value', () => {
-    const themeChangeCallback = mockThemeSelect.addEventListener.mock.calls[0][1];
-    themeSelectValue = 'dark';
-    themeChangeCallback();
-    expect(chrome.storage.sync.set).toHaveBeenCalledWith(
-      expect.objectContaining({ gmailCalTheme: 'dark' }),
-      expect.any(Function),
-    );
-  });
-
-  test('document title should be set from i18n message', () => {
+    expect(document.getElementById('pageTitle').textContent).toBe('Mock Page Title');
     expect(document.title).toBe('Mock Page Title');
-    expect(chrome.i18n.getMessage).toHaveBeenCalledWith('page_title');
+    expect(document.getElementById('alignmentOptionCenter').textContent).toBe('Align Center');
   });
 
-  test('debug label text should be set from i18n message', () => {
-    expect(mockDebugLabel.textContent).toBe('Mock Debug Label');
-    expect(chrome.i18n.getMessage).toHaveBeenCalledWith('options_debug_label');
+  test('serialises localised labels for regression safety', async () => {
+    await loadModule();
+
+    expect(serializeOptionsUi()).toMatchSnapshot();
   });
 
-  test('showButtonText label text should be set from i18n message', () => {
-    expect(mockShowButtonTextLabel.textContent).toBe('Mock Show Button Text Label');
-    expect(chrome.i18n.getMessage).toHaveBeenCalledWith('optionShowButtonText');
+  test('saves updated values when controls change', async () => {
+    const chrome = await loadModule();
+    const debugBox = document.getElementById('debug');
+    const showTextBox = document.getElementById('show-button-text-checkbox');
+    const favouritesBox = document.getElementById('show-favourites-checkbox');
+    const alignmentSelect = document.getElementById('alignment-select');
+    const themeSelect = document.getElementById('theme-select');
+
+    debugBox.checked = true;
+    showTextBox.checked = false;
+    favouritesBox.checked = true;
+    alignmentSelect.value = 'center';
+    themeSelect.value = 'dark';
+
+    debugBox.dispatchEvent(new Event('change'));
+    showTextBox.dispatchEvent(new Event('change'));
+    favouritesBox.dispatchEvent(new Event('change'));
+    alignmentSelect.dispatchEvent(new Event('change'));
+    themeSelect.dispatchEvent(new Event('change'));
+
+    const lastPayload = chrome.storage.sync.set.mock.calls.pop()[0];
+    expect(lastPayload).toMatchInlineSnapshot(`
+      {
+        "gmailCalDebug": true,
+        "gmailCalTheme": "dark",
+        "showButtonText": false,
+        "showFavourites": true,
+        "toolbarAlignment": "center",
+      }
+    `);
   });
 
-  test('showButtonText legend text should fall back to i18n message', () => {
-    expect(mockShowButtonTextLegend.textContent).toBe('Mock Show Button Text Legend');
-    expect(chrome.i18n.getMessage).toHaveBeenCalledWith('options_show_text_legend');
+  test('logs retrieval errors from storage', async () => {
+    const chrome = await loadModule({ getError: 'boom' });
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+
+    expect(errorSpy).toHaveBeenCalledWith('Error retrieving options:', chrome.runtime.lastError);
+    errorSpy.mockRestore();
   });
 
-  test('page title should be set from i18n message', () => {
-    expect(mockPageTitle.textContent).toBe('Mock Page Title');
-    expect(chrome.i18n.getMessage).toHaveBeenCalledWith('page_title');
-  });
+  test('logs saving errors to storage', async () => {
+    const chrome = await loadModule({ setError: 'save failure' });
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const debugBox = document.getElementById('debug');
+    debugBox.checked = true;
 
-  test('page description should be set from i18n message', () => {
-    expect(mockPageDescription.textContent).toBe('Mock Page Description');
-    expect(chrome.i18n.getMessage).toHaveBeenCalledWith('options_page_description');
-  });
+    debugBox.dispatchEvent(new Event('change'));
 
-  test('debug legend should be set from i18n message', () => {
-    expect(mockDebugLegend.textContent).toBe('Mock Debug Legend');
-    expect(chrome.i18n.getMessage).toHaveBeenCalledWith('options_debug_legend');
-  });
-
-  test('theme controls should be localized', () => {
-    expect(mockThemeLegend.textContent).toBe('Mock Theme Legend');
-    expect(mockThemeLabel.textContent).toBe('Mock Theme Label');
-    expect(mockThemeOptionSystem.textContent).toBe('Mock Theme System');
-    expect(mockThemeOptionLight.textContent).toBe('Mock Theme Light');
-    expect(mockThemeOptionDark.textContent).toBe('Mock Theme Dark');
-  });
-
-  test('alignment controls should be localized', () => {
-    expect(mockAlignmentLegend.textContent).toBe('Mock Alignment Legend');
-    expect(mockAlignmentLabel.textContent).toBe('Mock Alignment Label');
-    expect(mockAlignmentOptionStart.textContent).toBe('Mock Alignment Start');
-    expect(mockAlignmentOptionCenter.textContent).toBe('Mock Alignment Center');
-    expect(mockShowFavouritesLabel.textContent).toBe('Mock Show Favourites Label');
+    expect(errorSpy).toHaveBeenCalledWith('Error saving options:', chrome.runtime.lastError);
+    errorSpy.mockRestore();
   });
 });

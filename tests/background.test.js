@@ -1,32 +1,49 @@
-import { jest, describe, beforeAll, test, expect } from '@jest/globals';
+import { describe, beforeEach, test, expect, jest } from '@jest/globals';
 
-describe('background.js', () => {
-  beforeAll(async () => {
-    global.chrome = {
-      runtime: {
-        onInstalled: {
-          addListener: jest.fn(),
-        },
-      },
-      storage: {
-        sync: {
-          set: jest.fn(),
-        },
-      },
-    };
-    // Dynamically import background.js to ensure it runs after mocks are set up
+const { useChromeMock } = global;
+
+async function loadBackground() {
+  jest.resetModules();
+  await jest.isolateModulesAsync(async () => {
     await import('../src/modules/background.js');
   });
+}
 
-  test('should set gmailCalMode to ALL on installation', () => {
-    // Ensure the addListener was called and get the callback
+describe('background.js', () => {
+  beforeEach(() => {
+    useChromeMock();
+  });
+
+  test('sets gmailCalMode to ALL on installation', async () => {
+    const chrome = useChromeMock();
+    await loadBackground();
+
     expect(chrome.runtime.onInstalled.addListener).toHaveBeenCalledTimes(1);
-    const onInstalledCallback = chrome.runtime.onInstalled.addListener.mock.calls[0][0];
+    const installListener = chrome.runtime.onInstalled.addListener.mock.calls[0][0];
+    installListener();
 
-    // Simulate the onInstalled event by calling the captured callback
-    onInstalledCallback();
-
-    // Verify that chrome.storage.sync.set was called correctly
     expect(chrome.storage.sync.set).toHaveBeenCalledWith({ gmailCalMode: 'ALL' }, expect.any(Function));
+  });
+
+  test('logs storage error when initial mode fails to persist', async () => {
+    const chrome = useChromeMock({
+      storage: {
+        sync: {
+          set: jest.fn((data, callback) => {
+            chrome.runtime.lastError = new Error('quota exceeded');
+            callback?.();
+          }),
+        },
+      },
+    });
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    await loadBackground();
+    const installListener = chrome.runtime.onInstalled.addListener.mock.calls[0][0];
+    installListener();
+
+    expect(errorSpy).toHaveBeenCalledWith('Error setting initial mode:', chrome.runtime.lastError);
+
+    errorSpy.mockRestore();
   });
 });

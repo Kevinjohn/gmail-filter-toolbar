@@ -8,7 +8,9 @@
     "lint": "eslint src --fix",
     "test": "node --experimental-vm-modules --experimental-json-modules node_modules/jest/bin/jest.js",
     "e2e": "playwright test",
-    "format": "prettier --write \"src/**/*.{js,css,html,json}\""
+    "format": "prettier --write \"src/**/*.{js,css,html,json}\"",
+    "validate:env": "node scripts/validate-env.js",
+    "test:unit": "node --experimental-vm-modules --experimental-json-modules node_modules/jest/bin/jest.js --runInBand"
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",

@@ -1,20 +1,10 @@
-import { expect, test, describe } from '@jest/globals';
+import { expect, test, describe, beforeEach } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { isCalendarRow, hasAttachmentRow, isFavouriteRow } from '../src/modules/filter.js';
-import { applyFilter } from '../src/modules/filter.js';
+import { isCalendarRow, hasAttachmentRow, isFavouriteRow, applyFilter } from '../src/modules/filter.js';
 import { MODES, setCurrentMode } from '../src/modules/state.js';
 import { SELECTORS } from '../src/modules/constants.js';
 
-// Mock the chrome API and JSDOM
-global.chrome = {
-  i18n: {
-    getMessage: (key) => {
-      if (key === 'alt_calendar_event') return 'Calendar event';
-      if (key === 'alt_starred') return 'Starred';
-      return key;
-    },
-  },
-};
+const { useChromeMock } = global;
 
 const setupDOM = (html) => {
   const dom = new JSDOM(html);
@@ -22,26 +12,40 @@ const setupDOM = (html) => {
   return dom.window.document;
 };
 
+beforeEach(() => {
+  useChromeMock({
+    i18n: {
+      getMessage: (key) => {
+        if (key === 'alt_calendar_event') return 'Calendar event';
+        if (key === 'alt_starred') return 'Starred';
+        if (key === 'filter_status_update') return 'Filter set';
+        if (key === 'btn_all') return 'Everything';
+        return key;
+      },
+    },
+  });
+});
+
 describe('hasAttachmentRow', () => {
-  test('should return true for a row with attachment tooltip', () => {
+  test('returns true for a row with attachment tooltip', () => {
     const doc = setupDOM(`<div class="UI"><div class="zA"><span data-tooltip="Has attachment"></span></div></div>`);
     const row = doc.querySelector('.zA');
     expect(hasAttachmentRow(row)).toBe(true);
   });
 
-  test('should return true for a row with paperclip icon', () => {
+  test('returns true for a row with paperclip icon', () => {
     const doc = setupDOM(`<div class="UI"><div class="zA"><img class="aSK"></div></div>`);
     const row = doc.querySelector('.zA');
     expect(hasAttachmentRow(row)).toBe(true);
   });
 
-  test('should return true for a row with attachment row class', () => {
+  test('returns true for a row with attachment row class', () => {
     const doc = setupDOM(`<div class="UI"><div class="${SELECTORS.attachmentRowClass}"></div></div>`);
     const row = doc.querySelector(`.${SELECTORS.attachmentRowClass}`);
     expect(hasAttachmentRow(row)).toBe(true);
   });
 
-  test('should return false for a row without any attachment indicators', () => {
+  test('returns false for a row without any attachment indicators', () => {
     const doc = setupDOM(`<div class="UI"><div class="zA"></div></div>`);
     const row = doc.querySelector('.zA');
     expect(hasAttachmentRow(row)).toBe(false);
@@ -69,15 +73,25 @@ describe('isCalendarRow', () => {
 });
 
 describe('isFavouriteRow', () => {
-  test('should return true for a row with a starred image', () => {
+  test('returns true for a row with a starred image', () => {
     const doc = setupDOM('<div class="UI"><div class="zA"><td class="apU xY"><span id=":ph" class="T-KT T-KT-Jp" aria-label="Starred" role="button" data-tooltip="Starred"><img class="T-KT-JX" src="images/cleardot.gif" alt="Starred"></span></td></div></div>');
     const row = doc.querySelector('.zA');
     expect(isFavouriteRow(row)).toBe(true);
   });
 
-  test('should return false for a row without a starred image', () => {
+  test('returns false for a row without a starred image', () => {
     const doc = setupDOM('<div class="UI"><div class="zA"></div></div>');
     const row = doc.querySelector('.zA');
     expect(isFavouriteRow(row)).toBe(false);
+  });
+});
+
+describe('applyFilter', () => {
+  test('leaves display unchanged for ALL mode', () => {
+    const doc = setupDOM('<div class="UI"><div class="zA"></div></div>');
+    global.document = doc;
+    setCurrentMode(MODES.ALL);
+    applyFilter();
+    expect(doc.querySelector('.zA').style.display).toBe('');
   });
 });

@@ -6,18 +6,18 @@
 - Automate quality gates (lint, type safety, tests, coverage) in CI to block regressions.
 
 ## Baseline Audit and Tooling
-1. Catalogue existing test suites, fixtures, and mocks; document gaps in `tests/README.md`.
-2. Verify Jest, Playwright, ESLint, and Prettier versions align with Chrome MV3 support matrix; log required upgrades.
-3. Record current coverage via `npm test -- --coverage`; capture HTML report under `artifacts/coverage/`.
-4. Add a `scripts/validate-env.js` script to fail fast if required Playwright browsers or Chrome binaries are missing.
+1. Catalogue existing test suites, fixtures, and mocks; document gaps in `tests/README.md`. - COMPLETED
+2. Verify Jest, Playwright, ESLint, and Prettier versions align with Chrome MV3 support matrix; log required upgrades. - COMPLETED
+3. Record current coverage via `npm test -- --coverage`; capture HTML report under `artifacts/coverage/`. - COMPLETED
+4. Add a `scripts/validate-env.js` script to fail fast if required Playwright browsers or Chrome binaries are missing. - COMPLETED
 
 ## Unit Testing Enhancements (Jest)
-1. Expand `tests/setup.js` to mock Chrome extension APIs (alarms, storage.sync, i18n) with per-test overrides.
-2. Add factory helpers in `tests/factories/` for toolbar state, filter presets, and options payloads.
-3. Cover edge cases: error branches in `background.js`, race conditions in `filter.js`, and toolbar visibility toggles.
-4. Introduce snapshot tests for options UI state serialization to detect locale-driven changes.
-5. Enforce minimum coverage thresholds (90% lines/statements) inside `jest.config.cjs`.
-6. Schedule `npm run test:unit` script alias that runs Jest with `--runInBand` for deterministic CI.
+1. Expand `tests/setup.js` to mock Chrome extension APIs (alarms, storage.sync, i18n) with per-test overrides. - COMPLETED
+2. Add factory helpers in `tests/factories/` for toolbar state, filter presets, and options payloads. - COMPLETED
+3. Cover edge cases: error branches in `background.js`, race conditions in `filter.js`, and toolbar visibility toggles. - COMPLETED
+4. Introduce snapshot tests for options UI state serialization to detect locale-driven changes. - COMPLETED
+5. Enforce minimum coverage thresholds (90% lines/statements) inside `jest.config.cjs`. - COMPLETED
+6. Schedule `npm run test:unit` script alias that runs Jest with `--runInBand` for deterministic CI. - COMPLETED
 
 ## Integration Testing (DOM + Message Passing)
 1. Create `tests/integration/` folder with suites that mount toolbar + content script via JSDOM.

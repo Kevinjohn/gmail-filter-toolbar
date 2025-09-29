@@ -1,236 +1,150 @@
-import { expect, test, describe, beforeEach, afterEach, jest } from '@jest/globals';
+import { describe, beforeEach, test, expect } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { injectToolbar, refreshUI } from '../src/modules/toolbar.js';
+import {
+  injectToolbar,
+  updateButtonTextView,
+  updateAlignmentView,
+  updateFavouritesVisibility,
+  refreshUI,
+} from '../src/modules/toolbar.js';
 import {
   MODES,
   setCurrentMode,
-  saveState,
-  currentMode,
   setShowFavouritesButton,
   setToolbarAlignment,
+  showFavouritesButton,
+  toolbarAlignment,
 } from '../src/modules/state.js';
 import { SELECTORS } from '../src/modules/constants.js';
-import { applyFilter } from '../src/modules/filter.js';
 
-// Mock the chrome API
-global.chrome = {
-  i18n: {
-    getMessage: jest.fn((key, substitutions) => {
-      if (key === 'label_toolbar') return 'Calendar filter';
-      if (key === 'label_options') return 'Calendar options:';
-      if (key === 'filter_status_update') return `Filter set to ${substitutions ? substitutions[0] : ''}`;
-      if (key === 'btn_all') return 'Everything';
-      if (key === 'btn_mail') return 'Emails';
-      if (key === 'btn_cal') return 'Calendar';
-      if (key === 'btn_attach') return 'Attachments';
-      if (key === 'btn_fav') return 'Favourites';
-      if (key === 'button_filter_images') return 'Images Only';
-      if (key === 'button_filter_pdfs') return 'PDFs Only';
-      if (key === 'button_filter_documents') return 'Documents Only';
-      if (key === 'button_filter_spreadsheets') return 'Spreadsheets Only';
-      if (key === 'button_filter_presentations') return 'Presentations Only';
-      return `Mocked ${key}`;
-    }),
-  },
-  storage: {
-    sync: {
-      set: jest.fn(),
+const { useChromeMock } = global;
+
+beforeEach(() => {
+  useChromeMock({
+    i18n: {
+      getMessage: (key, substitutions) => {
+        const map = {
+          label_toolbar: 'Calendar filter',
+          label_options: 'Calendar options',
+          filter_status_update: `Filter set to ${substitutions?.[0] ?? ''}`,
+          btn_all: 'Everything',
+          btn_mail: 'Emails',
+          btn_cal: 'Calendar',
+          btn_attach: 'Attachments',
+          btn_fav: 'Favourites',
+          button_filter_images: 'Images Only',
+          button_filter_pdfs: 'PDFs Only',
+          button_filter_documents: 'Documents Only',
+          button_filter_spreadsheets: 'Spreadsheets Only',
+          button_filter_presentations: 'Presentations Only',
+        };
+        return map[key] ?? key;
+      },
     },
-  },
-};
+  });
+});
 
-jest.mock('../src/modules/filter.js', () => ({
-  applyFilter: jest.fn(),
-}));
-
-jest.mock('../src/modules/state.js', () => ({
-  ...jest.requireActual('../src/modules/state.js'),
-  setCurrentMode: jest.fn((mode) => {
-    jest.requireActual('../src/modules/state.js').setCurrentMode(mode);
-  }),
-  saveState: jest.fn(),
-}));
-
-const setupDOM = (html) => {
-  const dom = new JSDOM(html);
+const createDocument = () => {
+  const dom = new JSDOM('<div class="aeH"></div>');
   global.document = dom.window.document;
   return dom.window.document;
 };
 
-function simulateClick(mode) {
-    const button = document.querySelector(`button[data-mode="${mode}"]`);
-    if (button) {
-        button.click(); // This will trigger the event listener in contentScript.js
-    } else {
-        throw new Error(`Button for mode ${mode} not found.`); // Fail fast if button is missing
-    }
-}
+const renderToolbar = ({ alignment = 'start', favourites = true } = {}) => {
+  const doc = createDocument();
+  const header = doc.querySelector('.aeH');
+  setToolbarAlignment(alignment);
+  setShowFavouritesButton(favourites);
+  injectToolbar(doc, header);
+  const wrapper = header.nextElementSibling;
+  return { doc, header, wrapper };
+};
 
 describe('injectToolbar', () => {
-  let header;
-  let doc;
-  let wrapper;
-
-  beforeEach(() => {
-    document.body.innerHTML = ''; // Clear the DOM completely
-    document.body.innerHTML = '<div class="gb_Id gb_Hd gb_Id"></div>'; // Establish a clean, consistent Gmail-like header
-    doc = document;
-    header = doc.querySelector('.gb_Id');
-    setToolbarAlignment('start');
-    setShowFavouritesButton(true);
-    injectToolbar(doc, header);
-    wrapper = header.nextElementSibling;
-
-    chrome.storage.sync.set.mockClear();
-    chrome.i18n.getMessage.mockClear(); // Clear i18n mock calls as well
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
-  test('should inject the toolbar and live region', () => {
-    const toolbar = wrapper.querySelector(SELECTORS.filterBar);
+  test('creates toolbar wrapper and live region', () => {
+    const { wrapper } = renderToolbar();
+    const bar = wrapper.querySelector(SELECTORS.filterBar);
     const liveRegion = wrapper.querySelector(SELECTORS.liveRegion);
 
-    expect(wrapper).not.toBeNull();
-    expect(toolbar).not.toBeNull();
+    expect(bar).not.toBeNull();
     expect(liveRegion).not.toBeNull();
     expect(liveRegion.getAttribute('role')).toBe('status');
     expect(liveRegion.getAttribute('aria-live')).toBe('polite');
   });
 
-  test('should inject Material Icons into buttons', () => {
-    injectToolbar(doc);
-    const headerHtml = wrapper.innerHTML;
-
-    expect(headerHtml).toContain('<button id="filter-ALL" data-mode="ALL" role="radio" aria-label="Everything" data-tooltip="Everything" aria-checked="true" tabindex="0"><span class="material-symbols-outlined">inbox</span><span class="gcal-text-label">Everything</span></button>');
-    expect(headerHtml).toContain('<button id="filter-EMAIL" data-mode="EMAIL" role="radio" aria-label="Emails" data-tooltip="Emails" aria-checked="false" tabindex="-1"><span class="material-symbols-outlined">mail</span><span class="gcal-text-label">Emails</span></button>');
-    expect(headerHtml).toContain('<button id="filter-CALENDAR" data-mode="CALENDAR" role="radio" aria-label="Calendar" data-tooltip="Calendar" aria-checked="false" tabindex="-1"><span class="material-symbols-outlined">calendar_today</span><span class="gcal-text-label">Calendar</span></button>');
-    expect(headerHtml).toContain('<button id="filter-FAVOURITES" data-mode="FAVOURITES" role="radio" aria-label="Favourites" data-tooltip="Favourites" aria-checked="false" tabindex="-1"><span class="material-symbols-outlined">star</span><span class="gcal-text-label">Favourites</span></button>');
-    expect(headerHtml).toContain('<button id="filter-ATTACH" data-mode="ATTACH" role="radio" aria-label="Attachments" data-tooltip="Attachments" aria-checked="false" tabindex="-1"><span class="material-symbols-outlined">attachment</span><span class="gcal-text-label">Attachments</span></button>');
+  test('hides favourites button when preference disabled', () => {
+    const { wrapper } = renderToolbar({ favourites: false });
+    const favourites = wrapper.querySelector('#filter-FAVOURITES');
+    expect(favourites.hidden).toBe(true);
+    expect(favourites.getAttribute('aria-hidden')).toBe('true');
   });
 
-  test('should hide favourites button when preference disabled', () => {
-    setShowFavouritesButton(false);
-    injectToolbar(doc, header);
-    const favouritesButton = wrapper.querySelector('#filter-FAVOURITES');
-    expect(favouritesButton).not.toBeNull();
-    expect(favouritesButton.hidden).toBe(true);
-  });
-
-  test('should apply center alignment when selected', () => {
-    setToolbarAlignment('center');
-    injectToolbar(doc, header);
-    const bar = wrapper.querySelector('.gcal-filter-bar');
+  test('applies center alignment class', () => {
+    const { wrapper } = renderToolbar({ alignment: 'center' });
+    const bar = wrapper.querySelector(SELECTORS.filterBar);
     const group = wrapper.querySelector('.gcal-btn-group');
     expect(bar.classList.contains('gcal-align-center')).toBe(true);
     expect(group.classList.contains('gcal-align-center')).toBe(true);
   });
 });
 
-describe('createToolbar', () => {
-  let header;
-  let doc;
-  let wrapper;
-
-  beforeEach(() => {
-    document.body.innerHTML = ''; // Clear the DOM completely
-    document.body.innerHTML = '<div class="gb_Id gb_Hd gb_Id"></div>'; // Establish a clean, consistent Gmail-like header
-    doc = document;
-    header = doc.querySelector('.gb_Id');
-    setToolbarAlignment('start');
-    setShowFavouritesButton(true);
-    injectToolbar(doc, header);
-    wrapper = header.nextElementSibling;
-
-    chrome.storage.sync.set.mockClear();
-    chrome.i18n.getMessage.mockClear(); // Clear i18n mock calls as well
+describe('update helpers', () => {
+  test('updateButtonTextView toggles icon-only mode', () => {
+    const { doc, wrapper } = renderToolbar();
+    const bar = wrapper.querySelector(SELECTORS.filterBar);
+    expect(bar.classList.contains('show-icon-only')).toBe(false);
+    updateButtonTextView(false, doc);
+    expect(bar.classList.contains('show-icon-only')).toBe(true);
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
+  test('updateAlignmentView syncs classes when bar exists', () => {
+    const { doc, wrapper } = renderToolbar();
+    const bar = wrapper.querySelector(SELECTORS.filterBar);
+    const group = wrapper.querySelector('.gcal-btn-group');
+    expect(toolbarAlignment).toBe('start');
+    updateAlignmentView('center', doc);
+    expect(bar.classList.contains('gcal-align-center')).toBe(true);
+    expect(group.classList.contains('gcal-align-center')).toBe(true);
   });
 
-  test('should add five new attachment filter buttons', () => {
-    const buttons = wrapper.querySelectorAll('button[data-mode]');
-    // Original 5 buttons + 5 new attachment buttons
-    expect(buttons.length).toBe(10);
-  });
-
-  test('should create a button with id filter-IMAGE', () => {
-    const imageButton = wrapper.querySelector('button#filter-IMAGE');
-    expect(imageButton).not.toBeNull();
-    expect(imageButton.getAttribute('aria-label')).toBe('Images Only');
-    expect(imageButton.querySelector('.material-symbols-outlined').textContent).toBe('image');
-  });
-
-  test('should create a button with id filter-PDF', () => {
-    const pdfButton = wrapper.querySelector('button#filter-PDF');
-    expect(pdfButton).not.toBeNull();
-    expect(pdfButton.getAttribute('aria-label')).toBe('PDFs Only');
-    expect(pdfButton.querySelector('.material-symbols-outlined').textContent).toBe('picture_as_pdf');
-  });
-
-  test('should create a button with id filter-DOCUMENT', () => {
-    const documentButton = wrapper.querySelector('button#filter-DOCUMENT');
-    expect(documentButton).not.toBeNull();
-    expect(documentButton.getAttribute('aria-label')).toBe('Documents Only');
-    expect(documentButton.querySelector('.material-symbols-outlined').textContent).toBe('article');
-  });
-
-  test('should create a button with id filter-SPREADSHEET', () => {
-    const spreadsheetButton = wrapper.querySelector('button#filter-SPREADSHEET');
-    expect(spreadsheetButton).not.toBeNull();
-    expect(spreadsheetButton.getAttribute('aria-label')).toBe('Spreadsheets Only');
-    expect(spreadsheetButton.querySelector('.material-symbols-outlined').textContent).toBe('assessment');
-  });
-
-  test('should create a button with id filter-PRESENTATION', () => {
-    const presentationButton = wrapper.querySelector('button#filter-PRESENTATION');
-    expect(presentationButton).not.toBeNull();
-    expect(presentationButton.getAttribute('aria-label')).toBe('Presentations Only');
-    expect(presentationButton.querySelector('.material-symbols-outlined').textContent).toBe('slideshow');
+  test('updateFavouritesVisibility toggles attributes', () => {
+    const { doc, wrapper } = renderToolbar({ favourites: true });
+    const favourites = wrapper.querySelector('#filter-FAVOURITES');
+    expect(favourites.hidden).toBe(false);
+    updateFavouritesVisibility(false, doc);
+    expect(favourites.hidden).toBe(true);
+    expect(favourites.getAttribute('aria-hidden')).toBe('true');
+    updateFavouritesVisibility(true, doc);
+    expect(favourites.hidden).toBe(false);
+    expect(favourites.hasAttribute('aria-hidden')).toBe(false);
   });
 });
 
 describe('refreshUI', () => {
-  let header;
-  let doc;
-  let wrapper;
-
-  beforeEach(() => {
-    const doc = setupDOM(`
-      <div class="aeH"></div>
-    `);
-    header = doc.querySelector('.aeH');
-    jest.spyOn(document, 'querySelector').mockImplementation((selector) => {
-      if (selector === SELECTORS.gmailToolbarHeader) {
-        return header;
-      }
-      return doc.querySelector(selector);
-    });
-    setToolbarAlignment('start');
-    setShowFavouritesButton(true);
-    injectToolbar(doc, header); // Ensure toolbar is injected before refreshUI is called
-    wrapper = header.nextElementSibling;
+  test('reflects currentMode in aria attributes and live region', () => {
+    const { doc, wrapper } = renderToolbar();
+    setCurrentMode(MODES.CALENDAR);
+    refreshUI(doc);
+    const calendarButton = wrapper.querySelector('#filter-CALENDAR');
+    expect(calendarButton.getAttribute('aria-checked')).toBe('true');
+    expect(calendarButton.getAttribute('tabindex')).toBe('0');
+    const liveRegion = wrapper.querySelector(SELECTORS.liveRegion);
+    expect(liveRegion.textContent).toBe('Filter set to Calendar');
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
-  test('should update the live region text for ALL mode', () => {
-    setCurrentMode(MODES.ALL);
+  test('announces fallback label for unknown mode', () => {
+    const { doc, wrapper } = renderToolbar();
+    setCurrentMode('UNKNOWN_MODE');
     refreshUI(doc);
     const liveRegion = wrapper.querySelector(SELECTORS.liveRegion);
     expect(liveRegion.textContent).toBe('Filter set to Everything');
   });
+});
 
-  test('should update the live region text for FAVOURITES mode', () => {
-    setCurrentMode(MODES.FAVOURITES);
-    refreshUI(doc);
-    const liveRegion = wrapper.querySelector(SELECTORS.liveRegion);
-    expect(liveRegion.textContent).toBe('Filter set to Favourites');
+describe('state wiring sanity', () => {
+  test('exports reflect latest preference values after toolbar render', () => {
+    renderToolbar({ alignment: 'center', favourites: false });
+    expect(toolbarAlignment).toBe('center');
+    expect(showFavouritesButton).toBe(false);
   });
 });

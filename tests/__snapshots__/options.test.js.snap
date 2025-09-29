@@ -1,0 +1,57 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`options module serialises localised labels for regression safety 1`] = `
+{
+  "alignment": {
+    "label": "Alignment Label",
+    "legend": "Alignment Legend",
+    "options": [
+      {
+        "text": "Align Start",
+        "value": "start",
+      },
+      {
+        "text": "Align Center",
+        "value": "center",
+      },
+    ],
+    "value": "start",
+  },
+  "debug": {
+    "checked": false,
+    "label": "Debug Label",
+    "legend": "Debug Legend",
+  },
+  "documentTitle": "Mock Page Title",
+  "pageDescription": "Mock Page Description",
+  "pageTitle": "Mock Page Title",
+  "showButtonText": {
+    "checked": true,
+    "label": "Show Text Label",
+    "legend": "Display Legend",
+  },
+  "showFavourites": {
+    "checked": false,
+    "label": "Show Favourites Label",
+  },
+  "theme": {
+    "label": "Theme Label",
+    "legend": "Theme Legend",
+    "options": [
+      {
+        "text": "System Theme",
+        "value": "system",
+      },
+      {
+        "text": "Light Theme",
+        "value": "light",
+      },
+      {
+        "text": "Dark Theme",
+        "value": "dark",
+      },
+    ],
+    "value": "system",
+  },
+}
+`;

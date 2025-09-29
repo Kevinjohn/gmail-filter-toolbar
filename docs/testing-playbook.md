@@ -22,6 +22,11 @@ This playbook documents how we exercise the extension across unit, integration, 
 - Config: `playwright.config.js` captures screenshots/traces on failure and writes artifacts to `artifacts/playwright/`.
 - Fixtures: `tests/e2e/fixtures/extension.js` launches a persistent Chromium profile with the unpacked extension; set `PLAYWRIGHT_HEADFUL=1` if you need to debug headfully.
 - Specs reside under `tests/e2e/` (e.g. `locale-smoke.spec.js`, `options-toolbar.spec.js`). Gmail traffic is replayed from `tests/e2e/fixtures/gmail.html` so the suite runs offline. Use `--project=chromium` or `--grep` to pare down runs locally.
+- Content-script V8 coverage lands in `artifacts/coverage/playwright/` for dead-code analysis.
+
+## Performance & Memory Checks
+- `npm run audit:options` spins up a static preview of `dist/` and runs Lighthouse (performance/accessibility/best-practices) against the options page, storing reports in `artifacts/lighthouse/`.
+- Background listeners log task durations with `[perf]` prefixes; Jest monitors warn-level output when work exceeds the 500 ms budget (`tests/background.test.js`).
 
 ### Visual & Accessibility Guards
 - Visual snapshots will land under `tests/visual-baselines/` when added; run with `npm run test:visual` (future).

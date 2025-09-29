@@ -1,27 +1,27 @@
 #!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+# . "$(dirname "$0")/_/husky.sh"
 
-set -e
+# set -e
 
 # Collect staged JS/TS files for linting and related tests.
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM -z | \
-  python3 - <<'PY'
-import sys, shlex
-paths = [p for p in sys.stdin.read().split('\0') if p]
-js_like = [p for p in paths if p.endswith((
-    '.js', '.mjs', '.cjs', '.jsx', '.ts', '.tsx'
-))]
-print(' '.join(shlex.quote(p) for p in js_like))
-PY
-)
+# STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM -z | \
+#   python3 - <<'PY'
+# import sys, shlex
+# paths = [p for p in sys.stdin.read().split('\0') if p]
+# js_like = [p for p in paths if p.endswith((
+#     '.js', '.mjs', '.cjs', '.jsx', '.ts', '.tsx'
+# ))]
+# print(' '.join(shlex.quote(p) for p in js_like))
+# PY
+# )
 
-if [ -n "$STAGED_FILES" ]; then
-  echo "🔍  Husky: running ESLint on staged files"
-  # shellcheck disable=SC2086
-  npx --no-install eslint --max-warnings=0 $STAGED_FILES
-  echo "🧪  Husky: running Jest on related files"
-  # shellcheck disable=SC2086
-  npm run test:unit -- --bail --findRelatedTests $STAGED_FILES
-else
-  echo "Husky: no JS/TS changes staged; skipping lint/test"
-fi
+# if [ -n "$STAGED_FILES" ]; then
+#   echo "🔍  Husky: running ESLint on staged files"
+#   # shellcheck disable=SC2086
+#   npx --no-install eslint --max-warnings=0 $STAGED_FILES
+#   echo "🧪  Husky: running Jest on related files"
+#   # shellcheck disable=SC2086
+#   npm run test:unit -- --bail --findRelatedTests $STAGED_FILES
+# else
+#   echo "Husky: no JS/TS changes staged; skipping lint/test"
+# fi

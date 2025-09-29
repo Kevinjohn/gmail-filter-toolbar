@@ -1,4 +1,4 @@
-import { describe, beforeEach, test, expect, jest } from '@jest/globals';
+import { describe, beforeEach, afterEach, test, expect, jest } from '@jest/globals';
 
 const { useChromeMock } = global;
 
@@ -10,8 +10,21 @@ async function loadBackground() {
 }
 
 describe('background.js', () => {
+  let nowSpy;
+  let infoSpy;
+  let warnSpy;
+
   beforeEach(() => {
     useChromeMock();
+    nowSpy = jest.spyOn(performance, 'now').mockImplementation(() => 0);
+    infoSpy = jest.spyOn(console, 'info').mockImplementation(() => {});
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    nowSpy.mockRestore();
+    infoSpy.mockRestore();
+    warnSpy.mockRestore();
   });
 
   test('sets gmailCalMode to ALL on installation', async () => {
@@ -23,6 +36,9 @@ describe('background.js', () => {
     installListener();
 
     expect(chrome.storage.sync.set).toHaveBeenCalledWith({ gmailCalMode: 'ALL' }, expect.any(Function));
+    expect(infoSpy).toHaveBeenCalledWith(
+      expect.stringContaining('[perf] background:onInstalled storage.sync.set completed in 0ms')
+    );
   });
 
   test('logs storage error when initial mode fails to persist', async () => {
@@ -38,11 +54,16 @@ describe('background.js', () => {
     });
     const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
+    nowSpy.mockImplementationOnce(() => 0).mockImplementationOnce(() => 1200);
+
     await loadBackground();
     const installListener = chrome.runtime.onInstalled.addListener.mock.calls[0][0];
     installListener();
 
     expect(errorSpy).toHaveBeenCalledWith('Error setting initial mode:', chrome.runtime.lastError);
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('[perf] background:onInstalled storage.sync.set completed in 1200ms')
+    );
 
     errorSpy.mockRestore();
   });

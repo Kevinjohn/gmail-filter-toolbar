@@ -4,6 +4,9 @@ export default defineConfig({
   testDir: './tests/e2e',
   timeout: 30 * 1000,
   use: {
-    headless: true
+    headless: true,
+    launchOptions: {
+      args: ['--allow-file-access-from-files']
+    }
   }
 });

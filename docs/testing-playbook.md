@@ -17,9 +17,11 @@ This playbook documents how we exercise the extension across unit, integration, 
 
 ### End-to-End (Playwright)
 - Command: `npm run e2e`
+- CI flavour: `npm run test:e2e:ci` (list + JUnit reporters).
 - Install browsers once per environment: `npx playwright install`.
-- Config: `playwright.config.js` boots Chromium with MV3 flags so HTML assets load via `file://`.
-- Specs reside under `tests/e2e/` (e.g. `locale-smoke.spec.js`). Use `--project=chromium` or `--grep` to pare down runs locally.
+- Config: `playwright.config.js` captures screenshots/traces on failure and writes artifacts to `artifacts/playwright/`.
+- Fixtures: `tests/e2e/fixtures/extension.js` launches a persistent Chromium profile with the unpacked extension; set `PLAYWRIGHT_HEADFUL=1` if you need to debug headfully.
+- Specs reside under `tests/e2e/` (e.g. `locale-smoke.spec.js`, `options-toolbar.spec.js`). Gmail traffic is replayed from `tests/e2e/fixtures/gmail.html` so the suite runs offline. Use `--project=chromium` or `--grep` to pare down runs locally.
 
 ### Visual & Accessibility Guards
 - Visual snapshots will land under `tests/visual-baselines/` when added; run with `npm run test:visual` (future).

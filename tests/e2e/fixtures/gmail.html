@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Gmail Stub</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+      }
+      .G-atb {
+        padding: 12px;
+        background: #f1f3f4;
+      }
+      .G6[role="toolbar"] {
+        display: flex;
+        gap: 8px;
+      }
+      .G6[role="toolbar"] button {
+        padding: 6px 10px;
+      }
+      .UI {
+        display: block;
+      }
+      table.mail-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      tr.zA {
+        border-bottom: 1px solid #e0e0e0;
+        height: 48px;
+      }
+      tr.zA td {
+        padding: 8px;
+      }
+      .byw {
+        background: #fafafa;
+      }
+      .brd {
+        display: flex;
+        gap: 4px;
+      }
+      .brc {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 0 4px;
+        border: 1px solid #dadce0;
+        border-radius: 12px;
+        font-size: 12px;
+      }
+      .gcal-filter-bar {
+        transition: justify-content 0.2s ease;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="aeH">
+      <div class="G-atb">
+        <div class="G6" role="toolbar" aria-label="Main toolbar">
+          <button type="button">Archive</button>
+          <button type="button">Report spam</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="aeF">
+      <div class="UI">
+        <table class="mail-table">
+          <tbody>
+            <tr class="zA" data-testid="row-mail">
+              <td class="bog">Regular email</td>
+            </tr>
+            <tr class="zA" data-testid="row-calendar">
+              <td class="bog">Calendar invite</td>
+              <td><img alt=".ics" src="calendar.png" /></td>
+            </tr>
+            <tr class="zA byw" data-testid="row-attachment">
+              <td class="bog">Quarterly results</td>
+              <td>
+                <div class="brd">
+                  <div class="brc" title="report.pdf">
+                    <img src="icon_1_pdf.png" alt="pdf" />
+                    <span>report.pdf</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span data-tooltip="Has attachment"></span>
+                <img class="aSK" alt="Attachment" src="paperclip.png" />
+              </td>
+            </tr>
+            <tr class="zA" data-testid="row-favourite">
+              <td class="bog">Starred follow-up</td>
+              <td><span data-tooltip="Starred"></span></td>
+            </tr>
+            <tr class="zA byw" data-testid="row-image">
+              <td class="bog">Design review</td>
+              <td>
+                <div class="brd">
+                  <div class="brc" title="mock.png">
+                    <img src="icon_1_image.png" alt="image" />
+                    <span>mock.png</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

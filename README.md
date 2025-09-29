@@ -216,6 +216,7 @@ This extension is built on a few core principles: listening for the right moment
 | `npm run test:unit` | Jest unit+integration suites (serial for CI stability) |
 | `npm test` | Jest runner (watch mode locally) |
 | `npm run e2e` | Playwright specs (install browsers with `npx playwright install`) |
+| `npm run test:e2e:ci` | Playwright in CI mode (`list,junit` reporters) |
 | `npm run lint` | ESLint with autofix for source modules |
 | `npm run lint:locales` | Lints i18n message files for key/placeholder parity |
 | `npm run format` | Prettier auto-format (JS/CSS/HTML/JSON under `src/`) |

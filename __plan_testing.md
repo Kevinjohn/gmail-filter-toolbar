@@ -27,14 +27,14 @@
 5. Mock failures (storage quota, message timeouts) and assert graceful degradation. - COMPLETED
 
 ## End-to-End (Playwright)
-1. Generate Playwright fixtures that spin up a Chromium profile with the unpacked extension.
+1. Generate Playwright fixtures that spin up a Chromium profile with the unpacked extension. - COMPLETED
 2. Write specs for:
-   - Options page modifications flowing into Gmail UI (alignment, favourites toggle).
-   - Toolbar button interactions (Everything/Attachments/Favourites order, label changes).
-   - Theme switching and layout responsiveness across viewport widths.
-3. Parameterise specs for LTR/RTL locales and light/dark themes.
-4. Capture screenshots on failure and store under `artifacts/playwright/`.
-5. Add `npm run test:e2e:ci` with `--reporter=list,junit` for CI consumption.
+   - Options page modifications flowing into Gmail UI (alignment, favourites toggle). - COMPLETED
+   - Toolbar button interactions (Everything/Attachments/Favourites order, label changes). - COMPLETED
+   - Theme switching and layout responsiveness across viewport widths. - COMPLETED
+3. Parameterise specs for LTR/RTL locales and light/dark themes. - COMPLETED
+4. Capture screenshots on failure and store under `artifacts/playwright/`. - COMPLETED
+5. Add `npm run test:e2e:ci` with `--reporter=list,junit` for CI consumption. - COMPLETED
 
 ## Visual Regression Safety Nets
 1. Integrate Playwright trace viewer and screenshot diffing (e.g., `@playwright/test` snapshot assertions).

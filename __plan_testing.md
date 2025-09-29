@@ -42,9 +42,16 @@
 3. Document update workflow (`npm run test:visual -- --update-snapshots`) and guard with PR review checklist.
 
 ## Performance and Memory Checks
-1. Add Lighthouse CLI script targeting the options page to monitor performance/accessibility scores.
-2. Instrument background script with simple timing logs; assert no long-running listeners in unit tests.
-3. Configure Playwright to collect coverage for content scripts to spot dead code.
+1. Add Lighthouse CLI script targeting the options page to monitor performance/accessibility scores. - COMPLETED
+2. Instrument background script with simple timing logs; assert no long-running listeners in unit tests. - COMPLETED
+3. Configure Playwright to collect coverage for content scripts to spot dead code. - COMPLETED
+
+### Lighthouse Audit Run Log (WSL)
+- `npm run build` succeeds and leaves the audited bundle under `dist/`.
+- `npm run audit:options` fails on WSL with `Error: connect ECONNREFUSED 127.0.0.1:39769`; the Chrome launcher import lives at `scripts/audit-options.mjs:6`.
+- No reports written to `artifacts/lighthouse/` because Chrome never exposes its remote-debugging port.
+- Likely cause: WSL environment cannot launch Chrome (missing Linux binary); set `CHROME_PATH` to a Windows Chrome executable or install `google-chrome-stable` before retrying.
+- When Chrome is reachable, re-run `npm run audit:options` to capture the HTML/JSON reports and note the scores here.
 
 ## Accessibility Validation
 1. Integrate `axe-core` with Playwright to scan options UI and injected toolbar.

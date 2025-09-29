@@ -58,8 +58,10 @@
     <div class="aeH">
       <div class="G-atb">
         <div class="G6" role="toolbar" aria-label="Main toolbar">
-          <button type="button">Archive</button>
-          <button type="button">Report spam</button>
+          <button type="button" data-testid="archive-button">Archive</button>
+          <button type="button" data-testid="spam-button">Report spam</button>
+          <button type="button" data-testid="delete-button">Delete</button>
+          <button type="button" data-testid="mark-read-button">Mark as read</button>
         </div>
       </div>
     </div>
@@ -73,7 +75,9 @@
             </tr>
             <tr class="zA" data-testid="row-calendar">
               <td class="bog">Calendar invite</td>
-              <td><img alt=".ics" src="calendar.png" /></td>
+              <td>
+                <img alt=".ics" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%234285f4'%3E%3Cpath d='M13 2h-1V1h-2v1H6V1H4v1H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 12H3V7h10v7z'/%3E%3C/svg%3E" />
+              </td>
             </tr>
             <tr class="zA byw" data-testid="row-attachment">
               <td class="bog">Quarterly results</td>
@@ -86,13 +90,18 @@
                 </div>
               </td>
               <td>
-                <span data-tooltip="Has attachment"></span>
-                <img class="aSK" alt="Attachment" src="paperclip.png" />
+                <span data-tooltip="Has attachment">
+                  <img class="aSK" alt="Attachment" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='M14 1a3 3 0 013 3v8a3 3 0 01-3 3H6a3 3 0 01-3-3V4a3 3 0 013-3h8zm0 1H6a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2z'/%3E%3C/svg%3E" />
+                </span>
               </td>
             </tr>
             <tr class="zA" data-testid="row-favourite">
               <td class="bog">Starred follow-up</td>
-              <td><span data-tooltip="Starred"></span></td>
+              <td>
+                <span data-tooltip="Starred" class="T-KT" aria-label="Starred">
+                  <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23f4b400'%3E%3Cpath d='M8 1l2 4 4.5.5-3.2 3 .7 4.5L8 11l-4 2 .7-4.5L1.5 5.5 6 5z'/%3E%3C/svg%3E" alt="Starred" />
+                </span>
+              </td>
             </tr>
             <tr class="zA byw" data-testid="row-image">
               <td class="bog">Design review</td>

@@ -5,6 +5,7 @@ import {
   hasAttachmentRow,
   isFavouriteRow,
   hasSpecificAttachmentType,
+  isGoogleDocAttachment,
 } from '../src/modules/filter.js';
 import {
   MODES,
@@ -84,6 +85,42 @@ describe('hasAttachmentRow', () => {
     const { row } = prepareDocument();
     expect(hasAttachmentRow(row)).toBe(false);
   });
+
+  test('detects Google Drive attachment chips', () => {
+    const { row } = prepareDocument({
+      attachmentChips: [
+        {
+          dataDocurl: 'https://drive.google.com/file/d/abc',
+          imgSrc: '//ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_pdf_x16.png',
+        },
+      ],
+    });
+    expect(hasAttachmentRow(row)).toBe(true);
+  });
+});
+
+describe('isGoogleDocAttachment', () => {
+  test('returns true for drive-hosted attachment chips', () => {
+    const { row } = prepareDocument({
+      attachmentChips: [
+        {
+          dataDocurl: 'https://drive.google.com/drive/u/0/folders/abc',
+        },
+      ],
+    });
+    expect(isGoogleDocAttachment(row)).toBe(true);
+  });
+
+  test('returns false when chips are regular attachments', () => {
+    const { row } = prepareDocument({
+      attachmentChips: [
+        {
+          title: 'notes.txt',
+        },
+      ],
+    });
+    expect(isGoogleDocAttachment(row)).toBe(false);
+  });
 });
 
 describe('hasSpecificAttachmentType', () => {
@@ -108,6 +145,29 @@ describe('hasSpecificAttachmentType', () => {
     const { row } = prepareDocument({ attachmentChips: [{ title: 'custom.bin' }] });
     expect(hasSpecificAttachmentType(row, 'UNKNOWN')).toBe(false);
   });
+
+  test('ignores drive attachments when identifier mismatch', () => {
+    const { row } = prepareDocument({
+      attachmentChips: [
+        {
+          dataDocurl: 'https://drive.google.com/file/d/abc',
+          imgSrc: '//ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_document_x16.png',
+        },
+      ],
+    });
+    expect(hasSpecificAttachmentType(row, MODES.PDF)).toBe(false);
+  });
+
+  test('ignores drive attachments without icon hint', () => {
+    const { row } = prepareDocument({
+      attachmentChips: [
+        {
+          dataDocurl: 'https://drive.google.com/file/d/abc',
+        },
+      ],
+    });
+    expect(hasSpecificAttachmentType(row, MODES.PDF)).toBe(false);
+  });
 });
 
 describe('applyFilter edge cases', () => {
@@ -129,32 +189,102 @@ describe('applyFilter edge cases', () => {
   });
 
   test('short-circuits when mode not recognised', () => {
-    const { rows } = buildListWithRows();
+    const { document: doc, rows } = buildListWithRows();
     setCurrentMode('UNKNOWN');
-    applyFilter();
+    applyFilter(doc);
     rows.forEach((row) => {
       expect(row.style.display).toBe('');
     });
   });
 
   test('applies debug styling without hiding', () => {
-    const { rows } = buildListWithRows();
+    const { document: doc, rows } = buildListWithRows();
     setCurrentMode(MODES.CALENDAR);
     setDebugOn(true);
-    applyFilter();
-    expect(rows[0].style.opacity).toBe('0.5');
-    expect(rows[0].style.display).toBe('');
+    applyFilter(doc);
+    expect(rows[1].style.opacity).toBe('0.5');
+    expect(rows[1].style.display).toBe('');
   });
 
   test('resets debug styling when debug disabled', () => {
-    const { rows } = buildListWithRows();
+    const { document: doc, rows } = buildListWithRows();
     setCurrentMode(MODES.CALENDAR);
     setDebugOn(true);
-    applyFilter();
+    applyFilter(doc);
     setDebugOn(false);
-    applyFilter();
-    expect(rows[0].style.opacity).toBe('');
+    applyFilter(doc);
+    expect(rows[1].style.opacity).toBe('');
+    expect(rows[1].style.display).toBe('none');
+  });
+});
+
+describe('applyFilter mode behaviour', () => {
+  const buildRows = (rowConfigs) => {
+    const doc = makeMailDocument();
+    doc.querySelector('.UI').innerHTML = '';
+    const rows = rowConfigs.map((config) => makeEmailRow(config, doc).row);
+    global.document = doc;
+    return { doc, rows };
+  };
+
+  beforeEach(() => {
+    setDebugOn(false);
+  });
+
+  test('EMAIL mode hides calendar invites', () => {
+    const { doc, rows } = buildRows([
+      { id: 'calendar', isCalendar: true },
+      { id: 'normal' },
+    ]);
+    setCurrentMode(MODES.EMAIL);
+    applyFilter(doc);
     expect(rows[0].style.display).toBe('none');
+    expect(rows[1].style.display).toBe('');
+  });
+
+  test('ATTACH mode keeps attachment rows visible', () => {
+    const { doc, rows } = buildRows([
+      { id: 'calendar', isCalendar: true },
+      { id: 'attachment', hasAttachment: true },
+      { id: 'plain' },
+    ]);
+    setCurrentMode(MODES.ATTACH);
+    applyFilter(doc);
+    expect(rows[0].style.display).toBe('none');
+    expect(rows[1].style.display).toBe('');
+    expect(rows[2].style.display).toBe('none');
+  });
+
+  test('FAVOURITES mode only shows starred rows', () => {
+    const { doc, rows } = buildRows([
+      { id: 'plain' },
+      { id: 'starred', isFavourite: true },
+    ]);
+    setCurrentMode(MODES.FAVOURITES);
+    applyFilter(doc);
+    expect(rows[0].style.display).toBe('none');
+    expect(rows[1].style.display).toBe('');
+  });
+
+  test.each([
+    [MODES.IMAGE, { title: 'photo.png' }],
+    [MODES.PDF, { title: 'contract.pdf' }],
+    [MODES.DOCUMENT, {
+      dataDocurl: 'https://docs.google.com/document/d/abc',
+      imgSrc: '//ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_document_x16.png',
+    }],
+    [MODES.SPREADSHEET, { title: 'report.xlsx' }],
+    [MODES.PRESENTATION, { title: 'slides.pptx' }],
+  ])('attachment mode %s filters rows by chip metadata', (mode, chipConfig) => {
+    const doc = makeMailDocument();
+    doc.querySelector('.UI').innerHTML = '';
+    const matchRow = makeEmailRow({ id: 'match', attachmentChips: [chipConfig] }, doc).row;
+    const otherRow = makeEmailRow({ id: 'other' }, doc).row;
+    setCurrentMode(mode);
+    setDebugOn(false);
+    applyFilter(doc);
+    expect(matchRow.style.display).toBe('');
+    expect(otherRow.style.display).toBe('none');
   });
 });
 
@@ -163,6 +293,6 @@ describe('state mutations in tandem', () => {
     setToolbarAlignment('center');
     setShowFavouritesButton(true);
     setThemePreference('dark');
-    expect(() => applyFilter()).not.toThrow();
+    expect(() => applyFilter(document)).not.toThrow();
   });
 });

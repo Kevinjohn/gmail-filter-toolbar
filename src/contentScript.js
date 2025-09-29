@@ -57,12 +57,12 @@ function main() {
       refreshUI(document);
 
       waitForMessageTable().then(() => {
-        applyFilter();
-        observeMessageList();
+        applyFilter(document);
+        observeMessageList(document);
       });
     });
   });
-  setupGmailToolbarObserver();
+  setupGmailToolbarObserver(document);
 }
 
 // Listen for button clicks
@@ -73,7 +73,7 @@ document.addEventListener('click', (e) => {
   setCurrentMode(btn.dataset.mode);
   saveState()
     .then(() => {
-      applyFilter();
+      applyFilter(document);
       refreshUI(document);
     })
     .catch((error) => {
@@ -85,7 +85,7 @@ document.addEventListener('click', (e) => {
 chrome.storage.onChanged.addListener((changes) => {
   if (KEY_DEBUG in changes) {
     setDebugOn(changes[KEY_DEBUG].newValue);
-    applyFilter();
+    applyFilter(document);
   }
   if (SHOW_BUTTON_TEXT_KEY in changes) {
     updateButtonTextView(changes[SHOW_BUTTON_TEXT_KEY].newValue);
@@ -102,7 +102,7 @@ chrome.storage.onChanged.addListener((changes) => {
       setCurrentMode(MODES.ALL);
       saveState()
         .then(() => {
-          applyFilter();
+          applyFilter(document);
           refreshUI(document);
         })
         .catch((error) => {
@@ -117,5 +117,45 @@ chrome.storage.onChanged.addListener((changes) => {
     applyTheme(document, themePreference);
   }
 });
+
+function handleRuntimeMessage(message, _sender, sendResponse) {
+  if (!message || typeof message !== 'object') {
+    return false;
+  }
+
+  if (message.type === 'gmailCal:setMode') {
+    const mode = message.payload?.mode;
+    if (!mode) {
+      sendResponse?.({ ok: false, error: 'Missing mode payload' });
+      return false;
+    }
+
+    setCurrentMode(mode);
+    saveState()
+      .then(() => {
+        applyFilter(document);
+        refreshUI(document);
+        sendResponse?.({ ok: true, mode: currentMode });
+      })
+      .catch((error) => {
+        console.error('Error saving mode:', error);
+        sendResponse?.({ ok: false, error: error.message });
+      });
+    return true;
+  }
+
+  if (message.type === 'gmailCal:refreshFilter') {
+    applyFilter(document);
+    refreshUI(document);
+    sendResponse?.({ ok: true, mode: currentMode });
+    return false;
+  }
+
+  return false;
+}
+
+if (chrome.runtime?.onMessage?.addListener) {
+  chrome.runtime.onMessage.addListener(handleRuntimeMessage);
+}
 
 main();

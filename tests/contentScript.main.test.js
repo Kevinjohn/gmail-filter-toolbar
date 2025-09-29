@@ -2,7 +2,7 @@ import { describe, beforeEach, afterEach, test, expect, jest } from '@jest/globa
 
 const { useChromeMock, resetChromeMock } = global;
 
-const flushPromises = () => new Promise((resolve) => setImmediate(resolve));
+const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 describe('contentScript main lifecycle', () => {
   let loadStateMock;
@@ -23,6 +23,7 @@ describe('contentScript main lifecycle', () => {
   let setupGmailToolbarObserverMock;
   let applyThemeMock;
   let storageChangeListener;
+  let messageListener;
   let header;
 
   beforeEach(async () => {
@@ -33,6 +34,9 @@ describe('contentScript main lifecycle', () => {
     const chrome = useChromeMock();
     chrome.storage.onChanged.addListener.mockImplementation((listener) => {
       storageChangeListener = listener;
+    });
+    chrome.runtime.onMessage.addListener.mockImplementation((listener) => {
+      messageListener = listener;
     });
 
     header = document.createElement('div');
@@ -105,6 +109,7 @@ describe('contentScript main lifecycle', () => {
     document.head.innerHTML = '';
     document.body.innerHTML = '';
     storageChangeListener = undefined;
+    messageListener = undefined;
   });
 
   test('initialises toolbar and observers', async () => {
@@ -157,5 +162,65 @@ describe('contentScript main lifecycle', () => {
     expect(updateFavouritesVisibilityMock).toHaveBeenCalledWith(true);
     expect(setThemePreferenceMock).toHaveBeenCalledWith('dark');
     expect(applyThemeMock).toHaveBeenCalledWith(document, 'system');
+  });
+
+  test('runtime handler ignores non-object messages', () => {
+    expect(messageListener(undefined, {}, jest.fn())).toBe(false);
+    expect(messageListener('hello', {}, jest.fn())).toBe(false);
+  });
+
+  test('runtime handler reports missing mode payload', () => {
+    const sendResponse = jest.fn();
+    const result = messageListener({ type: 'gmailCal:setMode', payload: {} }, {}, sendResponse);
+    expect(result).toBe(false);
+    expect(sendResponse).toHaveBeenCalledWith({ ok: false, error: 'Missing mode payload' });
+  });
+
+  test('runtime handler persists mode and responds with success', async () => {
+    const sendResponse = jest.fn();
+    const result = messageListener(
+      { type: 'gmailCal:setMode', payload: { mode: 'FAVOURITES' } },
+      {},
+      sendResponse,
+    );
+    expect(result).toBe(true);
+    await flushPromises();
+    expect(setCurrentModeMock).toHaveBeenCalledWith('FAVOURITES');
+    expect(saveStateMock).toHaveBeenCalled();
+    expect(applyFilterMock).toHaveBeenCalled();
+    expect(refreshUIMock).toHaveBeenCalledWith(document);
+    expect(sendResponse).toHaveBeenCalledWith({ ok: true, mode: 'ALL' });
+  });
+
+  test('runtime handler surfaces save errors', async () => {
+    saveStateMock.mockImplementationOnce(() => Promise.reject(new Error('write failure')));
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const sendResponse = jest.fn();
+    const result = messageListener(
+      { type: 'gmailCal:setMode', payload: { mode: 'FAVOURITES' } },
+      {},
+      sendResponse,
+    );
+    expect(result).toBe(true);
+    await flushPromises();
+    expect(errorSpy).toHaveBeenCalledWith('Error saving mode:', expect.any(Error));
+    expect(sendResponse).toHaveBeenCalledWith({ ok: false, error: 'write failure' });
+    errorSpy.mockRestore();
+  });
+
+  test('runtime handler refreshes filter on demand', () => {
+    const sendResponse = jest.fn();
+    const result = messageListener({ type: 'gmailCal:refreshFilter' }, {}, sendResponse);
+    expect(result).toBe(false);
+    expect(applyFilterMock).toHaveBeenCalled();
+    expect(refreshUIMock).toHaveBeenCalledWith(document);
+    expect(sendResponse).toHaveBeenCalledWith({ ok: true, mode: 'ALL' });
+  });
+
+  test('runtime handler returns false for unknown messages', () => {
+    const sendResponse = jest.fn();
+    const result = messageListener({ type: 'gmailCal:noop' }, {}, sendResponse);
+    expect(result).toBe(false);
+    expect(sendResponse).not.toHaveBeenCalled();
   });
 });

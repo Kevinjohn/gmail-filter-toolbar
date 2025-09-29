@@ -62,7 +62,12 @@ const serializeOptionsUi = () => ({
   },
 });
 
-const renderHtml = () => {
+const renderHtml = ({
+  includeOptionals = true,
+  includeAlignmentSelect = true,
+  includeThemeSelect = true,
+  includeFavouritesCheckbox = true,
+} = {}) => {
   document.body.innerHTML = `
     <h1 id="pageTitle"></h1>
     <p id="pageDescription"></p>
@@ -72,33 +77,38 @@ const renderHtml = () => {
       <input type="checkbox" id="debug" />
     </fieldset>
     <fieldset>
-      <legend id="showButtonTextLegend"></legend>
+      ${includeOptionals ? '<legend id="showButtonTextLegend"></legend>' : ''}
       <label for="show-button-text-checkbox" id="showButtonTextLabel"></label>
       <input type="checkbox" id="show-button-text-checkbox" />
     </fieldset>
     <fieldset>
-      <legend id="alignmentLegend"></legend>
-      <label for="alignment-select" id="alignmentLabel"></label>
-      <select id="alignment-select">
-        <option id="alignmentOptionStart" value="start"></option>
-        <option id="alignmentOptionCenter" value="center"></option>
-      </select>
-      <label for="show-favourites-checkbox" id="showFavouritesLabel"></label>
-      <input type="checkbox" id="show-favourites-checkbox" />
+      ${includeOptionals ? '<legend id="alignmentLegend"></legend>' : ''}
+      ${includeOptionals ? '<label for="alignment-select" id="alignmentLabel"></label>' : ''}
+      ${includeAlignmentSelect ? `<select id="alignment-select">
+        ${includeOptionals ? '<option id="alignmentOptionStart" value="start"></option>' : ''}
+        ${includeOptionals ? '<option id="alignmentOptionCenter" value="center"></option>' : ''}
+      </select>` : ''}
+      ${includeOptionals && includeFavouritesCheckbox ? '<label for="show-favourites-checkbox" id="showFavouritesLabel"></label>' : ''}
+      ${includeFavouritesCheckbox ? '<input type="checkbox" id="show-favourites-checkbox" />' : ''}
     </fieldset>
     <fieldset>
-      <legend id="themeLegend"></legend>
-      <label for="theme-select" id="themeLabel"></label>
-      <select id="theme-select">
-        <option id="themeOptionSystem" value="system"></option>
-        <option id="themeOptionLight" value="light"></option>
-        <option id="themeOptionDark" value="dark"></option>
-      </select>
+      ${includeOptionals ? '<legend id="themeLegend"></legend>' : ''}
+      ${includeOptionals ? '<label for="theme-select" id="themeLabel"></label>' : ''}
+      ${includeThemeSelect ? `<select id="theme-select">
+        ${includeOptionals ? '<option id="themeOptionSystem" value="system"></option>' : ''}
+        ${includeOptionals ? '<option id="themeOptionLight" value="light"></option>' : ''}
+        ${includeOptionals ? '<option id="themeOptionDark" value="dark"></option>' : ''}
+      </select>` : ''}
     </fieldset>
   `;
 };
 
-async function loadModule({ storageValues = makeOptionsPayload(), getError, setError } = {}) {
+async function loadModule({
+  storageValues = makeOptionsPayload(),
+  getError,
+  setError,
+  renderOptions,
+} = {}) {
   jest.resetModules();
   const chrome = useChromeMock({
     i18n: {
@@ -128,7 +138,7 @@ async function loadModule({ storageValues = makeOptionsPayload(), getError, setE
       lastError: null,
     },
   });
-  renderHtml();
+  renderHtml(renderOptions);
   await jest.isolateModulesAsync(async () => {
     await import('../src/modules/options.js');
   });
@@ -212,5 +222,30 @@ describe('options module', () => {
 
     expect(errorSpy).toHaveBeenCalledWith('Error saving options:', chrome.runtime.lastError);
     errorSpy.mockRestore();
+  });
+
+  test('skips optional localisation hooks when nodes missing', async () => {
+    await loadModule({ renderOptions: { includeOptionals: false } });
+
+    expect(document.getElementById('showButtonTextLegend')).toBeNull();
+    expect(document.getElementById('alignmentLabel')).toBeNull();
+    expect(document.getElementById('themeOptionDark')).toBeNull();
+    // Should still localise required labels without throwing
+    expect(document.getElementById('showButtonTextLabel').textContent).toBe('Show Text Label');
+  });
+
+  test('handles missing select controls without errors', async () => {
+    await loadModule({
+      renderOptions: {
+        includeOptionals: true,
+        includeAlignmentSelect: false,
+        includeThemeSelect: false,
+        includeFavouritesCheckbox: false,
+      },
+    });
+
+    expect(document.getElementById('alignment-select')).toBeNull();
+    expect(document.getElementById('theme-select')).toBeNull();
+    expect(() => document.getElementById('debug').dispatchEvent(new Event('change'))).not.toThrow();
   });
 });

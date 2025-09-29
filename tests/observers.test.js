@@ -1,4 +1,5 @@
 import { describe, beforeEach, afterEach, test, expect, jest } from '@jest/globals';
+import { SELECTORS } from '../src/modules/constants.js';
 
 let observers;
 let state;
@@ -77,6 +78,30 @@ describe('observeMessageList', () => {
     jest.useRealTimers();
   });
 
+  test('does not apply filter while mode is ALL', () => {
+    jest.useFakeTimers();
+    const doc = document.implementation.createHTMLDocument('list');
+    const list = doc.createElement('div');
+    list.className = 'UI';
+    doc.body.appendChild(list);
+
+    state.setCurrentMode(state.MODES.ALL);
+    observers.observeMessageList(doc);
+
+    const instance = MockMutationObserver.instances[0];
+    instance.trigger();
+    jest.advanceTimersByTime(200);
+
+    expect(applyFilterMock).not.toHaveBeenCalled();
+    jest.useRealTimers();
+  });
+
+  test('exits early when no message list is present', () => {
+    const doc = document.implementation.createHTMLDocument('list');
+    observers.observeMessageList(doc);
+    expect(MockMutationObserver.instances).toHaveLength(0);
+  });
+
   test('disconnects existing observer before attaching new one', () => {
     const doc = document.implementation.createHTMLDocument('list');
     const list = doc.createElement('div');
@@ -96,8 +121,9 @@ describe('setupGmailToolbarObserver', () => {
     const header = doc.createElement('div');
     header.className = 'aeH';
     doc.body.appendChild(header);
-
-    const observeSpy = jest.spyOn(observers, 'observeMessageList');
+    const list = doc.createElement('div');
+    list.className = 'UI';
+    doc.body.appendChild(list);
 
     observers.setupGmailToolbarObserver(doc);
 
@@ -106,10 +132,54 @@ describe('setupGmailToolbarObserver', () => {
     instance.trigger([{ type: 'childList' }]);
 
     expect(injectToolbarMock).toHaveBeenCalledWith(doc, header);
-    expect(observeSpy).toHaveBeenCalledWith(doc);
+    expect(MockMutationObserver.instances).toHaveLength(2);
+    const [, listObserver] = MockMutationObserver.instances;
+    expect(listObserver.observe).toHaveBeenCalledWith(list, { childList: true });
     expect(applyFilterMock).toHaveBeenCalled();
+  });
 
-    observeSpy.mockRestore();
+  test('skips reinjection when wrapper already exists', () => {
+    const doc = document.implementation.createHTMLDocument('gmail');
+    const header = doc.createElement('div');
+    header.className = 'aeH';
+    doc.body.appendChild(header);
+    const list = doc.createElement('div');
+    list.className = 'UI';
+    doc.body.appendChild(list);
+    const wrapper = doc.createElement('div');
+    wrapper.className = 'gcal-filter-wrapper';
+    doc.body.appendChild(wrapper);
+
+    observers.setupGmailToolbarObserver(doc);
+
+    const instance = MockMutationObserver.instances[0];
+    instance.trigger([{ type: 'childList' }]);
+
+    expect(injectToolbarMock).not.toHaveBeenCalled();
+  });
+
+  test('disconnects existing toolbar observer before reattaching', () => {
+    const doc = document.implementation.createHTMLDocument('gmail');
+    const header = doc.createElement('div');
+    header.className = 'aeH';
+    doc.body.appendChild(header);
+    const list = doc.createElement('div');
+    list.className = 'UI';
+    doc.body.appendChild(list);
+
+    observers.setupGmailToolbarObserver(doc);
+    const firstInstance = MockMutationObserver.instances[0];
+    observers.setupGmailToolbarObserver(doc);
+    expect(firstInstance.disconnect).toHaveBeenCalled();
+  });
+
+  test('ignores mutations that are not childList updates', () => {
+    const doc = document.implementation.createHTMLDocument('gmail');
+    observers.setupGmailToolbarObserver(doc);
+    const instance = MockMutationObserver.instances[0];
+    instance.trigger([{ type: 'attributes' }]);
+    expect(injectToolbarMock).not.toHaveBeenCalled();
+    expect(applyFilterMock).not.toHaveBeenCalled();
   });
 });
 
@@ -129,9 +199,78 @@ describe('waiters', () => {
 
   test('waitForMessageTable resolves when email rows appear', async () => {
     const promise = observers.waitForMessageTable();
+    const list = document.createElement('div');
+    list.className = 'UI';
+    document.body.appendChild(list);
     const row = document.createElement('tr');
     row.className = 'zA';
-    document.body.appendChild(row);
+    list.appendChild(row);
     await promise;
+  });
+
+  test('waitForGmailChrome retries until header materialises', async () => {
+    jest.useFakeTimers();
+    const promise = observers.waitForGmailChrome();
+    const toolbar = document.createElement('div');
+    toolbar.className = 'G-atb';
+    toolbar.setAttribute('role', 'toolbar');
+    document.body.appendChild(toolbar);
+
+    await Promise.resolve();
+    jest.runOnlyPendingTimers();
+    expect.assertions(1);
+
+    const header = document.createElement('div');
+    header.className = 'aeH';
+    header.appendChild(toolbar);
+    document.body.appendChild(header);
+
+    await promise;
+    expect(header.contains(toolbar)).toBe(true);
+    jest.useRealTimers();
+  });
+
+  test('waitForGmailChrome polls until closest header appears', async () => {
+    jest.useFakeTimers();
+    const header = document.createElement('div');
+    header.className = 'aeH';
+    const toolbar = {
+      closest: jest.fn()
+        .mockImplementationOnce(() => null)
+        .mockImplementationOnce(() => header),
+    };
+
+    const originalQuery = document.querySelector.bind(document);
+    const querySpy = jest.spyOn(document, 'querySelector').mockImplementation((selector) => {
+      if (
+        selector === SELECTORS.gmailToolbar ||
+        selector === SELECTORS.gmailToolbarLegacy ||
+        selector === SELECTORS.gmailToolbarAria
+      ) {
+        return toolbar;
+      }
+      if (selector === SELECTORS.gmailToolbarHeader) {
+        return header;
+      }
+      return originalQuery(selector);
+    });
+
+    const promise = observers.waitForGmailChrome();
+    jest.runOnlyPendingTimers();
+    await promise;
+
+    expect(toolbar.closest).toHaveBeenCalledTimes(2);
+    querySpy.mockRestore();
+    jest.useRealTimers();
+  });
+
+  test('waitForGmailChrome rejects after timeout', async () => {
+    jest.useFakeTimers();
+    document.body.innerHTML = '';
+    const promise = observers.waitForGmailChrome();
+    jest.advanceTimersByTime(10000);
+    jest.runOnlyPendingTimers();
+    await expect(promise).rejects.toThrow('Gmail toolbar not found within 10 seconds.');
+    jest.useRealTimers();
   });
 });

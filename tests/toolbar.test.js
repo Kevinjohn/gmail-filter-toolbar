@@ -1,4 +1,4 @@
-import { describe, beforeEach, test, expect } from '@jest/globals';
+import { describe, beforeEach, test, expect, jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import {
   injectToolbar,
@@ -6,6 +6,7 @@ import {
   updateAlignmentView,
   updateFavouritesVisibility,
   refreshUI,
+  handleArrowNavigation,
 } from '../src/modules/toolbar.js';
 import {
   MODES,
@@ -86,6 +87,16 @@ describe('injectToolbar', () => {
     expect(bar.classList.contains('gcal-align-center')).toBe(true);
     expect(group.classList.contains('gcal-align-center')).toBe(true);
   });
+
+  test('reuses existing wrapper and clears previous toolbar', () => {
+    const { doc, header, wrapper } = renderToolbar();
+    const stale = doc.createElement('div');
+    wrapper.appendChild(stale);
+    injectToolbar(doc, header);
+    const newWrapper = header.nextElementSibling;
+    expect(newWrapper).toBe(wrapper);
+    expect(newWrapper.contains(stale)).toBe(false);
+  });
 });
 
 describe('update helpers', () => {
@@ -118,6 +129,133 @@ describe('update helpers', () => {
     expect(favourites.hidden).toBe(false);
     expect(favourites.hasAttribute('aria-hidden')).toBe(false);
   });
+
+  test('gracefully handles missing elements', () => {
+    const emptyDoc = document.implementation.createHTMLDocument('empty');
+    expect(() => updateButtonTextView(false, emptyDoc)).not.toThrow();
+    expect(() => updateAlignmentView('center', emptyDoc)).not.toThrow();
+    expect(() => updateFavouritesVisibility(true, emptyDoc)).not.toThrow();
+    expect(() => refreshUI(emptyDoc)).not.toThrow();
+  });
+});
+
+describe('keyboard accessibility', () => {
+  test('Escape focuses the message list and applies tabindex', () => {
+    const dom = new JSDOM('<div class="aeH"></div><div class="UI"></div>');
+    const doc = dom.window.document;
+    global.document = doc;
+    const list = doc.querySelector('.UI');
+    list.focus = jest.fn();
+    injectToolbar(doc, doc.querySelector('.aeH'));
+    const bar = doc.querySelector(SELECTORS.filterBar);
+    bar.dispatchEvent(new dom.window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    expect(list.getAttribute('tabindex')).toBe('-1');
+    expect(list.focus).toHaveBeenCalled();
+  });
+
+  test('Escape retains existing tabindex when already present', () => {
+    const dom = new JSDOM('<div class="aeH"></div><div class="UI" tabindex="0"></div>');
+    const doc = dom.window.document;
+    global.document = doc;
+    const list = doc.querySelector('.UI');
+    list.focus = jest.fn();
+    injectToolbar(doc, doc.querySelector('.aeH'));
+    const bar = doc.querySelector(SELECTORS.filterBar);
+    bar.dispatchEvent(new dom.window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    expect(list.getAttribute('tabindex')).toBe('0');
+    expect(list.focus).toHaveBeenCalled();
+  });
+
+  test('Arrow navigation cycles focus and triggers click', () => {
+    const dom = new JSDOM('<div class="aeH"></div>');
+    const doc = dom.window.document;
+    global.document = doc;
+    const firstButton = { focus: jest.fn(), click: jest.fn(), hidden: false };
+    const secondButton = { focus: jest.fn(), click: jest.fn(), hidden: false };
+    const fakeGroup = {
+      querySelectorAll: () => [firstButton, secondButton],
+    };
+    const preventDefault = jest.fn();
+    const originalDescriptor = Object.getOwnPropertyDescriptor(global.document.__proto__, 'activeElement')
+      || Object.getOwnPropertyDescriptor(Object.getPrototypeOf(global.document), 'activeElement');
+    Object.defineProperty(global.document, 'activeElement', {
+      configurable: true,
+      get: () => firstButton,
+    });
+    handleArrowNavigation({ key: 'ArrowRight', currentTarget: fakeGroup, preventDefault });
+    expect(preventDefault).toHaveBeenCalled();
+    expect(secondButton.focus).toHaveBeenCalled();
+    expect(secondButton.click).toHaveBeenCalled();
+    if (originalDescriptor) {
+      Object.defineProperty(global.document, 'activeElement', originalDescriptor);
+    } else {
+      delete global.document.activeElement;
+    }
+  });
+
+  test('ArrowLeft wraps focus to the last button', () => {
+    const dom = new JSDOM('<div class="aeH"></div>');
+    const doc = dom.window.document;
+    global.document = doc;
+    const firstButton = { focus: jest.fn(), click: jest.fn(), hidden: false };
+    const lastButton = { focus: jest.fn(), click: jest.fn(), hidden: false };
+    const fakeGroup = {
+      querySelectorAll: () => [firstButton, lastButton],
+    };
+    const preventDefault = jest.fn();
+    const originalDescriptor = Object.getOwnPropertyDescriptor(global.document.__proto__, 'activeElement')
+      || Object.getOwnPropertyDescriptor(Object.getPrototypeOf(global.document), 'activeElement');
+    Object.defineProperty(global.document, 'activeElement', {
+      configurable: true,
+      get: () => firstButton,
+    });
+    handleArrowNavigation({ key: 'ArrowLeft', currentTarget: fakeGroup, preventDefault });
+    expect(preventDefault).toHaveBeenCalled();
+    expect(lastButton.focus).toHaveBeenCalled();
+    expect(lastButton.click).toHaveBeenCalled();
+    if (originalDescriptor) {
+      Object.defineProperty(global.document, 'activeElement', originalDescriptor);
+    } else {
+      delete global.document.activeElement;
+    }
+  });
+
+  test('ignores non-arrow keys', () => {
+    const fakeGroup = {
+      querySelectorAll: jest.fn(),
+    };
+    const preventDefault = jest.fn();
+    handleArrowNavigation({ key: 'Enter', currentTarget: fakeGroup, preventDefault });
+    expect(fakeGroup.querySelectorAll).not.toHaveBeenCalled();
+    expect(preventDefault).not.toHaveBeenCalled();
+  });
+
+  test('returns early when no button is focused', () => {
+    const dom = new JSDOM('<div class="aeH"></div>');
+    const doc = dom.window.document;
+    global.document = doc;
+    const firstButton = { focus: jest.fn(), click: jest.fn(), hidden: false };
+    const secondButton = { focus: jest.fn(), click: jest.fn(), hidden: false };
+    const fakeGroup = {
+      querySelectorAll: () => [firstButton, secondButton],
+    };
+    const preventDefault = jest.fn();
+    const originalDescriptor = Object.getOwnPropertyDescriptor(global.document.__proto__, 'activeElement')
+      || Object.getOwnPropertyDescriptor(Object.getPrototypeOf(global.document), 'activeElement');
+    Object.defineProperty(global.document, 'activeElement', {
+      configurable: true,
+      get: () => null,
+    });
+    handleArrowNavigation({ key: 'ArrowRight', currentTarget: fakeGroup, preventDefault });
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(secondButton.focus).not.toHaveBeenCalled();
+    expect(secondButton.click).not.toHaveBeenCalled();
+    if (originalDescriptor) {
+      Object.defineProperty(global.document, 'activeElement', originalDescriptor);
+    } else {
+      delete global.document.activeElement;
+    }
+  });
 });
 
 describe('refreshUI', () => {
@@ -138,6 +276,26 @@ describe('refreshUI', () => {
     refreshUI(doc);
     const liveRegion = wrapper.querySelector(SELECTORS.liveRegion);
     expect(liveRegion.textContent).toBe('Filter set to Everything');
+  });
+
+  test('uses attachment labels when current mode is attachment specific', () => {
+    const { doc, wrapper } = renderToolbar();
+    setCurrentMode(MODES.PDF);
+    refreshUI(doc);
+    const liveRegion = wrapper.querySelector(SELECTORS.liveRegion);
+    expect(liveRegion.textContent).toBe('Filter set to PDFs Only');
+  });
+
+  test('handles missing live region without errors', () => {
+    const dom = new JSDOM('<div class="aeH"></div>');
+    const doc = dom.window.document;
+    global.document = doc;
+    injectToolbar(doc, doc.querySelector('.aeH'));
+    const bar = doc.querySelector(SELECTORS.filterBar);
+    expect(bar).not.toBeNull();
+    const liveRegion = doc.querySelector(SELECTORS.liveRegion);
+    liveRegion?.remove();
+    expect(() => refreshUI(doc)).not.toThrow();
   });
 });
 

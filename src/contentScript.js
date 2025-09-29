@@ -49,18 +49,25 @@ function main() {
   injectFont();
   loadState().then(() => {
     applyTheme(document, themePreference);
-    waitForGmailChrome().then((gmailToolbarHeader) => {
-      injectToolbar(document, gmailToolbarHeader);
-      updateButtonTextView(showButtonText); // Apply initial state
-      updateAlignmentView(toolbarAlignment);
-      updateFavouritesVisibility(showFavouritesButton);
-      refreshUI(document);
+    waitForGmailChrome()
+      .then((gmailToolbarHeader) => {
+        injectToolbar(document, gmailToolbarHeader);
+        updateButtonTextView(showButtonText); // Apply initial state
+        updateAlignmentView(toolbarAlignment);
+        updateFavouritesVisibility(showFavouritesButton);
+        refreshUI(document);
 
-      waitForMessageTable().then(() => {
-        applyFilter(document);
-        observeMessageList(document);
+        waitForMessageTable().then(() => {
+          applyFilter(document);
+          observeMessageList(document);
+        });
+      })
+      .catch((error) => {
+        console.error('Failed to find Gmail toolbar:', error);
+        console.error(
+          'Gmail selectors may have changed. Check SELECTORS in src/modules/constants.js',
+        );
       });
-    });
   });
   setupGmailToolbarObserver(document);
 }

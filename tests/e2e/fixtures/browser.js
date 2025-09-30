@@ -36,17 +36,16 @@ export async function launchExtensionContext(locale, colorScheme) {
     '--disable-extensions-except=' + EXTENSION_PATH,
     '--load-extension=' + EXTENSION_PATH,
     locale ? `--lang=${locale}` : '--lang=en-US',
+    // Stability flags for CI environments
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--disable-dev-shm-usage',
   ];
 
-  if (!HEADFUL && !DEBUG) {
-    launchArgs.push('--headless=new', '--disable-gpu');
-  }
-
-  // Stability flags for CI environments
-  launchArgs.push('--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage');
-
+  // IMPORTANT: Chrome MV3 service workers don't start in headless mode
+  // Always run in headed mode (use xvfb-run on Linux/WSL for virtual display)
   const context = await chromium.launchPersistentContext('', {
-    headless: !HEADFUL && !DEBUG,
+    headless: false, // Force headed mode for extension support
     locale,
     colorScheme,
     args: launchArgs,

@@ -1,6 +1,3 @@
-// NOTE: Disabled Playwright fixtures – Chrome/Chromium cannot launch reliably inside WSL.
-// Keep this file commented out until host-level Chrome access is confirmed (see README › WSL Playwright Workaround).
-/*
 import { test as base } from '@playwright/test';
 import { launchExtensionContext } from './browser.js';
 import { startCoverage, collectCoverage } from './coverage.js';
@@ -44,11 +41,10 @@ export const test = base.extend({
     await use(extensionId);
   },
 
-  gmailHtml: async (_, use) => {
+  gmailHtml: async ({}, use) => {
     const html = loadGmailFixture();
     await use(html);
   },
 });
 
 export const expect = test.expect;
-*/

@@ -41,6 +41,8 @@ This directory contains Playwright-based e2e tests for the Gmail Calendar Option
 npm run e2e
 ```
 
+**Note**: Tests automatically skip in WSL2 environments (see WSL2 Limitations section below).
+
 ### Specific Spec File
 ```bash
 npm run e2e -- tests/e2e/toolbar-a11y.spec.js
@@ -60,6 +62,31 @@ PLAYWRIGHT_DEBUG=1 npm run e2e
 ```bash
 E2E_WORKERS=4 npm run e2e
 ```
+
+## WSL2 Limitations
+
+**Chrome MV3 extensions cannot run in Playwright under WSL2** due to the following technical limitations:
+
+1. **Service workers don't start in headless mode** - Known Chromium limitation with MV3 extensions
+2. **Browser crashes during page navigation in headed mode** - Even with xvfb virtual display
+3. **X11/Xvfb instability** - Display server issues cause context termination
+
+### Workaround Strategy
+
+Tests automatically detect WSL2 environments by checking `uname -r` for "microsoft" or "WSL" strings. When detected, all tests skip with a clear message.
+
+**For WSL2 developers:**
+- ✅ Run unit tests locally: `npm run test:unit` (runs in pre-commit hook)
+- ✅ Use manual browser testing for UI validation
+- ✅ Run E2E tests on native system when making significant changes
+- ⚠️ Force run (not recommended): `E2E_FORCE=1 npm run e2e` (will fail)
+
+**For native environments:**
+- ✅ Tests work on native Linux (non-WSL)
+- ✅ Tests work on macOS
+- ✅ Tests work on native Windows
+
+The skip logic is in `playwright.config.js` and respects `CI=true` environment variable (always runs in CI).
 
 ## Writing New Tests
 

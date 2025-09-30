@@ -23,10 +23,11 @@ npm test                  # Run Jest in watch mode
 npm run test:unit         # Run Jest unit tests (--runInBand for CI stability)
 npm run lint:locales      # Validate i18n message files for key/placeholder parity
 npm run audit:options     # Run Lighthouse against built options page
+npm run e2e               # Run Playwright end-to-end tests (CI/native Linux/macOS/Windows only)
+npm run test:e2e:ci       # Run e2e tests with CI reporters (JUnit + HTML)
 
-# Playwright e2e tests are currently COMMENTED OUT due to WSL Chrome limitations
-# npm run e2e             # (disabled - see WSL Playwright section)
-# npm run test:e2e:ci     # (disabled - see WSL Playwright section)
+# Note: E2E tests automatically skip in WSL2 environments due to Chrome extension limitations
+# Run E2E tests manually on native systems when making significant changes
 ```
 
 ### Loading the Extension
@@ -116,33 +117,38 @@ All user-facing strings use `chrome.i18n.getMessage('key')` from `src/_locales/{
 - Pattern: `**/*.test.js`
 
 #### Playwright (`playwright.config.js`)
-- **CURRENTLY DISABLED**: All Playwright tests are commented out because development is happening in WSL where Chrome/Chromium cannot launch
-- When tests were active: Fixtures in `tests/e2e/fixtures/extension.js` loaded unpacked extension, used offline Gmail fixture (`tests/e2e/fixtures/gmail.html`), captured V8 coverage
-- **Do not attempt to run `npm run e2e` or uncomment tests** until Chrome is accessible from the environment
+- Fixtures in `tests/e2e/fixtures/extension.js` load unpacked extension, use offline Gmail fixture (`tests/e2e/fixtures/gmail.html`), capture V8 coverage
+- Environment validation: `npm run validate:env` checks browser availability
+- Configuration: Workers, retries, reporters (list/JUnit/HTML), video capture on failure
 
-#### Re-enabling Playwright (Future)
-When moving to a Chrome-capable environment (native Windows/Linux/macOS):
-1. Uncomment test code in `tests/e2e/fixtures/extension.js` and spec files
-2. Run `npx playwright install`
-3. Verify `npm run validate:env` passes
-4. Run `npm run e2e -- --reporter=line` to confirm
-5. Update this documentation to reflect restored e2e testing
+**WSL2 Limitation**: Chrome MV3 extensions with service workers cannot run in Playwright under WSL2 due to browser crashes during page navigation. Tests automatically skip when `uname -r` contains "microsoft" or "WSL". E2E tests work correctly in:
+- Native Linux (non-WSL)
+- macOS
+- Native Windows
+
+For local development in WSL2, rely on unit tests (`npm run test:unit`) and manual browser testing. Run E2E tests manually on native systems when making significant changes.
 
 ## Development Workflow
 
 ### Commit Convention
 Follow [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `chore:`, `docs:`, `test:`, etc.
 
+### Before Committing
+The pre-commit hook automatically runs:
+- ESLint (`npm run lint`)
+- Unit tests (`npm run test:unit`)
+
+E2E tests (`npm run e2e`) are available but skip in WSL. Run manually when needed on native systems.
+
 ### Before Submitting PR
-1. Create an issue describing the proposal
-2. Create feature branch: `git checkout -b feature/your-branch`
-3. Ensure tests pass: `npm run test:unit && npm run lint`
-4. Format code: `npm run format`
-5. Validate locales: `npm run lint:locales`
-6. Update `CHANGELOG.md` under **Unreleased** section
-7. Rebuild extension: `npm run build`
-8. Manual smoke test in Chrome
-9. Open PR against `main`
+1. Create an issue describing the proposal (if significant change)
+2. Ensure pre-commit tests passed
+3. Format code: `npm run format`
+4. Validate locales: `npm run lint:locales` (if changed)
+5. Update `CHANGELOG.md` under **Unreleased** section
+6. Rebuild extension: `npm run build`
+7. Manual smoke test in Chrome
+8. Open PR against `main` (or push directly for small changes)
 
 ### Manual Testing Checklist
 1. Load unpacked extension and verify toolbar appears below Gmail's action bar

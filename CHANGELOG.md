@@ -8,6 +8,17 @@ All notable changes to this project will be documented in this file.
 - feat: Dynamically set HTML lang attribute based on browser locale in options page.
 - docs: Add future i18n roadmap items for completing translations and adding language switching UI.
 
+## [1.0.0] - 2025-09-30
+- chore: Major version bump to 1.0.0 marking stable release.
+- test: Complete E2E test suite with 7 specs and Page Object Model pattern.
+- test: Add WSL2-aware test infrastructure with automatic skip detection.
+- test: Achieve 98.67% unit test coverage across 106 tests.
+- chore: Implement automated pre-commit hooks (ESLint + unit tests).
+- fix: Resolve ESLint errors in test files.
+- fix: Update Husky pre-commit hook for v10 compatibility.
+- fix: Make pre-commit hook resilient to npm PATH issues.
+- chore: Add test artifacts to .gitignore.
+
 ## [0.1.0] - 2025-07-08
 - feat: Implement granular attachment filtering (images, PDFs, documents, spreadsheets, presentations).
 - feat: Move Favourites button to the end of the toolbar.

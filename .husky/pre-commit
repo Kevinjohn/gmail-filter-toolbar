@@ -1,10 +1,19 @@
+#!/bin/sh
+
+# Ensure npm is in PATH for Windows Git Bash
+command -v npm >/dev/null 2>&1 || {
+  echo "⚠️  npm not found in PATH - skipping pre-commit checks"
+  echo "   Run 'npm run lint && npm run test:unit' manually before pushing"
+  exit 0
+}
+
 # Run linting on all files
 echo "🔍  Pre-commit: Running ESLint..."
-npm run lint
+npm run lint || exit 1
 
 # Run unit tests (E2E tests will skip automatically in WSL)
 echo "🧪  Pre-commit: Running unit tests..."
-npm run test:unit
+npm run test:unit || exit 1
 
 # Note: E2E tests skipped in WSL (run manually when needed: npm run e2e)
 echo "✅  Pre-commit checks passed!"

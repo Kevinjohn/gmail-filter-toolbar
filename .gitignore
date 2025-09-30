@@ -138,3 +138,9 @@ dist
 # KJ added
 .DS_store
 GIT-COMMIT.md
+
+# Test artifacts (Playwright, Jest, coverage reports)
+artifacts/
+test-results/
+playwright-report/
+.playwright/

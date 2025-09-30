@@ -36,23 +36,23 @@
     "description": "Button to show only starred/favourite e-mails."
   },
   "button_filter_images": {
-    "message": "Images",
+    "message": "Képek",
     "description": "Button to show only emails with image attachments."
   },
   "button_filter_pdfs": {
-    "message": "PDFs",
+    "message": "PDF-ek",
     "description": "Button to show only emails with PDF attachments."
   },
   "button_filter_documents": {
-    "message": "Documents",
+    "message": "Dokumentumok",
     "description": "Button to show only emails with document attachments."
   },
   "button_filter_spreadsheets": {
-    "message": "Spreadsheets",
+    "message": "Táblázatok",
     "description": "Button to show only emails with spreadsheet attachments."
   },
   "button_filter_presentations": {
-    "message": "Presentations",
+    "message": "Prezentációk",
     "description": "Button to show only emails with presentation attachments."
   },
   "page_title": {
@@ -76,47 +76,47 @@
     "description": "Label for the debug mode checkbox."
   },
   "options_show_text_legend": {
-    "message": "Display",
+    "message": "Megjelenítés",
     "description": "Legend heading for button text options."
   },
   "options_alignment_legend": {
-    "message": "Toolbar layout",
+    "message": "Eszköztár elrendezése",
     "description": "Legend heading for toolbar layout options."
   },
   "options_alignment_label": {
-    "message": "Toolbar alignment",
+    "message": "Eszköztár igazítása",
     "description": "Label for the toolbar alignment control."
   },
   "options_alignment_start": {
-    "message": "Start",
+    "message": "Eleje",
     "description": "Option to align the toolbar buttons to the start."
   },
   "options_alignment_center": {
-    "message": "Center",
+    "message": "Közép",
     "description": "Option to align the toolbar buttons to the centre."
   },
   "options_show_favourites_label": {
-    "message": "Show Favourites button",
+    "message": "Mutasd a Kedvencek gombot",
     "description": "Label for the option to display the Favourites filter button."
   },
   "options_theme_legend": {
-    "message": "Appearance",
+    "message": "Megjelenés",
     "description": "Legend heading for theme options."
   },
   "options_theme_label": {
-    "message": "Extension theme",
+    "message": "Bővítmény témája",
     "description": "Label for the theme selection control."
   },
   "options_theme_system": {
-    "message": "Match system theme",
+    "message": "Rendszer téma használata",
     "description": "Option to follow the operating system theme preference."
   },
   "options_theme_light": {
-    "message": "Light",
+    "message": "Világos",
     "description": "Option to always use the light theme."
   },
   "options_theme_dark": {
-    "message": "Dark",
+    "message": "Sötét",
     "description": "Option to always use the dark theme."
   },
   "alt_calendar_event": {
@@ -136,7 +136,7 @@
     "description": "Alt text for the starred icon/tooltip"
   },
   "optionShowButtonText": {
-    "message": "Show text on filter buttons",
+    "message": "Szöveg megjelenítése a szűrőgombokon",
     "description": "Label for the option to show or hide text on the filter buttons."
   }
 }

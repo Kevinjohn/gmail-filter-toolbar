@@ -1,142 +1,142 @@
 {
   "extension_name": {
-    "message": "Gmail Takvim Seçenekleri",
+    "message": "Gmail 日历选项",
     "description": "Name of the extension."
   },
   "extension_description": {
-    "message": "Gmail içindeki takvim davetlerinin görünürlüğünü değiştirin.",
+    "message": "在 Gmail 中切换日历邀请的显示。",
     "description": "Description of the extension."
   },
   "label_toolbar": {
-    "message": "Takvim filtresi",
+    "message": "日历筛选器",
     "description": "ARIA label for the main toolbar."
   },
   "label_options": {
-    "message": "E-posta filtresi: ",
+    "message": "邮件筛选：",
     "description": "Label preceding the filter buttons."
   },
   "btn_all": {
-    "message": "Tüm E-postalar",
+    "message": "全部邮件",
     "description": "Button to show all e-mails."
   },
   "btn_mail": {
-    "message": "Sadece e-posta",
+    "message": "仅邮件",
     "description": "Button to hide calendar e-mails."
   },
   "btn_cal": {
-    "message": "Sadece takvim",
+    "message": "仅日历",
     "description": "Button to show only calendar e-mails."
   },
   "btn_attach": {
-    "message": "Yalnızca ekler",
+    "message": "仅附件",
     "description": "Button to show only e-mails with attachments."
   },
   "btn_fav": {
-    "message": "Yalnızca favoriler",
+    "message": "仅收藏",
     "description": "Button to show only starred/favourite e-mails."
   },
   "button_filter_images": {
-    "message": "Görseller",
+    "message": "图片",
     "description": "Button to show only emails with image attachments."
   },
   "button_filter_pdfs": {
-    "message": "PDF'ler",
+    "message": "PDF",
     "description": "Button to show only emails with PDF attachments."
   },
   "button_filter_documents": {
-    "message": "Belgeler",
+    "message": "文档",
     "description": "Button to show only emails with document attachments."
   },
   "button_filter_spreadsheets": {
-    "message": "Elektronik tablolar",
+    "message": "表格",
     "description": "Button to show only emails with spreadsheet attachments."
   },
   "button_filter_presentations": {
-    "message": "Sunular",
+    "message": "演示文稿",
     "description": "Button to show only emails with presentation attachments."
   },
   "page_title": {
-    "message": "Takvim Seçenekleri",
+    "message": "日历选项",
     "description": "Title for the extension's options page."
   },
   "options_debug": {
-    "message": "Hata ayıklama modunu etkinleştir (filtrelenmiş satırları mavi göster)",
+    "message": "启用调试模式（以蓝色显示筛选的行）",
     "description": "Label for the debug mode checkbox."
   },
   "options_page_description": {
-    "message": "Gmail Takvim Seçenekleri uzantısı için ayarlar.",
+    "message": "Gmail 日历选项扩展的设置。",
     "description": "A short summary of the options page."
   },
   "options_debug_legend": {
-    "message": "Hata ayıklama",
+    "message": "调试",
     "description": "Legend for the debug settings fieldset."
   },
   "options_debug_label": {
-    "message": "Hata ayıklama modunu etkinleştir (filtrelenen satırları gizlemek yerine mavi renkle vurgular)",
+    "message": "启用调试模式（将筛选的行用蓝色高亮而不是隐藏）",
     "description": "Label for the debug mode checkbox."
   },
   "options_show_text_legend": {
-    "message": "Görünüm",
+    "message": "显示",
     "description": "Legend heading for button text options."
   },
   "options_alignment_legend": {
-    "message": "Araç çubuğu düzeni",
+    "message": "工具栏布局",
     "description": "Legend heading for toolbar layout options."
   },
   "options_alignment_label": {
-    "message": "Araç çubuğu hizalaması",
+    "message": "工具栏对齐",
     "description": "Label for the toolbar alignment control."
   },
   "options_alignment_start": {
-    "message": "Başlangıç",
+    "message": "开头",
     "description": "Option to align the toolbar buttons to the start."
   },
   "options_alignment_center": {
-    "message": "Ortala",
+    "message": "居中",
     "description": "Option to align the toolbar buttons to the centre."
   },
   "options_show_favourites_label": {
-    "message": "Favoriler düğmesini göster",
+    "message": "显示收藏按钮",
     "description": "Label for the option to display the Favourites filter button."
   },
   "options_theme_legend": {
-    "message": "Görünüm",
+    "message": "外观",
     "description": "Legend heading for theme options."
   },
   "options_theme_label": {
-    "message": "Uzantı teması",
+    "message": "扩展主题",
     "description": "Label for the theme selection control."
   },
   "options_theme_system": {
-    "message": "Sistem temasını kullan",
+    "message": "跟随系统主题",
     "description": "Option to follow the operating system theme preference."
   },
   "options_theme_light": {
-    "message": "Açık",
+    "message": "浅色",
     "description": "Option to always use the light theme."
   },
   "options_theme_dark": {
-    "message": "Koyu",
+    "message": "深色",
     "description": "Option to always use the dark theme."
   },
   "alt_calendar_event": {
-    "message": "Takvim etkinliği",
+    "message": "日历事件",
     "description": "The alt text for the calendar event icon in an email row."
   },
   "filter_status_update": {
-    "message": "Filtre $1 olarak ayarlandı",
+    "message": "筛选器设为 $1",
     "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
   },
   "extension_action_title": {
-    "message": "Takvim filtresi Gmail sayfalarına gömülüdür",
+    "message": "日历筛选器已嵌入 Gmail 页面",
     "description": "The title of the extension's action button in the browser toolbar."
   },
   "alt_starred": {
-    "message": "Yıldızlı",
+    "message": "星标",
     "description": "Alt text for the starred icon/tooltip"
   },
   "optionShowButtonText": {
-    "message": "Filtre düğmelerinde metni göster",
+    "message": "在筛选按钮上显示文本",
     "description": "Label for the option to show or hide text on the filter buttons."
   }
 }

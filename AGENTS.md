@@ -1,16 +1,16 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-The extension code resides in `src/`. `src/modules/` hosts logic modules like `background.js`, `filter.js`, and `toolbar.js`, with shared helpers under `utils/`. UI assets (icons, CSS, HTML) live in `src/icons/`, `options.html`, and `styles.css`, while localized strings are in `src/_locales/`. Built artifacts output to `dist/`. Tests for each module are in `tests/` (for example `filter.test.js`) with shared setup in `tests/setup.js`.
+The extension source lives under `src/`, with feature logic in `src/modules/` (e.g., `background.js`, `filter.js`, `toolbar.js`) and shared helpers in `src/utils/`. UI assets such as icons, styles, and option markup sit in `src/icons/`, `src/styles.css`, and `src/options.html`. Localized strings are versioned in `src/_locales/`. Jest specs mirror module names in `tests/` (for example `tests/filter.test.js`) with common bootstrapping in `tests/setup.js`. Production bundles are emitted to `dist/` via Vite.
 
 ## Build, Test, and Development Commands
-Use `npm run build` to generate the production bundle via Vite into `dist/`. `npm test` runs Jest unit suites with the experimental module flags already configured. `npm run e2e` invokes Playwright UI checks—run `npx playwright install` once if browsers are missing. `npm run lint` applies ESLint recommendations, and `npm run format` formats JS/CSS/HTML/JSON under `src/`.
+Use `npm run build` to produce the Vite bundle in `dist/`. Run `npm test` for the Jest unit suite with preconfigured JSDOM shims. Execute `npm run e2e` for Playwright flows that exercise extension UI; install browsers once using `npx playwright install`. Lint code with `npm run lint`, and normalize formatting through `npm run format` before committing.
 
 ## Coding Style & Naming Conventions
-Write ES2022 modules with top-level `import`/`export`. Prefer camelCase for variables and functions, PascalCase for exported factories, and kebab-case for asset filenames. Keep files scoped by feature (`toolbar.js` pairs with `toolbar.test.js`). The project uses ESLint (`.eslintrc.cjs`) with the `eslint:recommended` ruleset and Prettier configured for single quotes and 100-character lines. Adopt two-space indentation, matching existing files.
+Write ES2022 modules with top-level `import`/`export` syntax. Follow two-space indentation, single quotes, and 100-character lines enforced by Prettier. Use camelCase for variables and functions, PascalCase for exported factories, and kebab-case for asset filenames. Keep files organized by feature so `toolbar.js` pairs with `toolbar.test.js` and relevant assets.
 
 ## Testing Guidelines
-Write Jest unit tests beside equivalent module names in `tests/`, using `describe('<module>')` blocks. Stub DOM APIs through `tests/setup.js` and prefer data attributes when targeting nodes. Add Playwright specs for user flows that cross background/content boundaries. Ensure new features include at least one Jest test and update localization fixtures when adding new strings.
+Place new Jest specs beside their modules in `tests/`, wrapping suites in `describe('<module>')`. Stub DOM APIs through `tests/setup.js` instead of ad-hoc globals. Add at least one Playwright spec whenever a feature crosses background, content, or UI boundaries. Aim to keep unit tests deterministic and fast to support `npm test --watch` during development.
 
 ## Commit & Pull Request Guidelines
-Commits should follow Conventional Commits (e.g., `fix: adjust toolbar toggle`) as seen in `git log`. Keep commits focused and document manual migration steps in the body if required. Pull requests need a concise summary, testing evidence (command output or UI screenshots), and linked issue or task IDs. Request review before merging and wait for CI checks to pass prior to squash-merging.
+Adopt Conventional Commit prefixes such as `fix:`, `feat:`, or `chore:` with focused scope (e.g., `fix: adjust toolbar toggle`). Reference manual migration steps in the body when required. Pull requests should summarize the change, link relevant issues or tasks, and provide evidence of testing (command output or screenshots). Request review and wait for CI to pass before performing a squash merge.

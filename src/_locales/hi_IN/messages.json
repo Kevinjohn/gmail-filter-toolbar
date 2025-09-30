@@ -1,142 +1,142 @@
 {
   "extension_name": {
-    "message": "Gmail Takvim Seçenekleri",
+    "message": "जीमेल कैलेंडर विकल्प",
     "description": "Name of the extension."
   },
   "extension_description": {
-    "message": "Gmail içindeki takvim davetlerinin görünürlüğünü değiştirin.",
+    "message": "Gmail में कैलेंडर निमंत्रण की दृश्यता चालू या बंद करें।",
     "description": "Description of the extension."
   },
   "label_toolbar": {
-    "message": "Takvim filtresi",
+    "message": "कैलेंडर फ़िल्टर",
     "description": "ARIA label for the main toolbar."
   },
   "label_options": {
-    "message": "E-posta filtresi: ",
+    "message": "ईमेल फ़िल्टर: ",
     "description": "Label preceding the filter buttons."
   },
   "btn_all": {
-    "message": "Tüm E-postalar",
+    "message": "सभी ईमेल",
     "description": "Button to show all e-mails."
   },
   "btn_mail": {
-    "message": "Sadece e-posta",
+    "message": "केवल ईमेल",
     "description": "Button to hide calendar e-mails."
   },
   "btn_cal": {
-    "message": "Sadece takvim",
+    "message": "केवल कैलेंडर",
     "description": "Button to show only calendar e-mails."
   },
   "btn_attach": {
-    "message": "Yalnızca ekler",
+    "message": "केवल अनुलग्नक",
     "description": "Button to show only e-mails with attachments."
   },
   "btn_fav": {
-    "message": "Yalnızca favoriler",
+    "message": "केवल पसंदीदा",
     "description": "Button to show only starred/favourite e-mails."
   },
   "button_filter_images": {
-    "message": "Görseller",
+    "message": "छवियाँ",
     "description": "Button to show only emails with image attachments."
   },
   "button_filter_pdfs": {
-    "message": "PDF'ler",
+    "message": "PDF",
     "description": "Button to show only emails with PDF attachments."
   },
   "button_filter_documents": {
-    "message": "Belgeler",
+    "message": "दस्तावेज़",
     "description": "Button to show only emails with document attachments."
   },
   "button_filter_spreadsheets": {
-    "message": "Elektronik tablolar",
+    "message": "स्प्रेडशीट",
     "description": "Button to show only emails with spreadsheet attachments."
   },
   "button_filter_presentations": {
-    "message": "Sunular",
+    "message": "प्रस्तुतियाँ",
     "description": "Button to show only emails with presentation attachments."
   },
   "page_title": {
-    "message": "Takvim Seçenekleri",
+    "message": "कैलेंडर विकल्प",
     "description": "Title for the extension's options page."
   },
   "options_debug": {
-    "message": "Hata ayıklama modunu etkinleştir (filtrelenmiş satırları mavi göster)",
+    "message": "डीबग मोड सक्षम करें (फ़िल्टर की गई पंक्तियों को नीले रंग में दिखाएँ)",
     "description": "Label for the debug mode checkbox."
   },
   "options_page_description": {
-    "message": "Gmail Takvim Seçenekleri uzantısı için ayarlar.",
+    "message": "Gmail कैलेंडर विकल्प एक्सटेंशन की सेटिंग्स।",
     "description": "A short summary of the options page."
   },
   "options_debug_legend": {
-    "message": "Hata ayıklama",
+    "message": "डीबगिंग",
     "description": "Legend for the debug settings fieldset."
   },
   "options_debug_label": {
-    "message": "Hata ayıklama modunu etkinleştir (filtrelenen satırları gizlemek yerine mavi renkle vurgular)",
+    "message": "डीबग मोड सक्षम करें (फ़िल्टर की गई पंक्तियों को छिपाने के बजाय नीले रंग में हाइलाइट करता है)",
     "description": "Label for the debug mode checkbox."
   },
   "options_show_text_legend": {
-    "message": "Görünüm",
+    "message": "प्रदर्शन",
     "description": "Legend heading for button text options."
   },
   "options_alignment_legend": {
-    "message": "Araç çubuğu düzeni",
+    "message": "टूलबार लेआउट",
     "description": "Legend heading for toolbar layout options."
   },
   "options_alignment_label": {
-    "message": "Araç çubuğu hizalaması",
+    "message": "टूलबार संरेखण",
     "description": "Label for the toolbar alignment control."
   },
   "options_alignment_start": {
-    "message": "Başlangıç",
+    "message": "आरंभ",
     "description": "Option to align the toolbar buttons to the start."
   },
   "options_alignment_center": {
-    "message": "Ortala",
+    "message": "केंद्र",
     "description": "Option to align the toolbar buttons to the centre."
   },
   "options_show_favourites_label": {
-    "message": "Favoriler düğmesini göster",
+    "message": "पसंदीदा बटन दिखाएँ",
     "description": "Label for the option to display the Favourites filter button."
   },
   "options_theme_legend": {
-    "message": "Görünüm",
+    "message": "दिखावट",
     "description": "Legend heading for theme options."
   },
   "options_theme_label": {
-    "message": "Uzantı teması",
+    "message": "एक्सटेंशन थीम",
     "description": "Label for the theme selection control."
   },
   "options_theme_system": {
-    "message": "Sistem temasını kullan",
+    "message": "सिस्टम थीम अपनाएँ",
     "description": "Option to follow the operating system theme preference."
   },
   "options_theme_light": {
-    "message": "Açık",
+    "message": "हल्का",
     "description": "Option to always use the light theme."
   },
   "options_theme_dark": {
-    "message": "Koyu",
+    "message": "गहरा",
     "description": "Option to always use the dark theme."
   },
   "alt_calendar_event": {
-    "message": "Takvim etkinliği",
+    "message": "कैलेंडर ईवेंट",
     "description": "The alt text for the calendar event icon in an email row."
   },
   "filter_status_update": {
-    "message": "Filtre $1 olarak ayarlandı",
+    "message": "फ़िल्टर $1 पर सेट किया गया",
     "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
   },
   "extension_action_title": {
-    "message": "Takvim filtresi Gmail sayfalarına gömülüdür",
+    "message": "कैलेंडर फ़िल्टर Gmail पेज में एम्बेड किया गया है",
     "description": "The title of the extension's action button in the browser toolbar."
   },
   "alt_starred": {
-    "message": "Yıldızlı",
+    "message": "सितारा लगाया",
     "description": "Alt text for the starred icon/tooltip"
   },
   "optionShowButtonText": {
-    "message": "Filtre düğmelerinde metni göster",
+    "message": "फ़िल्टर बटनों पर पाठ दिखाएँ",
     "description": "Label for the option to show or hide text on the filter buttons."
   }
 }

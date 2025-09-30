@@ -36,7 +36,7 @@
     "description": "Button to show only starred/favourite e-mails."
   },
   "button_filter_images": {
-    "message": "Images",
+    "message": "Bilder",
     "description": "Button to show only emails with image attachments."
   },
   "button_filter_pdfs": {
@@ -44,15 +44,15 @@
     "description": "Button to show only emails with PDF attachments."
   },
   "button_filter_documents": {
-    "message": "Documents",
+    "message": "Dokumente",
     "description": "Button to show only emails with document attachments."
   },
   "button_filter_spreadsheets": {
-    "message": "Spreadsheets",
+    "message": "Tabellen",
     "description": "Button to show only emails with spreadsheet attachments."
   },
   "button_filter_presentations": {
-    "message": "Presentations",
+    "message": "Präsentationen",
     "description": "Button to show only emails with presentation attachments."
   },
   "page_title": {
@@ -76,47 +76,47 @@
     "description": "Label for the debug mode checkbox."
   },
   "options_show_text_legend": {
-    "message": "Display",
+    "message": "Anzeige",
     "description": "Legend heading for button text options."
   },
   "options_alignment_legend": {
-    "message": "Toolbar layout",
+    "message": "Symbolleistenlayout",
     "description": "Legend heading for toolbar layout options."
   },
   "options_alignment_label": {
-    "message": "Toolbar alignment",
+    "message": "Ausrichtung der Symbolleiste",
     "description": "Label for the toolbar alignment control."
   },
   "options_alignment_start": {
-    "message": "Start",
+    "message": "Anfang",
     "description": "Option to align the toolbar buttons to the start."
   },
   "options_alignment_center": {
-    "message": "Center",
+    "message": "Zentriert",
     "description": "Option to align the toolbar buttons to the centre."
   },
   "options_show_favourites_label": {
-    "message": "Show Favourites button",
+    "message": "Schaltfläche \"Favoriten\" anzeigen",
     "description": "Label for the option to display the Favourites filter button."
   },
   "options_theme_legend": {
-    "message": "Appearance",
+    "message": "Darstellung",
     "description": "Legend heading for theme options."
   },
   "options_theme_label": {
-    "message": "Extension theme",
+    "message": "Design der Erweiterung",
     "description": "Label for the theme selection control."
   },
   "options_theme_system": {
-    "message": "Match system theme",
+    "message": "Systemthema übernehmen",
     "description": "Option to follow the operating system theme preference."
   },
   "options_theme_light": {
-    "message": "Light",
+    "message": "Hell",
     "description": "Option to always use the light theme."
   },
   "options_theme_dark": {
-    "message": "Dark",
+    "message": "Dunkel",
     "description": "Option to always use the dark theme."
   },
   "alt_calendar_event": {
@@ -136,7 +136,7 @@
     "description": "Alt text for the starred icon/tooltip"
   },
   "optionShowButtonText": {
-    "message": "Show text on filter buttons",
+    "message": "Text auf Filter-Schaltflächen anzeigen",
     "description": "Label for the option to show or hide text on the filter buttons."
   }
 }

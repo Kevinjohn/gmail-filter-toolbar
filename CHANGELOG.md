@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.1.1] - 2025-09-30
+- docs: add `AGENTS.md` contributor guide for automation collaborators.
+- i18n: add Hindi, Arabic, and Simplified Chinese locales; complete translations across existing language bundles.
+- chore: bump extension version to 1.1.1.
+
 ## [1.1.0] - 2025-09-30
 - feat: Dynamically set HTML lang attribute based on browser locale in options page.
 - docs: Add future i18n roadmap items for completing translations and adding language switching UI.

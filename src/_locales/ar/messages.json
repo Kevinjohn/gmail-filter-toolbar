@@ -1,142 +1,142 @@
 {
   "extension_name": {
-    "message": "Gmail Takvim Seçenekleri",
+    "message": "خيارات تقويم Gmail",
     "description": "Name of the extension."
   },
   "extension_description": {
-    "message": "Gmail içindeki takvim davetlerinin görünürlüğünü değiştirin.",
+    "message": "تبديل ظهور دعوات التقويم داخل Gmail.",
     "description": "Description of the extension."
   },
   "label_toolbar": {
-    "message": "Takvim filtresi",
+    "message": "مرشح التقويم",
     "description": "ARIA label for the main toolbar."
   },
   "label_options": {
-    "message": "E-posta filtresi: ",
+    "message": "مرشح البريد: ",
     "description": "Label preceding the filter buttons."
   },
   "btn_all": {
-    "message": "Tüm E-postalar",
+    "message": "كل الرسائل",
     "description": "Button to show all e-mails."
   },
   "btn_mail": {
-    "message": "Sadece e-posta",
+    "message": "البريد فقط",
     "description": "Button to hide calendar e-mails."
   },
   "btn_cal": {
-    "message": "Sadece takvim",
+    "message": "التقويم فقط",
     "description": "Button to show only calendar e-mails."
   },
   "btn_attach": {
-    "message": "Yalnızca ekler",
+    "message": "المرفقات فقط",
     "description": "Button to show only e-mails with attachments."
   },
   "btn_fav": {
-    "message": "Yalnızca favoriler",
+    "message": "المفضلة فقط",
     "description": "Button to show only starred/favourite e-mails."
   },
   "button_filter_images": {
-    "message": "Görseller",
+    "message": "صور",
     "description": "Button to show only emails with image attachments."
   },
   "button_filter_pdfs": {
-    "message": "PDF'ler",
+    "message": "ملفات PDF",
     "description": "Button to show only emails with PDF attachments."
   },
   "button_filter_documents": {
-    "message": "Belgeler",
+    "message": "مستندات",
     "description": "Button to show only emails with document attachments."
   },
   "button_filter_spreadsheets": {
-    "message": "Elektronik tablolar",
+    "message": "جداول بيانات",
     "description": "Button to show only emails with spreadsheet attachments."
   },
   "button_filter_presentations": {
-    "message": "Sunular",
+    "message": "عروض تقديمية",
     "description": "Button to show only emails with presentation attachments."
   },
   "page_title": {
-    "message": "Takvim Seçenekleri",
+    "message": "خيارات التقويم",
     "description": "Title for the extension's options page."
   },
   "options_debug": {
-    "message": "Hata ayıklama modunu etkinleştir (filtrelenmiş satırları mavi göster)",
+    "message": "تفعيل وضع التصحيح (إظهار الصفوف المفلترة باللون الأزرق)",
     "description": "Label for the debug mode checkbox."
   },
   "options_page_description": {
-    "message": "Gmail Takvim Seçenekleri uzantısı için ayarlar.",
+    "message": "إعدادات إضافة خيارات تقويم Gmail.",
     "description": "A short summary of the options page."
   },
   "options_debug_legend": {
-    "message": "Hata ayıklama",
+    "message": "تصحيح الأخطاء",
     "description": "Legend for the debug settings fieldset."
   },
   "options_debug_label": {
-    "message": "Hata ayıklama modunu etkinleştir (filtrelenen satırları gizlemek yerine mavi renkle vurgular)",
+    "message": "تفعيل وضع التصحيح (يبرز الصفوف المفلترة باللون الأزرق بدل إخفائها)",
     "description": "Label for the debug mode checkbox."
   },
   "options_show_text_legend": {
-    "message": "Görünüm",
+    "message": "العرض",
     "description": "Legend heading for button text options."
   },
   "options_alignment_legend": {
-    "message": "Araç çubuğu düzeni",
+    "message": "تخطيط شريط الأدوات",
     "description": "Legend heading for toolbar layout options."
   },
   "options_alignment_label": {
-    "message": "Araç çubuğu hizalaması",
+    "message": "محاذاة شريط الأدوات",
     "description": "Label for the toolbar alignment control."
   },
   "options_alignment_start": {
-    "message": "Başlangıç",
+    "message": "بداية",
     "description": "Option to align the toolbar buttons to the start."
   },
   "options_alignment_center": {
-    "message": "Ortala",
+    "message": "منتصف",
     "description": "Option to align the toolbar buttons to the centre."
   },
   "options_show_favourites_label": {
-    "message": "Favoriler düğmesini göster",
+    "message": "إظهار زر المفضلة",
     "description": "Label for the option to display the Favourites filter button."
   },
   "options_theme_legend": {
-    "message": "Görünüm",
+    "message": "المظهر",
     "description": "Legend heading for theme options."
   },
   "options_theme_label": {
-    "message": "Uzantı teması",
+    "message": "سمة الإضافة",
     "description": "Label for the theme selection control."
   },
   "options_theme_system": {
-    "message": "Sistem temasını kullan",
+    "message": "مطابقة سمة النظام",
     "description": "Option to follow the operating system theme preference."
   },
   "options_theme_light": {
-    "message": "Açık",
+    "message": "فاتح",
     "description": "Option to always use the light theme."
   },
   "options_theme_dark": {
-    "message": "Koyu",
+    "message": "داكن",
     "description": "Option to always use the dark theme."
   },
   "alt_calendar_event": {
-    "message": "Takvim etkinliği",
+    "message": "حدث تقويم",
     "description": "The alt text for the calendar event icon in an email row."
   },
   "filter_status_update": {
-    "message": "Filtre $1 olarak ayarlandı",
+    "message": "تم ضبط المرشح على $1",
     "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
   },
   "extension_action_title": {
-    "message": "Takvim filtresi Gmail sayfalarına gömülüdür",
+    "message": "مرشح التقويم مضمَّن في صفحات Gmail",
     "description": "The title of the extension's action button in the browser toolbar."
   },
   "alt_starred": {
-    "message": "Yıldızlı",
+    "message": "مميز بنجمة",
     "description": "Alt text for the starred icon/tooltip"
   },
   "optionShowButtonText": {
-    "message": "Filtre düğmelerinde metni göster",
+    "message": "إظهار النص على أزرار المرشح",
     "description": "Label for the option to show or hide text on the filter buttons."
   }
 }

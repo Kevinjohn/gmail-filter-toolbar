@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { chromium } from '@playwright/test';
-import { EXTENSION_PATH, HEADFUL, DEBUG } from './config.js';
+import { EXTENSION_PATH } from './config.js';
 
 /**
  * Throws an error if the extension build is missing or incomplete.

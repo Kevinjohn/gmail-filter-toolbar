@@ -41,7 +41,7 @@ export const test = base.extend({
     await use(extensionId);
   },
 
-  gmailHtml: async ({}, use) => {
+  gmailHtml: async (/* eslint-disable-line no-empty-pattern */ {}, use) => {
     const html = loadGmailFixture();
     await use(html);
   },

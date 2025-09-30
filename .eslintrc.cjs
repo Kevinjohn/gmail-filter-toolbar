@@ -16,9 +16,14 @@ module.exports = {
   overrides: [
     {
       files: ['tests/**/*.js'],
+      env: {
+        node: true,    // Enable Node.js globals (process, global)
+        jest: true,    // Enable Jest globals
+      },
       rules: {
         'no-console': 'off', // Allow console.log in tests
         'no-await-in-loop': 'off', // Common in sequential test steps
+        'no-unused-vars': ['error', { argsIgnorePattern: '^_|^extensionId$' }], // Allow unused _ and extensionId (fixture params)
       },
     },
   ],

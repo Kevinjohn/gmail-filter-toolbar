@@ -1,12 +1,22 @@
 import fs from 'node:fs';
+import path from 'node:path';
+import process from 'node:process';
 import { GMAIL_FIXTURE_PATH } from './config.js';
 
+const TEMPLATES_DIR = path.join(process.cwd(), 'tests', 'e2e', 'fixtures', 'gmail-templates');
+const DEFAULT_TEMPLATE = GMAIL_FIXTURE_PATH;
+
 /**
- * Loads the Gmail HTML fixture from disk.
+ * Loads a Gmail HTML fixture from disk.
+ * @param {string} template - Template name (e.g., 'minimal', 'paginated') or null for default
  * @returns {string} HTML content
  */
-export function loadGmailFixture() {
-  return fs.readFileSync(GMAIL_FIXTURE_PATH, 'utf8');
+export function loadGmailFixture(template = null) {
+  if (!template) {
+    return fs.readFileSync(DEFAULT_TEMPLATE, 'utf8');
+  }
+  const templatePath = path.join(TEMPLATES_DIR, `${template}.html`);
+  return fs.readFileSync(templatePath, 'utf8');
 }
 
 /**

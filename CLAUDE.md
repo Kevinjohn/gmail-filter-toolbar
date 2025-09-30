@@ -42,6 +42,20 @@ npm test -- --runTestsByPath tests/specific-file.test.js
 npm run e2e -- tests/e2e/specific-spec.spec.js
 ```
 
+### E2E Test Architecture
+The Playwright test suite follows a **Page Object Model** pattern:
+- **Fixtures** (`tests/e2e/fixtures/`): Browser setup, extension loading, coverage collection
+- **Page Objects** (`tests/e2e/page-objects/`): `OptionsPage`, `GmailPage`, `ToolbarComponent` encapsulate selectors and actions
+- **Helpers** (`tests/e2e/helpers/`): Custom matchers, storage utilities, Gmail stubbing
+- **Specs** (`tests/e2e/*.spec.js`): Test scenarios organized by feature area
+
+See `tests/e2e/README.md` for detailed documentation.
+
+When selectors break due to Gmail DOM changes:
+1. Update `src/modules/constants.js` (production code)
+2. Update `tests/e2e/page-objects/GmailPage.js` (test selectors)
+3. Update `tests/e2e/fixtures/gmail.html` (test fixture)
+
 ## Architecture
 
 ### Entry Points

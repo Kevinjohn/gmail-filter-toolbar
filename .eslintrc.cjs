@@ -12,5 +12,14 @@ module.exports = {
   },
   rules: {
     // add project-specific rules here
-  }
+  },
+  overrides: [
+    {
+      files: ['tests/**/*.js'],
+      rules: {
+        'no-console': 'off', // Allow console.log in tests
+        'no-await-in-loop': 'off', // Common in sequential test steps
+      },
+    },
+  ],
 };

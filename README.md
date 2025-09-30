@@ -274,6 +274,8 @@ Pull requests are welcome! Before raising a PR:
   - Automated build for `edge-zip` & Partner Centre pipeline.
 - [ ] **1.3 – Translations**
   - Add community-provided translations for French (fr), German (de), and Arabic (ar).
+  - Complete translations for all untranslated message keys across all 24 locales (currently several keys like `options_show_text_legend`, `options_alignment_*`, `options_theme_*`, `button_filter_*` remain in English).
+  - Add optional language switching UI to allow users to override browser default locale.
 - [ ] **2.0 – Optional AI Summary**
   - GPT-based invite digest (subject to privacy review).
 

@@ -39,6 +39,7 @@ const createBaseChromeMock = () => ({
   },
   i18n: {
     getMessage: jest.fn((key) => key),
+    getUILanguage: jest.fn(() => 'en'),
   },
   runtime: {
     lastError: null,

@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.1.0] - 2025-09-30
+- feat: Dynamically set HTML lang attribute based on browser locale in options page.
+- docs: Add future i18n roadmap items for completing translations and adding language switching UI.
+
 ## [0.1.0] - 2025-07-08
 - feat: Implement granular attachment filtering (images, PDFs, documents, spreadsheets, presentations).
 - feat: Move Favourites button to the end of the toolbar.

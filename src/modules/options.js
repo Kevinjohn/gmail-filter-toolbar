@@ -30,6 +30,9 @@ function getMessage(key, fallback) {
   return value || fallback;
 }
 
+// Set document language dynamically based on browser locale
+document.documentElement.lang = chrome.i18n.getUILanguage();
+
 function normalizeAlignment(value) {
   return Object.values(ALIGNMENTS).includes(value) ? value : ALIGNMENTS.START;
 }

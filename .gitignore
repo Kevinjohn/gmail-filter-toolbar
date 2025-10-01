@@ -144,3 +144,16 @@ artifacts/
 test-results/
 playwright-report/
 .playwright/
+
+# Distribution artifacts
+dist-chrome/
+dist-firefox/
+*.zip
+*.xpi
+
+# Firefox profiles
+*.gmail-calendar-test/
+web-ext-artifacts/
+
+# Build logs
+web-ext.log

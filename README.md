@@ -54,12 +54,15 @@
 ## Requirements
 
 * **Google Chrome / Microsoft Edge ≥ 114** (desktop)
+* **Mozilla Firefox ≥ 121** (desktop)
 * **Node ≥ 18** (for build & test tooling)
 * macOS, Windows, or Linux
 
 ---
 
 ## Quick Start
+
+### For Chrome/Edge
 
 ```bash
 git clone https://github.com/Kevinjohn/chome-extension-gmail-calendar-options.git
@@ -73,27 +76,87 @@ npm run build
 
 # load unpacked extension
 # 1. Open chrome://extensions (or edge://extensions)
-# 2. Enable “Developer mode”
-# 3. Click “Load unpacked” → select the dist/ folder
+# 2. Enable "Developer mode"
+# 3. Click "Load unpacked" → select the dist/ folder
 ```
 
-Open https://mail.google.com in a new tab – the **Calendar options** toolbar appears just beneath Gmail’s native action bar.
+### For Firefox
+
+```bash
+git clone https://github.com/Kevinjohn/chome-extension-gmail-calendar-options.git
+cd chome-extension-gmail-calendar-options
+
+# install dev dependencies
+npm ci
+
+# create dist/ with Firefox manifest
+npm run build:firefox
+
+# load temporary extension
+npx web-ext run --source-dir dist
+```
+
+Firefox will open automatically with the extension loaded.
+
+**Or manually load**:
+1. Open `about:debugging#/runtime/this-firefox`
+2. Click "Load Temporary Add-on"
+3. Navigate to `dist/` folder
+4. Select `manifest.json`
+
+---
+
+Open https://mail.google.com in a new tab – the **Calendar options** toolbar appears just beneath Gmail's native action bar.
 
 ---
 
 ## Building for Production
 
+### Building for Chrome/Edge
+
 ```bash
-npm run build         # vite build → dist/
-npm run zip           # packages dist/ into gmail_calendar_options.zip
+npm run build:chrome  # vite build → dist/
 ```
 
-Upload the zip file to:
-
+Upload to:
 * **Chrome Web Store** (Partner Dash)
 * **Edge Add-ons Store** (Partner Centre)
 
-The icons, manifest and artefacts in **dist/** meet both stores’ publishing guidelines.
+### Building for Firefox
+
+```bash
+npm run build:firefox        # Build Firefox version to dist/
+npm run firefox:lint         # Validate Firefox extension
+npm run firefox:package      # Create .zip for Mozilla Add-ons
+```
+
+The Firefox build includes:
+- `browser_specific_settings.gecko.id` for AMO submission
+- Dual background script declaration (service_worker + scripts)
+- Same host permissions (requires user approval in Firefox)
+
+Upload the generated ZIP from `artifacts/firefox/` to:
+- **Mozilla Add-ons (AMO)**: https://addons.mozilla.org/developers/
+
+The icons, manifest and artefacts in **dist/** meet all store publishing guidelines.
+
+---
+
+## Firefox-Specific Behavior
+
+### Host Permissions
+Unlike Chrome, Firefox requires users to manually grant permissions to mail.google.com:
+1. Click the extension icon or shield icon in the address bar
+2. Select "Always allow on mail.google.com"
+3. Reload Gmail
+
+### Temporary Installation
+Extensions loaded via `about:debugging` are temporary and removed when Firefox closes. For permanent installation:
+- Wait for Mozilla Add-ons (AMO) publication
+- Or use Firefox Developer Edition with persistent profiles
+
+### Background Scripts vs Service Workers
+Firefox executes the background script as an event page (non-persistent background script) rather than a service worker. This is transparent to users but relevant for developers.
 
 ---
 

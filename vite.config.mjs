@@ -1,6 +1,12 @@
 import { defineConfig } from 'vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
+// Determine which manifest to use based on environment variable
+const browser = process.env.BROWSER || 'chrome';
+const manifestFile = browser === 'firefox'
+  ? 'src/manifest.firefox.json'
+  : 'src/manifest.json';
+
 export default defineConfig({
   build: {
     outDir: 'dist',
@@ -19,7 +25,8 @@ export default defineConfig({
   plugins: [
     viteStaticCopy({
       targets: [
-        { src: 'src/manifest.json',     dest: '.' },
+        // Use dynamic manifest based on browser target
+        { src: manifestFile, dest: '.', rename: 'manifest.json' },
         
         { src: 'src/styles.css',        dest: '.' },
         { src: 'src/colours.css',      dest: '.' },

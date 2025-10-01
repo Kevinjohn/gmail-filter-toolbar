@@ -5,7 +5,7 @@ module.exports = {
   testMatch: ['**/*.test.js'],
   setupFilesAfterEnv: ['./tests/setup.js'],
   collectCoverage: true,
-  collectCoverageFrom: ['src/**/*.js'],
+  collectCoverageFrom: ['src/**/*.js', '!src/modules/browser-polyfill.js'],
   coverageDirectory: 'coverage',
   coverageThreshold: {
     global: {

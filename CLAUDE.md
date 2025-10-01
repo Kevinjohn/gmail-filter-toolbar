@@ -11,10 +11,19 @@ This is a Manifest V3 Chrome extension that adds a custom toolbar to Gmail's int
 ### Development
 ```bash
 npm ci                    # Install dependencies
-npm run build             # Build extension to dist/
+npm run build             # Build extension to dist/ (Chrome by default)
+npm run build:chrome      # Build Chrome version
+npm run build:firefox     # Build Firefox version with gecko ID
 npm run lint              # Lint source files with ESLint (with --fix)
 npm run format            # Format code with Prettier
 npm run validate:env      # Check Playwright/Chrome binaries availability
+```
+
+### Firefox Development
+```bash
+npm run firefox:run       # Launch Firefox Developer Edition with extension
+npm run firefox:lint      # Validate Firefox extension
+npm run firefox:package   # Create AMO-ready ZIP file
 ```
 
 ### Testing
@@ -101,6 +110,28 @@ If Gmail changes its DOM structure and the extension breaks, update `SELECTORS` 
 ### Localisation
 All user-facing strings use `chrome.i18n.getMessage('key')` from `src/_locales/{locale}/messages.json`. CSS uses logical properties (`padding-inline-start`, `border-inline-end`) for RTL language support.
 
+## Browser Compatibility
+
+### Supported Browsers
+- **Chrome**: 114+ (Manifest V3)
+- **Edge**: 114+ (Chromium-based, Manifest V3)
+- **Firefox**: 121+ (Manifest V3 with background scripts)
+
+### API Compatibility
+The extension uses the `chrome.*` namespace for all browser APIs, which is supported by both Chrome and Firefox:
+
+- `chrome.storage.sync` - Cross-browser state persistence
+- `chrome.i18n` - Internationalization and localization
+- `chrome.runtime` - Extension lifecycle and messaging
+- `chrome.storage.onChanged` - Real-time storage updates
+
+Firefox natively supports the `chrome.*` namespace alongside its preferred `browser.*` namespace. No polyfill is currently required.
+
+### Firefox-Specific Behaviors
+1. **Background Scripts**: Firefox executes `background.js` as a background script (event page) rather than a service worker. The code works identically in both contexts.
+2. **Host Permissions**: Firefox users must manually grant permissions to mail.google.com when first visiting Gmail (Chrome grants automatically).
+3. **Storage Sync**: Firefox's `chrome.storage.sync` has the same 100KB quota as Chrome - extension is well within limits.
+
 ## Build System
 
 ### Vite Configuration (`vite.config.mjs`)
@@ -179,6 +210,33 @@ E2E tests (`npm run e2e`) are available but skip in WSL. Run manually when neede
 - Check `chrome.storage.sync` in DevTools → Application → Storage → Extension Storage
 - Verify `saveState()` is called after state changes
 - Check `loadState()` resolves before `applyFilter()` is called
+
+## Firefox-Specific Debugging
+
+### Extension Not Loading
+- Check Firefox version ≥ 121: `firefox --version`
+- Verify gecko ID in manifest: `grep gecko dist/manifest.json`
+- Check browser console for errors: `about:devtools-toolbox?id=<extension-id>&type=extension`
+
+### Toolbar Not Injecting
+- Same as Chrome - Gmail selectors likely changed
+- Update `src/modules/constants.js` selectors
+- Test in both browsers
+
+### Permission Not Granted
+- Click shield/lock icon in address bar
+- Select "Permissions" → Grant mail.google.com access
+- Reload Gmail
+
+### Storage Not Syncing
+- Firefox sync must be enabled in browser
+- Check `about:preferences#sync`
+- Or use `chrome.storage.local` for testing
+
+### web-ext Errors
+- Update web-ext: `npm install --save-dev web-ext@latest`
+- Specify Firefox path: `npx web-ext run --firefox=/path/to/firefox`
+- Clear profile: `rm -rf ~/.mozilla/firefox/*.gmail-calendar-test/`
 
 ## Code Quality Standards
 

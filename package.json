@@ -1,7 +1,7 @@
 {
-  "name": "gmail-calendar-options",
-  "version": "2.0.0",
-  "description": "Toggle visibility of calendar invites inside Gmail.",
+  "name": "gmail-filter-toolbar",
+  "version": "2.0.1",
+  "description": "Filter Gmail by calendar invites, attachments, starred messages, or regular mail.",
   "type": "module",
   "scripts": {
     "build": "vite build",

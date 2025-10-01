@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.1] - 2025-10-01
+
+### Changed
+- **Branding Update**: Rebranded extension from "Gmail Calendar Options" to "Gmail Filter Toolbar" to better reflect expanded functionality
+  - Updated extension name, description, and all user-facing strings
+  - Package name updated to `gmail-filter-toolbar`
+  - Emphasizes email filtering capabilities (calendar invites, attachments, starred messages, regular mail)
+- **Documentation**: Updated README.md and CLAUDE.md with improved descriptions of filtering functionality and cross-browser compatibility
+
 ## [2.0.0] - 2025-10-01
 
 ### Added

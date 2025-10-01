@@ -1,4 +1,6 @@
-> Lightweight MV3 extension that lets Gmail users toggle the visibility of calendar-related e-mails directly inside the web interface.
+# Gmail Filter Toolbar
+
+> Lightweight browser extension (Chrome & Firefox) that adds a powerful filtering toolbar to Gmail, letting you instantly view only the emails you want – calendar invites, attachments, starred messages, or regular mail – directly in your inbox or any folder.
 
 ---
 
@@ -22,24 +24,30 @@
 
 ---
 
-## Features
+## What It Does
 
-| Button | Result |
-|---|---|
-| **All Mail** | Show ordinary e-mails **and** calendar invites |
-| **Mail Only** | Hide calendar invites |
-| **Calendar Only** | Show **only** calendar invites |
-| **Attachments Only** | Show **only** e-mails with attachments |
-| **Favourites Only** | Show **only** starred/favourite e-mails |
-| **Show/Hide Button Text** | Toggle visibility of text labels on filter buttons. |
+Transform your Gmail inbox with instant, client-side filtering. A custom toolbar appears directly below Gmail's action bar, giving you one-click access to different views of your email:
 
-*   Enhanced visual clarity with Material Icons on toolbar buttons.
-* MV3-compliant (`service_worker` background, no persistent pages).
-* Zero network calls – all filtering happens client-side.
-* **Debug mode** tints hidden rows blue at 50 % opacity.
-* Fully keyboard accessible and WCAG 2.1 AA compliant.
-* Strings externalised for easy translation (`_locales`).
-* CSS uses logical properties so RTL languages render correctly.
+| Filter Mode | What You See |
+|-------------|--------------|
+| **All Mail** | Everything – regular emails, calendar invites, attachments |
+| **Mail Only** | Just regular emails (hides calendar invites) |
+| **Calendar Only** | Only meeting invites and calendar-related emails |
+| **Attachments Only** | Emails with files attached (documents, images, etc.) |
+| **Favourites Only** | Your starred/important messages |
+
+**Works everywhere in Gmail** – inbox, sent items, labels, search results, any folder you navigate to.
+
+### Key Features
+
+* **Instant filtering** – No page reload, no network calls, all client-side
+* **Cross-browser** – Chrome, Edge, and Firefox support
+* **Persistent filters** – Your selection survives pagination and navigation
+* **Customizable UI** – Toggle button text visibility, choose toolbar alignment (left/center/right), select theme (light/dark/system)
+* **Debug mode** – Visualize filtered emails with a blue tint instead of hiding them
+* **Accessibility-first** – Full keyboard navigation and WCAG 2.1 AA compliant
+* **Privacy-focused** – Zero external requests, all filtering happens locally
+* **Multi-language ready** – Localizable strings with RTL language support
 
 ---
 
@@ -106,7 +114,7 @@ Firefox will open automatically with the extension loaded.
 
 ---
 
-Open https://mail.google.com in a new tab – the **Calendar options** toolbar appears just beneath Gmail's native action bar.
+Open https://mail.google.com in a new tab – the **filter toolbar** appears just beneath Gmail's native action bar.
 
 ---
 
@@ -160,13 +168,21 @@ Firefox executes the background script as an event page (non-persistent backgrou
 
 ---
 
-## Debug Mode
+## Configuration Options
 
-1. Go to **chrome://extensions** → *Calendar Options* → **Details**.
-2. Click **Extension options**.
-3. Tick **Enable debug mode (show filtered rows in blue)**.
+Access the extension options page via:
+- **Chrome/Edge**: `chrome://extensions` → *Gmail Filter Toolbar* → **Extension options**
+- **Firefox**: `about:addons` → *Gmail Filter Toolbar* → **Options**
 
-Toggled rows are no longer hidden; they render with a light-blue overlay at 50 % opacity, so you can visually verify the filter logic during development.
+### Available Settings
+
+| Setting | Description |
+|---------|-------------|
+| **Debug Mode** | Show filtered emails with a blue tint (50% opacity) instead of hiding them – useful for verifying filter logic |
+| **Show Button Text** | Toggle visibility of text labels on filter buttons (icons-only vs icons+text) |
+| **Toolbar Alignment** | Position toolbar left, center, or right within Gmail's interface |
+| **Theme** | Choose light, dark, or system theme preference |
+| **Show Favourites Button** | Enable/disable the Favourites Only filter button |
 
 ---
 
@@ -344,16 +360,18 @@ Pull requests are welcome! Before raising a PR:
 ## To-Do
 
 Thoughts for future development...
-- Edge Store release
-- Firefox version
-- Selection: Out of Office / Auto responder
-- Selection: Note taker
-- Selection: Inbox only
-- Selection: Unread
-- Selection: Still to action
-- Non-AI translation
-- Confirmation of RTL
-- Better accessibility testing
+- Additional filter modes:
+  - Out of Office / Auto responder emails
+  - Note-taking apps (Google Keep, Evernote, etc.)
+  - Unread only
+  - Requires action/follow-up
+- Store releases:
+  - Chrome Web Store (pending)
+  - Edge Add-ons (pending)
+  - Mozilla Add-ons (pending)
+- Community translations (non-AI)
+- RTL language testing and refinement
+- Enhanced accessibility testing with real screen readers
 
 ---
 

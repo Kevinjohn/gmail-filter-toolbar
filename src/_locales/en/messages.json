@@ -1,18 +1,18 @@
 {
   "extension_name": {
-    "message": "Gmail Calendar Options",
+    "message": "Gmail Filter Toolbar",
     "description": "Name of the extension."
   },
   "extension_description": {
-    "message": "Toggle visibility of calendar invites inside Gmail.",
+    "message": "Filter Gmail by calendar invites, attachments, starred messages, or regular mail.",
     "description": "Description of the extension."
   },
   "label_toolbar": {
-    "message": "Calendar filter",
+    "message": "Email & calendar filter toolbar",
     "description": "ARIA label for the main toolbar."
   },
   "label_options": {
-    "message": "Email filter: ",
+    "message": "Email & calendar filter: ",
     "description": "Label preceding the filter buttons."
   },
   "btn_all": {
@@ -56,7 +56,7 @@
     "description": "Button to show only emails with presentation attachments."
   },
   "page_title": {
-    "message": "Calendar Options",
+    "message": "Filter Toolbar Options",
     "description": "Title for the extension's options page."
   },
   "options_debug": {
@@ -64,7 +64,7 @@
     "description": "Label for the debug mode checkbox."
   },
   "options_page_description": {
-    "message": "Settings for the Gmail Calendar Options extension.",
+    "message": "Configure filtering options and toolbar preferences for Gmail.",
     "description": "A short summary of the options page."
   },
   "options_debug_legend": {
@@ -128,7 +128,7 @@
     "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., Everything, Mail Only)"
   },
   "extension_action_title": {
-    "message": "Calendar filter is embedded on Gmail pages",
+    "message": "Email & calendar filter toolbar is embedded on Gmail pages",
     "description": "The title of the extension's action button in the browser toolbar."
   },
   "alt_starred": {

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Manifest V3 Chrome extension that adds a custom toolbar to Gmail's interface, allowing users to filter emails by type (calendar invites, attachments, regular mail, etc.). The extension is built with vanilla JavaScript ES modules and uses Vite for bundling.
+This is a Manifest V3 browser extension (Chrome & Firefox) that adds a custom toolbar to Gmail's interface, allowing users to filter emails by type (calendar invites, attachments, regular mail, etc.). The extension is built with vanilla JavaScript ES modules and uses Vite for bundling.
 
 ## Common Commands
 
@@ -28,8 +28,8 @@ npm run firefox:package   # Create AMO-ready ZIP file
 
 ### Testing
 ```bash
-npm test                  # Run Jest in watch mode
-npm run test:unit         # Run Jest unit tests (--runInBand for CI stability)
+npm test                  # Run Jest unit tests in watch mode
+npm run test:unit         # Run Jest unit tests once (--runInBand for CI stability)
 npm run lint:locales      # Validate i18n message files for key/placeholder parity
 npm run audit:options     # Run Lighthouse against built options page
 npm run e2e               # Run Playwright end-to-end tests (CI/native Linux/macOS/Windows only)
@@ -37,6 +37,14 @@ npm run test:e2e:ci       # Run e2e tests with CI reporters (JUnit + HTML)
 
 # Note: E2E tests automatically skip in WSL2 environments due to Chrome extension limitations
 # Run E2E tests manually on native systems when making significant changes
+```
+
+### Release & Versioning
+```bash
+npm run version:major     # Bump major version (e.g., 1.0.0 → 2.0.0)
+npm run version:minor     # Bump minor version (e.g., 1.0.0 → 1.1.0)
+npm run version:patch     # Bump patch version (e.g., 1.0.0 → 1.0.1)
+npm run release:build     # Build release artifacts for distribution
 ```
 
 ### Loading the Extension

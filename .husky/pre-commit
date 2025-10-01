@@ -1,11 +1,11 @@
 #!/bin/sh
 
-# Ensure npm is in PATH for Windows Git Bash
-command -v npm >/dev/null 2>&1 || {
-  echo "⚠️  npm not found in PATH - skipping pre-commit checks"
+# Ensure npm is in PATH and executable
+if ! npm --version >/dev/null 2>&1; then
+  echo "⚠️  npm not executable - skipping pre-commit checks"
   echo "   Run 'npm run lint && npm run test:unit' manually before pushing"
   exit 0
-}
+fi
 
 # Run linting on all files
 echo "🔍  Pre-commit: Running ESLint..."

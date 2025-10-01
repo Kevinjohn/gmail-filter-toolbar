@@ -16,8 +16,9 @@
 10. [Scripts](#scripts)  
 11. [Testing](#testing)  
 12. [Contributing](#contributing)  
-13. [Road-map](#road-map)  
-14. [Licence](#licence)
+13. [Road-map](#road-map)
+14. [To-Do](#to-do)
+15. [Licence](#licence)
 
 ---
 
@@ -270,17 +271,29 @@ Pull requests are welcome! Before raising a PR:
 
 - [x] **1.1 – Core Functionality**
   - Initial release with four filtering modes, dark/light theme support, localization-ready strings, and keyboard accessibility.
-- [ ] **1.2 – Edge Store Parity**
-  - Automated build for `edge-zip` & Partner Centre pipeline.
-- [ ] **1.3 – Translations**
+- [x] **1.2 – Translations (via AI)**
   - Add community-provided translations for French (fr), German (de), and Arabic (ar).
   - Complete translations for all untranslated message keys across all 24 locales (currently several keys like `options_show_text_legend`, `options_alignment_*`, `options_theme_*`, `button_filter_*` remain in English).
   - Add optional language switching UI to allow users to override browser default locale.
-- [ ] **2.0 – Optional AI Summary**
-  - GPT-based invite digest (subject to privacy review).
+
+---
+
+## To-Do
+
+Thoughts for future development...
+- Edge Store release
+- Firefox version
+- Selection: Out of Office / Auto responder
+- Selection: Note taker
+- Selection: Inbox only
+- Selection: Unread
+- Selection: Still to action
+- Non-AI translation
+- Confirmation of RTL
+- Better accessibility testing
 
 ---
 
 ## Licence
 
-MIT © Kevin John – see [LICENCE](LICENCE) for full text.
+MIT © [https://KevinjohnGallagher.com](KevinJohn Gallagher) – see [LICENCE](LICENCE) for full text.

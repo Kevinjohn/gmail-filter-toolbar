@@ -1,7 +1,7 @@
 {
   "name": "__MSG_extension_name__",
   "description": "__MSG_extension_description__",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "manifest_version": 3,
   "default_locale": "en",
   "browser_specific_settings": {
@@ -25,7 +25,6 @@
     {
       "matches": ["https://mail.google.com/*"],
       "js": ["contentScript.js"],
-      "type": "module",
       "css": ["styles.css", "colours.css"],
       "run_at": "document_idle"
     }
@@ -47,8 +46,6 @@
   },
 
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com;",
-
-    "sandbox": "sandbox allow-scripts; script-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; object-src 'self';"
+    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com;"
   }
 }

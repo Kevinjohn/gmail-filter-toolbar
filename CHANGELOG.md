@@ -4,6 +4,44 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.0] - 2025-10-01
+
+### Added
+- **Firefox Support**: Full Mozilla Firefox compatibility (Firefox ≥ 121)
+  - Firefox-specific manifest with gecko ID `gmail-calendar-options@kevinjohngallagher.com`
+  - Dual background script declaration (service_worker + scripts)
+  - Cross-browser build system with environment-based manifest selection
+- **Multi-Browser Build System**:
+  - `npm run build:chrome` - Build Chrome/Edge version
+  - `npm run build:firefox` - Build Firefox version
+  - `npm run firefox:run` - Launch Firefox with extension for testing
+  - `npm run firefox:lint` - Validate Firefox extension
+  - `npm run firefox:package` - Create AMO-ready ZIP package
+- **Distribution Scripts**:
+  - `npm run release:build` - Build packages for both browsers
+  - `npm run version:major/minor/patch` - Automated version management
+  - Dual-browser release packaging with validation
+- **Development Tools**:
+  - `web-ext` integration for Firefox development workflow
+  - `cross-env` for cross-platform environment variables
+  - Automated manifest switching based on target browser
+
+### Changed
+- **Build System**: Vite config now uses `BROWSER` environment variable to select appropriate manifest
+- **Pre-commit Hooks**: Now only run in WSL environment (skip on Windows Git GUI)
+- **Test Coverage**: Excluded optional `browser-polyfill.js` from coverage requirements
+- **Documentation**: Comprehensive Firefox support documentation in README.md and CLAUDE.md
+
+### Technical
+- All `chrome.*` APIs verified compatible with Firefox (no code changes required)
+- Firefox uses background scripts instead of service workers (transparent to functionality)
+- Optional browser API polyfill created for future compatibility
+- Firefox manifest excludes Chrome-specific properties (`type: "module"` in content_scripts, CSP sandbox)
+
+### Breaking Changes
+- Major version bump due to significant new browser support and build system changes
+- No breaking changes to existing Chrome/Edge functionality
+
 ## [1.1.1] - 2025-09-30
 - docs: add `AGENTS.md` contributor guide for automation collaborators.
 - i18n: add Hindi, Arabic, and Simplified Chinese locales; complete translations across existing language bundles.

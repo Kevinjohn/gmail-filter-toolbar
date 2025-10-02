@@ -89,7 +89,11 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
+
+# Build output directories (browser-specific)
+dist/
+dist/chrome/
+dist/firefox/
 
 # Gatsby files
 .cache/
@@ -146,8 +150,6 @@ playwright-report/
 .playwright/
 
 # Distribution artifacts
-dist-chrome/
-dist-firefox/
 *.zip
 *.xpi
 

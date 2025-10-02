@@ -1,15 +1,16 @@
 import { defineConfig } from 'vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
-// Determine which manifest to use based on environment variable
+// Determine which manifest and output directory to use based on environment variable
 const browser = process.env.BROWSER || 'chrome';
 const manifestFile = browser === 'firefox'
   ? 'src/manifest.firefox.json'
   : 'src/manifest.json';
+const outDir = browser === 'firefox' ? 'dist/firefox' : 'dist/chrome';
 
 export default defineConfig({
   build: {
-    outDir: 'dist',
+    outDir: outDir,
     emptyOutDir: true,
 
     rollupOptions: {

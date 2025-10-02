@@ -14,7 +14,7 @@ execSync('rm -rf dist/ artifacts/', { stdio: 'inherit' });
 console.log('🏗️  Building Chrome version...');
 execSync('npm run build:chrome', { stdio: 'inherit' });
 execSync('mkdir -p artifacts/chrome', { stdio: 'inherit' });
-execSync('cp -r dist artifacts/chrome/', { stdio: 'inherit' });
+execSync('cp -r dist/chrome artifacts/chrome/dist', { stdio: 'inherit' });
 execSync(`cd artifacts/chrome/dist && tar -czf ../gmail-calendar-options-chrome-v${VERSION}.tar.gz . && cd ../../..`, { stdio: 'inherit' });
 console.log(`✅ Chrome package: artifacts/chrome/gmail-calendar-options-chrome-v${VERSION}.tar.gz`);
 
@@ -22,7 +22,7 @@ console.log(`✅ Chrome package: artifacts/chrome/gmail-calendar-options-chrome-
 console.log('🦊 Building Firefox version...');
 execSync('npm run build:firefox', { stdio: 'inherit' });
 execSync('mkdir -p artifacts/firefox', { stdio: 'inherit' });
-execSync('cp -r dist artifacts/firefox/', { stdio: 'inherit' });
+execSync('cp -r dist/firefox artifacts/firefox/dist', { stdio: 'inherit' });
 execSync(`cd artifacts/firefox/dist && tar -czf ../gmail-calendar-options-firefox-v${VERSION}.tar.gz . && cd ../../..`, { stdio: 'inherit' });
 console.log(`✅ Firefox package: artifacts/firefox/gmail-calendar-options-firefox-v${VERSION}.tar.gz`);
 

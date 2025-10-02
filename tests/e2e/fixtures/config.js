@@ -2,10 +2,10 @@ import path from 'node:path';
 import process from 'node:process';
 
 /**
- * Path to the built extension directory (dist/).
+ * Path to the built extension directory (dist/chrome/).
  * @constant {string}
  */
-export const EXTENSION_PATH = path.join(process.cwd(), 'dist');
+export const EXTENSION_PATH = path.join(process.cwd(), 'dist', 'chrome');
 
 /**
  * Path to the Gmail HTML fixture.

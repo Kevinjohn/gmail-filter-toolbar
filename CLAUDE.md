@@ -49,27 +49,23 @@ npm run release:build     # Build release artifacts for distribution
 
 ### Loading the Extension
 
-**IMPORTANT**: Always build for the correct browser before loading:
-- **Chrome/Edge**: `npm run build:chrome` (uses `src/manifest.json`)
-- **Firefox**: `npm run build:firefox` (uses `src/manifest.firefox.json`)
-
-The `dist/` folder contains the **last built version**. Running the wrong build command will replace the manifest with the wrong browser's configuration.
-
 **Chrome/Edge**:
-1. Run `npm run build:chrome`
+1. Run `npm run build:chrome` (or `npm run build` to build both browsers)
 2. Open `chrome://extensions` (or `edge://extensions`)
 3. Enable "Developer mode"
-4. Click "Load unpacked" → select `dist/` folder
+4. Click "Load unpacked" → select `dist/chrome/` folder
 5. Open https://mail.google.com to see the toolbar
 
 **Firefox**:
-1. Run `npm run build:firefox`
+1. Run `npm run build:firefox` (or `npm run build` to build both browsers)
 2. Open `about:debugging#/runtime/this-firefox`
 3. Click "Load Temporary Add-on"
-4. Navigate to `dist/manifest.json` and select it
+4. Navigate to `dist/firefox/manifest.json` and select it
 5. Open https://mail.google.com to see the toolbar
 
 Or use: `npm run firefox:run` to automatically build and launch Firefox with the extension
+
+**Note**: Both browser builds can exist simultaneously in `dist/chrome/` and `dist/firefox/`. You no longer need to worry about rebuilding when switching browsers for testing.
 
 ### Running a Single Test
 ```bash
@@ -161,8 +157,9 @@ Firefox natively supports the `chrome.*` namespace alongside its preferred `brow
 
 ### Vite Configuration (`vite.config.mjs`)
 - **Entry points**: `background.js` and `contentScript.js` are bundled as ES modules
-- **Static copy**: `vite-plugin-static-copy` copies `manifest.json`, CSS, HTML, options.js, constants.js, theme.js, icons, locales, and fonts to `dist/`
-- **Output**: Files maintain their original names (`[name].js`)
+- **Static copy**: `vite-plugin-static-copy` copies `manifest.json`, CSS, HTML, options.js, constants.js, theme.js, icons, locales, and fonts to output directory
+- **Output**: Browser-specific directories (`dist/chrome/` or `dist/firefox/`) determined by `BROWSER` environment variable
+- **Default**: When `BROWSER` is unset, defaults to Chrome build (`dist/chrome/`)
 
 ### Testing Setup
 

@@ -80,13 +80,13 @@ cd chome-extension-gmail-calendar-options
 # install dev dependencies
 npm ci
 
-# create dist/ with manifest and assets
-npm run build
+# create dist/chrome/ with manifest and assets
+npm run build:chrome
 
 # load unpacked extension
 # 1. Open chrome://extensions (or edge://extensions)
 # 2. Enable "Developer mode"
-# 3. Click "Load unpacked" → select the dist/ folder
+# 3. Click "Load unpacked" → select the dist/chrome/ folder
 ```
 
 ### For Firefox
@@ -98,11 +98,11 @@ cd chome-extension-gmail-calendar-options
 # install dev dependencies
 npm ci
 
-# create dist/ with Firefox manifest
+# create dist/firefox/ with Firefox manifest
 npm run build:firefox
 
 # load temporary extension
-npx web-ext run --source-dir dist
+npx web-ext run --source-dir dist/firefox
 ```
 
 Firefox will open automatically with the extension loaded.
@@ -110,7 +110,7 @@ Firefox will open automatically with the extension loaded.
 **Or manually load**:
 1. Open `about:debugging#/runtime/this-firefox`
 2. Click "Load Temporary Add-on"
-3. Navigate to `dist/` folder
+3. Navigate to `dist/firefox/` folder
 4. Select `manifest.json`
 
 ---
@@ -124,7 +124,7 @@ Open https://mail.google.com in a new tab – the **filter toolbar** appears jus
 ### Building for Chrome/Edge
 
 ```bash
-npm run build:chrome  # vite build → dist/
+npm run build:chrome  # vite build → dist/chrome/
 ```
 
 Upload to:
@@ -134,7 +134,7 @@ Upload to:
 ### Building for Firefox
 
 ```bash
-npm run build:firefox        # Build Firefox version to dist/
+npm run build:firefox        # Build Firefox version to dist/firefox/
 npm run firefox:lint         # Validate Firefox extension
 npm run firefox:package      # Create .zip for Mozilla Add-ons
 ```
@@ -147,7 +147,7 @@ The Firefox build includes:
 Upload the generated ZIP from `artifacts/firefox/` to:
 - **Mozilla Add-ons (AMO)**: https://addons.mozilla.org/developers/
 
-The icons, manifest and artefacts in **dist/** meet all store publishing guidelines.
+The icons, manifest and artefacts in **dist/chrome/** and **dist/firefox/** meet all store publishing guidelines.
 
 ---
 
@@ -232,7 +232,9 @@ src/
 
 _locales/                 # message bundles for i18n
 tests/                    # Jest unit tests
-dist/                     # build output (ignored in Git)
+dist/                     # build output (browser-specific)
+  ├─ chrome/              # Chrome/Edge build
+  └─ firefox/             # Firefox build
 docs/                     # screenshots & diagrams
 ```
 
@@ -291,8 +293,9 @@ This extension is built on a few core principles: listening for the right moment
 
 | Command | Purpose |
 |---------|---------|
-| `npm run build` | Vite build → `dist/` |
-| `npm run zip` | Zip `dist/` for store upload |
+| `npm run build` | Vite build → `dist/chrome/` and `dist/firefox/` |
+| `npm run build:chrome` | Vite build → `dist/chrome/` only |
+| `npm run build:firefox` | Vite build → `dist/firefox/` only |
 | `npm run validate:env` | Sanity-check required Playwright/Chrome binaries |
 | `npm run test:unit` | Jest unit+integration suites (serial for CI stability) |
 | `npm test` | Jest runner (watch mode locally) |

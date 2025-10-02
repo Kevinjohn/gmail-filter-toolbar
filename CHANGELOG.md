@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.2.0] - 2025-10-02
+
+### Added
+- **Experimental Features Section**: Added new "Experimental" section to options page
+  - Empty section with descriptive text indicating features are in active testing
+  - Localized with `experimental_legend` and `experimental_description` i18n keys
+  - CSS styling for experimental description text
+  - Prepares UI for upcoming experimental feature toggles (Phase 4)
+
+### Changed
+- **Documentation**: Added JSDoc `@stable` annotations to all existing features in preparation for experimental feature introduction
+  - Annotated storage keys, enums, and configuration objects in `constants.js`
+  - Annotated state variables and storage keys in `state.js`
+  - Annotated filter detection functions in `filter.js`
+- **Documentation**: Added Future Enhancements section to CLAUDE.md documenting proposed feature flag system for when experimental features scale beyond 3+ features
+
 ## [2.1.0] - 2025-10-02
 
 ### Changed

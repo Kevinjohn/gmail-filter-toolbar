@@ -23,6 +23,10 @@ exports[`options module serialises localised labels for regression safety 1`] = 
     "legend": "Debug Legend",
   },
   "documentTitle": "Mock Page Title",
+  "experimental": {
+    "description": "Experimental features are in active testing and may only be available in English.",
+    "legend": "Experimental",
+  },
   "pageDescription": "Mock Page Description",
   "pageTitle": "Mock Page Title",
   "showButtonText": {

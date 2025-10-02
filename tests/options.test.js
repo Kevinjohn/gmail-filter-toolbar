@@ -20,6 +20,8 @@ const baseMessages = {
   options_theme_system: 'System Theme',
   options_theme_light: 'Light Theme',
   options_theme_dark: 'Dark Theme',
+  experimental_legend: 'Experimental',
+  experimental_description: 'Experimental features are in active testing and may only be available in English.',
 };
 
 const getTextContent = (id) => document.getElementById(id)?.textContent ?? null;
@@ -60,6 +62,10 @@ const serializeOptionsUi = () => ({
       text: option.textContent,
     })),
   },
+  experimental: {
+    legend: document.querySelector('[data-i18n="experimental_legend"]')?.textContent ?? null,
+    description: document.querySelector('[data-i18n="experimental_description"]')?.textContent ?? null,
+  },
 });
 
 const renderHtml = ({
@@ -67,6 +73,7 @@ const renderHtml = ({
   includeAlignmentSelect = true,
   includeThemeSelect = true,
   includeFavouritesCheckbox = true,
+  includeExperimental = true,
 } = {}) => {
   document.body.innerHTML = `
     <h1 id="pageTitle"></h1>
@@ -100,6 +107,12 @@ const renderHtml = ({
         ${includeOptionals ? '<option id="themeOptionDark" value="dark"></option>' : ''}
       </select>` : ''}
     </fieldset>
+    ${includeExperimental ? `<fieldset id="experimental-section">
+      <legend data-i18n="experimental_legend">Experimental</legend>
+      <p id="experimentalDescription" style="margin-bottom: 1em; font-style: italic;">
+        <span data-i18n="experimental_description">Experimental features are in active testing and may only be available in English.</span>
+      </p>
+    </fieldset>` : ''}
   `;
 };
 
@@ -246,6 +259,25 @@ describe('options module', () => {
 
     expect(document.getElementById('alignment-select')).toBeNull();
     expect(document.getElementById('theme-select')).toBeNull();
+    expect(() => document.getElementById('debug').dispatchEvent(new Event('change'))).not.toThrow();
+  });
+
+  test('localises experimental section text', async () => {
+    await loadModule();
+
+    const experimentalLegend = document.querySelector('[data-i18n="experimental_legend"]');
+    const experimentalDescription = document.querySelector('[data-i18n="experimental_description"]');
+
+    expect(experimentalLegend.textContent).toBe('Experimental');
+    expect(experimentalDescription.textContent).toBe('Experimental features are in active testing and may only be available in English.');
+  });
+
+  test('handles missing experimental section without errors', async () => {
+    await loadModule({ renderOptions: { includeExperimental: false } });
+
+    expect(document.querySelector('[data-i18n="experimental_legend"]')).toBeNull();
+    expect(document.querySelector('[data-i18n="experimental_description"]')).toBeNull();
+    // Should still work without throwing
     expect(() => document.getElementById('debug').dispatchEvent(new Event('change'))).not.toThrow();
   });
 });

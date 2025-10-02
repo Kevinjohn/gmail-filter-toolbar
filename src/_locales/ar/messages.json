@@ -138,5 +138,13 @@
   "optionShowButtonText": {
     "message": "إظهار النص على أزرار المرشح",
     "description": "Label for the option to show or hide text on the filter buttons."
+  },
+  "experimental_legend": {
+    "message": "Experimental",
+    "description": "Legend for experimental features section in options page."
+  },
+  "experimental_description": {
+    "message": "Experimental features are in active testing and may only be available in English.",
+    "description": "Description text explaining experimental features may not be fully localized."
   }
 }

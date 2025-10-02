@@ -87,6 +87,17 @@ if (themeOptionDark) {
   themeOptionDark.textContent = getMessage('options_theme_dark', 'Dark');
 }
 
+// Set experimental section text
+const experimentalLegend = document.querySelector('[data-i18n="experimental_legend"]');
+const experimentalDescription = document.querySelector('[data-i18n="experimental_description"]');
+
+if (experimentalLegend) {
+  experimentalLegend.textContent = getMessage('experimental_legend', 'Experimental');
+}
+if (experimentalDescription) {
+  experimentalDescription.textContent = getMessage('experimental_description', 'Experimental features are in active testing and may only be available in English.');
+}
+
 // Save options to chrome.storage.sync
 function save_options() {
   const themeValue = themeSelect ? themeSelect.value : THEMES.SYSTEM;

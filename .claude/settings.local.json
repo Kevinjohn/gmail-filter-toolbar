@@ -7,7 +7,12 @@
       "Read(//home/kj-wsl/.cache/ms-playwright/**)",
       "Read(//etc/**)",
       "Bash(systemctl:*)",
-      "Bash(npm run validate:env:*)"
+      "Bash(npm run validate:env:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run build:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

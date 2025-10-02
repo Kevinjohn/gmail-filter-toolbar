@@ -143,6 +143,9 @@ dist/firefox/
 .DS_store
 GIT-COMMIT.md
 
+# Claude Code local settings
+.claude/settings.local.json
+
 # Test artifacts (Playwright, Jest, coverage reports)
 artifacts/
 test-results/

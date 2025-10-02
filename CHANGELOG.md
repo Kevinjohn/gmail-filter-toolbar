@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.3.2] - 2025-10-02
+
+### Fixed
+- **Firefox Build**: Ensured Firefox build has complete parity with Chrome v2.3.1
+  - Verified Firefox-specific manifest (`browser_specific_settings` with gecko ID)
+  - Confirmed AI & Transcription feature properly bundled
+  - Verified experimental features section in options page
+  - All recent features (AI filter, options refactor, styling) included
+
 ## [2.3.1] - 2025-10-02
 
 ### Fixed

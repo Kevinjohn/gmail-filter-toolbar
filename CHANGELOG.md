@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.2.1] - 2025-10-02
+
+### Changed
+- **UI Polish**: Improved options page spacing
+  - Changed fieldset padding from all sides to top-only (`padding-top: 1em`)
+  - Added bottom margin to fieldsets (`margin-bottom: 1rem`)
+  - Removed font-size override from experimental description text for consistency
+
 ## [2.2.0] - 2025-10-02
 
 ### Added

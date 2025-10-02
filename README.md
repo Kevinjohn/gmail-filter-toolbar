@@ -35,6 +35,7 @@ Transform your Gmail inbox with instant, client-side filtering. A custom toolbar
 | **Calendar Only** | Only meeting invites and calendar-related emails |
 | **Attachments Only** | Emails with files attached (documents, images, etc.) |
 | **Favourites Only** | Your starred/important messages |
+| **AI & Transcription** *(experimental)* | Emails from AI services (Gemini, ChatGPT, Claude, etc.) and transcription tools (Otter.ai, Fathom, Fireflies.ai) – enable in options |
 
 **Works everywhere in Gmail** – inbox, sent items, labels, search results, any folder you navigate to.
 

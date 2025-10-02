@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.3.0] - 2025-10-02
+
+### Added
+- **Experimental AI & Transcription Filter**: New filter to show emails from AI services and transcription tools
+  - Detects emails from Gemini, ChatGPT, Claude, Copilot, Otter.ai, Fathom, and Fireflies.ai
+  - Optional feature disabled by default - enable in options page under "Experimental" section
+  - Button appears at the end of the toolbar (after Presentations filter)
+  - Uses smart_toy Material Icon
+  - Robust sender detection with multiple fallback selectors for Gmail DOM compatibility
+  - Localized with `btn_ai_notetakers` and `options_show_ai_notetakers` i18n keys
+  - Real-time visibility toggle from options page
+  - Automatically switches to "Everything" filter if disabled while active
+
+### Technical
+- Added `AI_NOTETAKERS` mode to filter modes enum
+- Added `AI_NOTETAKER_PATTERNS` regex array for sender matching
+- Added `showAiNotetakersButton` state variable and storage key
+- Added `isAiNotetakerRow()` detection function with fallback selectors
+- Added `updateAiNotetakersVisibility()` toolbar function
+- Default value set to `false` in background.js on extension install
+- Unit tests added for AI notetaker detection function
+
 ## [2.2.2] - 2025-10-02
 
 ### Changed

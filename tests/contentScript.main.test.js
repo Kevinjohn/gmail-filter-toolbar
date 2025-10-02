@@ -10,6 +10,7 @@ describe('contentScript main lifecycle', () => {
   let setCurrentModeMock;
   let setToolbarAlignmentMock;
   let setShowFavouritesButtonMock;
+  let setShowAiNotetakersButtonMock;
   let setThemePreferenceMock;
   let applyFilterMock;
   let injectToolbarMock;
@@ -17,6 +18,7 @@ describe('contentScript main lifecycle', () => {
   let updateAlignmentViewMock;
   let updateButtonTextViewMock;
   let updateFavouritesVisibilityMock;
+  let updateAiNotetakersVisibilityMock;
   let waitForGmailChromeMock;
   let waitForMessageTableMock;
   let observeMessageListMock;
@@ -48,6 +50,7 @@ describe('contentScript main lifecycle', () => {
     setCurrentModeMock = jest.fn();
     setToolbarAlignmentMock = jest.fn();
     setShowFavouritesButtonMock = jest.fn();
+    setShowAiNotetakersButtonMock = jest.fn();
     setThemePreferenceMock = jest.fn();
     applyFilterMock = jest.fn();
     injectToolbarMock = jest.fn();
@@ -55,6 +58,7 @@ describe('contentScript main lifecycle', () => {
     updateAlignmentViewMock = jest.fn();
     updateButtonTextViewMock = jest.fn();
     updateFavouritesVisibilityMock = jest.fn();
+    updateAiNotetakersVisibilityMock = jest.fn();
     waitForGmailChromeMock = jest.fn(() => Promise.resolve(header));
     waitForMessageTableMock = jest.fn(() => Promise.resolve());
     observeMessageListMock = jest.fn();
@@ -73,7 +77,9 @@ describe('contentScript main lifecycle', () => {
       setToolbarAlignment: setToolbarAlignmentMock,
       showFavouritesButton: false,
       setShowFavouritesButton: setShowFavouritesButtonMock,
-      MODES: { ALL: 'ALL', FAVOURITES: 'FAVOURITES' },
+      showAiNotetakersButton: false,
+      setShowAiNotetakersButton: setShowAiNotetakersButtonMock,
+      MODES: { ALL: 'ALL', FAVOURITES: 'FAVOURITES', AI_NOTETAKERS: 'AI_NOTETAKERS' },
       themePreference: 'system',
       setThemePreference: setThemePreferenceMock,
     }));
@@ -88,6 +94,7 @@ describe('contentScript main lifecycle', () => {
       updateAlignmentView: updateAlignmentViewMock,
       updateButtonTextView: updateButtonTextViewMock,
       updateFavouritesVisibility: updateFavouritesVisibilityMock,
+      updateAiNotetakersVisibility: updateAiNotetakersVisibilityMock,
     }));
 
     jest.unstable_mockModule('../src/modules/observers.js', () => ({

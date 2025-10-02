@@ -26,6 +26,8 @@ exports[`options module serialises localised labels for regression safety 1`] = 
   "experimental": {
     "description": "Experimental features are in active testing and may only be available in English.",
     "legend": "Experimental",
+    "showAiNotetakersChecked": false,
+    "showAiNotetakersLabel": "Show AI & Transcription button",
   },
   "pageDescription": "Mock Page Description",
   "pageTitle": "Mock Page Title",

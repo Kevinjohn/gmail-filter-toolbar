@@ -3,6 +3,7 @@ import {
   ALIGNMENTS,
   SHOW_BUTTON_TEXT_KEY,
   SHOW_FAVOURITES_KEY,
+  SHOW_AI_NOTETAKERS_KEY,
   THEME_KEY,
   THEMES,
 } from './constants.js';
@@ -24,6 +25,7 @@ const themeLabel = document.getElementById('themeLabel');
 const themeOptionSystem = document.getElementById('themeOptionSystem');
 const themeOptionLight = document.getElementById('themeOptionLight');
 const themeOptionDark = document.getElementById('themeOptionDark');
+const showAiNotetakersCheckbox = document.getElementById('show-ai-notetakers-checkbox');
 
 function getMessage(key, fallback) {
   const value = chrome.i18n.getMessage(key);
@@ -98,16 +100,23 @@ if (experimentalDescription) {
   experimentalDescription.textContent = getMessage('experimental_description', 'Experimental features are in active testing and may only be available in English.');
 }
 
+const showAiNotetakersLabel = document.querySelector('[data-i18n="options_show_ai_notetakers"]');
+if (showAiNotetakersLabel) {
+  showAiNotetakersLabel.textContent = getMessage('options_show_ai_notetakers', 'Show AI & Transcription button');
+}
+
 // Save options to chrome.storage.sync
 function save_options() {
   const themeValue = themeSelect ? themeSelect.value : THEMES.SYSTEM;
   const alignmentValue = alignmentSelect ? alignmentSelect.value : ALIGNMENTS.START;
   const favouritesValue = showFavouritesCheckbox ? showFavouritesCheckbox.checked : false;
+  const aiNotetakersValue = showAiNotetakersCheckbox ? showAiNotetakersCheckbox.checked : false;
   chrome.storage.sync.set(
     {
       gmailCalDebug: debugCheckbox.checked,
       [SHOW_BUTTON_TEXT_KEY]: showButtonTextCheckbox.checked,
       [SHOW_FAVOURITES_KEY]: favouritesValue,
+      [SHOW_AI_NOTETAKERS_KEY]: aiNotetakersValue,
       [ALIGNMENT_KEY]: alignmentValue,
       [THEME_KEY]: themeValue,
     },
@@ -123,7 +132,7 @@ function save_options() {
 // Restore options from chrome.storage.sync
 function restore_options() {
   chrome.storage.sync.get(
-    ['gmailCalDebug', SHOW_BUTTON_TEXT_KEY, SHOW_FAVOURITES_KEY, ALIGNMENT_KEY, THEME_KEY],
+    ['gmailCalDebug', SHOW_BUTTON_TEXT_KEY, SHOW_FAVOURITES_KEY, SHOW_AI_NOTETAKERS_KEY, ALIGNMENT_KEY, THEME_KEY],
     (res) => {
       if (chrome.runtime.lastError) {
         console.error('Error retrieving options:', chrome.runtime.lastError);
@@ -133,6 +142,7 @@ function restore_options() {
         const restoredTheme = normalizeTheme(res[THEME_KEY] ?? THEMES.SYSTEM);
         const restoredAlignment = normalizeAlignment(res[ALIGNMENT_KEY]);
         const showFavourites = !!res[SHOW_FAVOURITES_KEY];
+        const showAiNotetakers = !!res[SHOW_AI_NOTETAKERS_KEY];
         if (themeSelect) {
           themeSelect.value = restoredTheme;
         }
@@ -141,6 +151,9 @@ function restore_options() {
         }
         if (showFavouritesCheckbox) {
           showFavouritesCheckbox.checked = showFavourites;
+        }
+        if (showAiNotetakersCheckbox) {
+          showAiNotetakersCheckbox.checked = showAiNotetakers;
         }
         applyTheme(document, restoredTheme);
       }
@@ -159,6 +172,9 @@ if (themeSelect) {
 }
 if (alignmentSelect) {
   alignmentSelect.addEventListener('change', save_options);
+}
+if (showAiNotetakersCheckbox) {
+  showAiNotetakersCheckbox.addEventListener('change', save_options);
 }
 
 // Load options when the page is loaded

@@ -146,5 +146,13 @@
   "experimental_description": {
     "message": "Experimental features are in active testing and may only be available in English.",
     "description": "Description text explaining experimental features may not be fully localized."
+  },
+  "btn_ai_notetakers": {
+    "message": "AI & Transcription",
+    "description": "Button to show emails from AI services and transcription tools."
+  },
+  "options_show_ai_notetakers": {
+    "message": "Show AI & Transcription button",
+    "description": "Checkbox label in options page to enable/disable AI & Transcription filter button."
   }
 }

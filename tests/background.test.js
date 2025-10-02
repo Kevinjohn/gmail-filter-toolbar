@@ -35,7 +35,7 @@ describe('background.js', () => {
     const installListener = chrome.runtime.onInstalled.addListener.mock.calls[0][0];
     installListener();
 
-    expect(chrome.storage.sync.set).toHaveBeenCalledWith({ gmailCalMode: 'ALL' }, expect.any(Function));
+    expect(chrome.storage.sync.set).toHaveBeenCalledWith({ gmailCalMode: 'ALL', showAiNotetakers: false }, expect.any(Function));
     expect(infoSpy).toHaveBeenCalledWith(
       expect.stringContaining('[perf] background:onInstalled storage.sync.set completed in 0ms')
     );

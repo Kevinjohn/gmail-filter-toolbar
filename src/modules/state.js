@@ -3,6 +3,7 @@ import {
   ALIGNMENTS,
   SHOW_BUTTON_TEXT_KEY,
   SHOW_FAVOURITES_KEY,
+  SHOW_AI_NOTETAKERS_KEY,
   THEME_KEY,
   THEMES,
 } from './constants.js';
@@ -29,6 +30,7 @@ export const MODES = {
   CALENDAR: 'CALENDAR',
   ATTACH: 'ATTACH',
   FAVOURITES: 'FAVOURITES',
+  AI_NOTETAKERS: 'AI_NOTETAKERS',
   IMAGE: 'IMAGE',
   PDF: 'PDF',
   DOCUMENT: 'DOCUMENT',
@@ -69,6 +71,13 @@ export let themePreference = THEMES.SYSTEM;
 export let showFavouritesButton = false;
 
 /**
+ * AI & Transcription button visibility.
+ * @experimental
+ * @since 2.3.0
+ */
+export let showAiNotetakersButton = false;
+
+/**
  * Toolbar alignment preference.
  * @stable
  */
@@ -90,6 +99,15 @@ export function setShowFavouritesButton(value) {
   showFavouritesButton = !!value;
 }
 
+/**
+ * Sets AI & Transcription button visibility.
+ * @experimental
+ * @param {boolean} value
+ */
+export function setShowAiNotetakersButton(value) {
+  showAiNotetakersButton = !!value;
+}
+
 const ALIGNMENT_VALUES = new Set(Object.values(ALIGNMENTS));
 
 export function setToolbarAlignment(value) {
@@ -99,7 +117,7 @@ export function setToolbarAlignment(value) {
 export function loadState() {
   return new Promise((resolve, reject) => {
     chrome.storage.sync.get(
-      [KEY_MODE, KEY_DEBUG, SHOW_BUTTON_TEXT_KEY, SHOW_FAVOURITES_KEY, ALIGNMENT_KEY, THEME_KEY],
+      [KEY_MODE, KEY_DEBUG, SHOW_BUTTON_TEXT_KEY, SHOW_FAVOURITES_KEY, SHOW_AI_NOTETAKERS_KEY, ALIGNMENT_KEY, THEME_KEY],
       (res) => {
         if (chrome.runtime.lastError) {
           console.error('Error retrieving storage data:', chrome.runtime.lastError);
@@ -108,6 +126,7 @@ export function loadState() {
           showButtonText = true; // Default to true on error
           themePreference = THEMES.SYSTEM;
           showFavouritesButton = false;
+          showAiNotetakersButton = false;
           toolbarAlignment = ALIGNMENTS.START;
           reject(chrome.runtime.lastError); // Reject the promise on error
         } else {
@@ -117,6 +136,7 @@ export function loadState() {
             res[SHOW_BUTTON_TEXT_KEY] !== undefined ? res[SHOW_BUTTON_TEXT_KEY] : true; // Default to true if not set
           setThemePreference(res[THEME_KEY]);
           setShowFavouritesButton(res[SHOW_FAVOURITES_KEY]);
+          setShowAiNotetakersButton(res[SHOW_AI_NOTETAKERS_KEY]);
           setToolbarAlignment(res[ALIGNMENT_KEY]);
           resolve(); // Resolve the promise on success
         }

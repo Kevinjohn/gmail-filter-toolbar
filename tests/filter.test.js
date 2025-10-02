@@ -6,6 +6,7 @@ import {
   isFavouriteRow,
   hasSpecificAttachmentType,
   isGoogleDocAttachment,
+  isAiNotetakerRow,
 } from '../src/modules/filter.js';
 import {
   MODES,
@@ -285,6 +286,76 @@ describe('applyFilter mode behaviour', () => {
     applyFilter(doc);
     expect(matchRow.style.display).toBe('');
     expect(otherRow.style.display).toBe('none');
+  });
+});
+
+describe('isAiNotetakerRow', () => {
+  test('returns true for Gemini sender', () => {
+    const doc = makeMailDocument();
+    const row = doc.createElement('tr');
+    const senderSpan = doc.createElement('span');
+    senderSpan.className = 'zF';
+    senderSpan.setAttribute('name', 'Gemini');
+    senderSpan.setAttribute('email', 'gemini-notes@google.com');
+
+    const container = doc.createElement('div');
+    container.className = 'yW';
+    container.appendChild(senderSpan);
+    row.appendChild(container);
+    doc.querySelector('.UI').appendChild(row);
+
+    expect(isAiNotetakerRow(row)).toBe(true);
+  });
+
+  test('returns true for Otter.ai sender', () => {
+    const doc = makeMailDocument();
+    const row = doc.createElement('tr');
+    const senderSpan = doc.createElement('span');
+    senderSpan.className = 'zF';
+    senderSpan.setAttribute('name', 'Otter.ai');
+    senderSpan.setAttribute('email', 'no-reply@otter.ai');
+
+    const container = doc.createElement('div');
+    container.className = 'yW';
+    container.appendChild(senderSpan);
+    row.appendChild(container);
+    doc.querySelector('.UI').appendChild(row);
+
+    expect(isAiNotetakerRow(row)).toBe(true);
+  });
+
+  test('returns false for regular sender', () => {
+    const doc = makeMailDocument();
+    const row = doc.createElement('tr');
+    const senderSpan = doc.createElement('span');
+    senderSpan.className = 'zF';
+    senderSpan.setAttribute('name', 'John Doe');
+    senderSpan.setAttribute('email', 'john@example.com');
+
+    const container = doc.createElement('div');
+    container.className = 'yW';
+    container.appendChild(senderSpan);
+    row.appendChild(container);
+    doc.querySelector('.UI').appendChild(row);
+
+    expect(isAiNotetakerRow(row)).toBe(false);
+  });
+
+  test('is case-insensitive', () => {
+    const doc = makeMailDocument();
+    const row = doc.createElement('tr');
+    const senderSpan = doc.createElement('span');
+    senderSpan.className = 'zF';
+    senderSpan.setAttribute('name', 'GEMINI');  // Uppercase
+    senderSpan.setAttribute('email', 'gemini@google.com');
+
+    const container = doc.createElement('div');
+    container.className = 'yW';
+    container.appendChild(senderSpan);
+    row.appendChild(container);
+    doc.querySelector('.UI').appendChild(row);
+
+    expect(isAiNotetakerRow(row)).toBe(true);
   });
 });
 

@@ -1,5 +1,5 @@
 import { ALIGNMENTS, ATTACHMENT_TYPE_CONFIG, SELECTORS } from './constants.js';
-import { MODES, currentMode, showFavouritesButton, toolbarAlignment } from './state.js';
+import { MODES, currentMode, showFavouritesButton, showAiNotetakersButton, toolbarAlignment } from './state.js';
 
 // Define the base filter configurations for non-attachment modes
 const BASE_FILTER_CONFIG = {
@@ -22,6 +22,10 @@ const BASE_FILTER_CONFIG = {
   [MODES.ATTACH]: {
     icon: 'attachment',
     labelKey: 'btn_attach',
+  },
+  [MODES.AI_NOTETAKERS]: {
+    icon: 'smart_toy',
+    labelKey: 'btn_ai_notetakers',
   },
 };
 
@@ -96,6 +100,16 @@ export function injectToolbar(doc = document, headerElement) {
     btnGroup.appendChild(button);
   });
 
+  // Add AI & Transcription button at the end
+  const aiConfig = BASE_FILTER_CONFIG[MODES.AI_NOTETAKERS];
+  const aiButton = createFilterButton(doc, MODES.AI_NOTETAKERS, aiConfig.icon, aiConfig.labelKey);
+  if (!showAiNotetakersButton) {
+    aiButton.hidden = true;
+    aiButton.setAttribute('aria-hidden', 'true');
+    aiButton.setAttribute('tabindex', '-1');
+  }
+  btnGroup.appendChild(aiButton);
+
   bar.appendChild(btnGroup);
 
   const liveRegion = doc.createElement('div');
@@ -106,6 +120,7 @@ export function injectToolbar(doc = document, headerElement) {
 
   updateAlignmentView(toolbarAlignment, doc);
   updateFavouritesVisibility(showFavouritesButton, doc);
+  updateAiNotetakersVisibility(showAiNotetakersButton, doc);
   refreshUI(doc);
 
   // NOTE: Commented out listener flag check (line 62 always creates a new bar element,
@@ -197,6 +212,28 @@ export function updateAlignmentView(alignment, doc = document) {
 
 export function updateFavouritesVisibility(show, doc = document) {
   const button = doc.querySelector('#filter-FAVOURITES');
+  if (!button) {
+    return;
+  }
+
+  button.hidden = !show;
+  if (show) {
+    button.removeAttribute('aria-hidden');
+  } else {
+    button.setAttribute('aria-hidden', 'true');
+    button.setAttribute('aria-checked', 'false');
+    button.setAttribute('tabindex', '-1');
+  }
+}
+
+/**
+ * Shows or hides the AI & Transcription filter button.
+ * @experimental
+ * @param {boolean} show - Whether to show the button.
+ * @param {Document} doc - The document object.
+ */
+export function updateAiNotetakersVisibility(show, doc = document) {
+  const button = doc.querySelector('#filter-AI_NOTETAKERS');
   if (!button) {
     return;
   }

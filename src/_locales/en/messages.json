@@ -35,6 +35,10 @@
     "message": "Favourites",
     "description": "Button to show starred/favourite e-mails."
   },
+  "btn_ai_notetakers": {
+    "message": "AI & Transcription",
+    "description": "Button to show emails from AI services and transcription tools."
+  },
   "button_filter_images": {
     "message": "Images",
     "description": "Button to show only emails with image attachments."
@@ -146,5 +150,9 @@
   "experimental_description": {
     "message": "Experimental features are in active testing and may only be available in English.",
     "description": "Description text explaining experimental features may not be fully localized."
+  },
+  "options_show_ai_notetakers": {
+    "message": "Show AI & Transcription button",
+    "description": "Checkbox label in options page to enable/disable AI & Transcription filter button."
   }
 }

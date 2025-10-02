@@ -3,6 +3,7 @@ import {
   SELECTORS,
   SHOW_BUTTON_TEXT_KEY,
   SHOW_FAVOURITES_KEY,
+  SHOW_AI_NOTETAKERS_KEY,
   THEME_KEY,
 } from './modules/constants.js';
 import {
@@ -17,6 +18,8 @@ import {
   setToolbarAlignment,
   showFavouritesButton,
   setShowFavouritesButton,
+  showAiNotetakersButton,
+  setShowAiNotetakersButton,
   MODES,
   themePreference,
   setThemePreference,
@@ -28,6 +31,7 @@ import {
   updateAlignmentView,
   updateButtonTextView,
   updateFavouritesVisibility,
+  updateAiNotetakersVisibility,
 } from './modules/toolbar.js';
 import {
   waitForGmailChrome,
@@ -55,6 +59,7 @@ function main() {
         updateButtonTextView(showButtonText); // Apply initial state
         updateAlignmentView(toolbarAlignment);
         updateFavouritesVisibility(showFavouritesButton);
+        updateAiNotetakersVisibility(showAiNotetakersButton);
         refreshUI(document);
 
         waitForMessageTable().then(() => {
@@ -106,6 +111,24 @@ chrome.storage.onChanged.addListener((changes) => {
     setShowFavouritesButton(nextValue);
     updateFavouritesVisibility(nextValue);
     if (!nextValue && currentMode === MODES.FAVOURITES) {
+      setCurrentMode(MODES.ALL);
+      saveState()
+        .then(() => {
+          applyFilter(document);
+          refreshUI(document);
+        })
+        .catch((error) => {
+          console.error('Error saving mode:', error);
+        });
+    } else {
+      refreshUI(document);
+    }
+  }
+  if (SHOW_AI_NOTETAKERS_KEY in changes) {
+    const nextValue = !!changes[SHOW_AI_NOTETAKERS_KEY].newValue;
+    setShowAiNotetakersButton(nextValue);
+    updateAiNotetakersVisibility(nextValue);
+    if (!nextValue && currentMode === MODES.AI_NOTETAKERS) {
       setCurrentMode(MODES.ALL);
       saveState()
         .then(() => {

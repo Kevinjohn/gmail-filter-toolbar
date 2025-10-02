@@ -1,5 +1,5 @@
 import { MODES, currentMode, debugOn } from './state.js';
-import { SELECTORS, ATTACHMENT_TYPE_CONFIG } from './constants.js';
+import { SELECTORS, ATTACHMENT_TYPE_CONFIG, AI_NOTETAKER_PATTERNS } from './constants.js';
 
 /**
  * Checks if an email row is a calendar invitation.
@@ -45,6 +45,45 @@ export function hasAttachmentRow(row) {
 export function isFavouriteRow(row, chromeApi = chrome) {
   const starredAltText = chromeApi.i18n.getMessage('alt_starred');
   return !!row.querySelector(`span[data-tooltip="${starredAltText}"]`);
+}
+
+/**
+ * Checks if an email row is from an AI service or transcription tool.
+ * Matches sender name against patterns in AI_NOTETAKER_PATTERNS.
+ * @experimental
+ * @since 2.3.0
+ * @param {HTMLElement} row - The DOM element for the email row.
+ * @returns {boolean} True if sender matches any AI/notetaker pattern.
+ */
+export function isAiNotetakerRow(row) {
+  // Try primary selector
+  let senderElement = row.querySelector(SELECTORS.senderName);
+
+  // Fallback: try to find any span with email attribute in the sender area
+  if (!senderElement) {
+    senderElement = row.querySelector('.yW span[email]');
+  }
+
+  // Fallback: try to find the sender name in the row's text content
+  if (!senderElement) {
+    const senderContainer = row.querySelector('.yW');
+    if (senderContainer) {
+      const textContent = senderContainer.textContent || '';
+      return AI_NOTETAKER_PATTERNS.some(pattern => pattern.test(textContent));
+    }
+    return false;
+  }
+
+  // Get sender name from name attribute, email attribute, or text content
+  const senderName = senderElement.getAttribute('name') ||
+                     senderElement.getAttribute('email') ||
+                     senderElement.textContent || '';
+
+  if (debugOn) {
+    console.log('[AI Filter Debug] Sender name:', senderName, 'Element:', senderElement);
+  }
+
+  return AI_NOTETAKER_PATTERNS.some(pattern => pattern.test(senderName));
 }
 
 /**
@@ -123,6 +162,10 @@ const FILTER_CONFIG = {
   [MODES.PRESENTATION]: {
     labelKey: 'button_filter_presentations',
     filterFn: (row) => !hasSpecificAttachmentType(row, MODES.PRESENTATION),
+  },
+  [MODES.AI_NOTETAKERS]: {
+    labelKey: 'btn_ai_notetakers',
+    filterFn: (row) => !isAiNotetakerRow(row),
   },
 };
 

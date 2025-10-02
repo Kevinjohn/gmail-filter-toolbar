@@ -11,6 +11,13 @@ export const SHOW_BUTTON_TEXT_KEY = 'showButtonText';
 export const SHOW_FAVOURITES_KEY = 'showFavourites';
 
 /**
+ * Storage key for AI & Transcription button visibility.
+ * @experimental
+ * @since 2.3.0
+ */
+export const SHOW_AI_NOTETAKERS_KEY = 'showAiNotetakers';
+
+/**
  * Storage key for toolbar alignment preference.
  * @stable
  */
@@ -82,6 +89,22 @@ export const ATTACHMENT_TYPE_CONFIG = {
     labelKey: 'button_filter_presentations',
   },
 };
+
+/**
+ * Regex patterns to match AI services and transcription tools.
+ * Patterns are case-insensitive and match against sender display name.
+ * @experimental
+ * @since 2.3.0
+ */
+export const AI_NOTETAKER_PATTERNS = [
+  /gemini/i,         // Google Gemini AI
+  /chatgpt/i,        // OpenAI ChatGPT
+  /claude/i,         // Anthropic Claude
+  /copilot/i,        // Microsoft Copilot
+  /otter\.ai/i,      // Otter.ai transcription service
+  /fathom/i,         // Fathom video transcription
+  /fireflies\.ai/i,  // Fireflies.ai transcription service
+];
 
 /**
  * DOM selectors for Gmail elements.
@@ -172,4 +195,10 @@ export const SELECTORS = {
    * This region is used to announce filter status updates to screen readers.
    */
   liveRegion: '.gcal-live-region',
+  /**
+   * Selector for the sender name element within an email row.
+   * Targets the span containing the sender's display name.
+   * @experimental - Used by AI & Transcription filter
+   */
+  senderName: '.yW span.zF[name]',
 };

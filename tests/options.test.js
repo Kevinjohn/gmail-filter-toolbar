@@ -22,6 +22,7 @@ const baseMessages = {
   options_theme_dark: 'Dark Theme',
   experimental_legend: 'Experimental',
   experimental_description: 'Experimental features are in active testing and may only be available in English.',
+  options_show_ai_notetakers: 'Show AI & Transcription button',
 };
 
 const getTextContent = (id) => document.getElementById(id)?.textContent ?? null;
@@ -65,6 +66,8 @@ const serializeOptionsUi = () => ({
   experimental: {
     legend: document.querySelector('[data-i18n="experimental_legend"]')?.textContent ?? null,
     description: document.querySelector('[data-i18n="experimental_description"]')?.textContent ?? null,
+    showAiNotetakersLabel: document.querySelector('[data-i18n="options_show_ai_notetakers"]')?.textContent ?? null,
+    showAiNotetakersChecked: document.getElementById('show-ai-notetakers-checkbox')?.checked ?? false,
   },
 });
 
@@ -109,9 +112,13 @@ const renderHtml = ({
     </fieldset>
     ${includeExperimental ? `<fieldset id="experimental-section">
       <legend data-i18n="experimental_legend">Experimental</legend>
-      <p id="experimentalDescription" style="margin-bottom: 1em; font-style: italic;">
+      <p id="experimentalDescription">
         <span data-i18n="experimental_description">Experimental features are in active testing and may only be available in English.</span>
       </p>
+      <div class="option-row">
+        <label for="show-ai-notetakers-checkbox" data-i18n="options_show_ai_notetakers">Show AI & Transcription button</label>
+        <input type="checkbox" id="show-ai-notetakers-checkbox">
+      </div>
     </fieldset>` : ''}
   `;
 };
@@ -169,7 +176,7 @@ describe('options module', () => {
     const chrome = await loadModule();
 
     expect(chrome.storage.sync.get).toHaveBeenCalledWith(
-      ['gmailCalDebug', 'showButtonText', 'showFavourites', 'toolbarAlignment', 'gmailCalTheme'],
+      ['gmailCalDebug', 'showButtonText', 'showFavourites', 'showAiNotetakers', 'toolbarAlignment', 'gmailCalTheme'],
       expect.any(Function),
     );
     expect(document.getElementById('pageTitle').textContent).toBe('Mock Page Title');
@@ -204,15 +211,14 @@ describe('options module', () => {
     themeSelect.dispatchEvent(new Event('change'));
 
     const lastPayload = chrome.storage.sync.set.mock.calls.pop()[0];
-    expect(lastPayload).toMatchInlineSnapshot(`
-      {
-        "gmailCalDebug": true,
-        "gmailCalTheme": "dark",
-        "showButtonText": false,
-        "showFavourites": true,
-        "toolbarAlignment": "center",
-      }
-    `);
+    expect(lastPayload).toMatchObject({
+      gmailCalDebug: true,
+      gmailCalTheme: 'dark',
+      showButtonText: false,
+      showFavourites: true,
+      showAiNotetakers: false,
+      toolbarAlignment: 'center',
+    });
   });
 
   test('logs retrieval errors from storage', async () => {
@@ -279,5 +285,30 @@ describe('options module', () => {
     expect(document.querySelector('[data-i18n="experimental_description"]')).toBeNull();
     // Should still work without throwing
     expect(() => document.getElementById('debug').dispatchEvent(new Event('change'))).not.toThrow();
+  });
+
+  test('localises AI & Transcription checkbox label', async () => {
+    await loadModule();
+    const aiNotetakersLabel = document.querySelector('[data-i18n="options_show_ai_notetakers"]');
+    expect(aiNotetakersLabel.textContent).toBe('Show AI & Transcription button');
+  });
+
+  test('restores AI & Transcription checkbox state', async () => {
+    await loadModule({ storageValues: { showAiNotetakers: true } });
+    const aiNotetakersCheckbox = document.getElementById('show-ai-notetakers-checkbox');
+    expect(aiNotetakersCheckbox.checked).toBe(true);
+  });
+
+  test('saves AI & Transcription checkbox state', async () => {
+    const chrome = await loadModule();
+    const aiNotetakersCheckbox = document.getElementById('show-ai-notetakers-checkbox');
+
+    aiNotetakersCheckbox.checked = true;
+    aiNotetakersCheckbox.dispatchEvent(new Event('change'));
+
+    expect(chrome.storage.sync.set).toHaveBeenCalledWith(
+      expect.objectContaining({ showAiNotetakers: true }),
+      expect.any(Function),
+    );
   });
 });

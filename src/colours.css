@@ -5,7 +5,7 @@
   --gcal-bg-color: #f1f3f4;
   --gcal-border-color: #dadce0;
   --gcal-text-color: #202124;
-  --gcal-active-button-text: #1a73e8; /* Google Blue */
+  --gcal-active-button-text: #d93025; /* Gmail Red */
   --gcal-debug-overlay: rgba(0, 123, 255, 0.15); /* Light blue for debug */
   color-scheme: light;
 }
@@ -14,7 +14,7 @@
   --gcal-bg-color: #f1f3f4;
   --gcal-border-color: #dadce0;
   --gcal-text-color: #202124;
-  --gcal-active-button-text: #1a73e8; /* Google Blue */
+  --gcal-active-button-text: #d93025; /* Gmail Red */
   --gcal-debug-overlay: rgba(0, 123, 255, 0.15); /* Light blue for debug */
   color-scheme: light;
 }
@@ -23,7 +23,7 @@
   --gcal-bg-color: #3c4043;
   --gcal-border-color: #5f6368;
   --gcal-text-color: #e8eaed;
-  --gcal-active-button-text: #8ab4f8; /* Lighter Google Blue */
+  --gcal-active-button-text: #f28b82; /* Lighter Gmail Red */
   --gcal-debug-overlay: rgba(138, 180, 248, 0.25); /* Lighter blue for debug */
   color-scheme: dark;
 }
@@ -32,7 +32,7 @@
   --gcal-bg-color: #f1f3f4;
   --gcal-border-color: #dadce0;
   --gcal-text-color: #202124;
-  --gcal-active-button-text: #1a73e8; /* Google Blue */
+  --gcal-active-button-text: #d93025; /* Gmail Red */
   --gcal-debug-overlay: rgba(0, 123, 255, 0.15); /* Light blue for debug */
   color-scheme: light;
 }
@@ -44,7 +44,7 @@
     --gcal-bg-color: #3c4043;
     --gcal-border-color: #5f6368;
     --gcal-text-color: #e8eaed;
-    --gcal-active-button-text: #8ab4f8; /* Lighter Google Blue */
+    --gcal-active-button-text: #f28b82; /* Lighter Gmail Red */
     --gcal-debug-overlay: rgba(138, 180, 248, 0.25); /* Lighter blue for debug */
     color-scheme: dark;
   }

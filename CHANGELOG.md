@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.1.0] - 2025-10-02
+
+### Changed
+- **UI Update**: Changed active button color from Google Blue to Gmail Red (#d93025 in light mode, #f28b82 in dark mode) for better brand consistency
+
 ## [2.0.1] - 2025-10-01
 
 ### Changed

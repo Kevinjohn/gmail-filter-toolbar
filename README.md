@@ -368,8 +368,14 @@ Thoughts for future development...
   - Requires action/follow-up
 - Store releases:
   - Chrome Web Store (pending)
+    - Upload `artifacts/chrome/gmail-calendar-options-chrome-v*.tar.gz` to [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole)
+    - No signing required - Google handles everything
   - Edge Add-ons (pending)
+    - Uses same Chrome package - upload to [Microsoft Partner Center](https://partner.microsoft.com/dashboard)
   - Mozilla Add-ons (pending)
+    - Upload `artifacts/firefox/gmail-calendar-options-firefox-v*.tar.gz` to [AMO](https://addons.mozilla.org/developers/)
+    - Mozilla automatically signs during review
+    - For self-hosting: Use `web-ext sign --api-key=<KEY> --api-secret=<SECRET>` (get keys from AMO developer hub)
 - Community translations (non-AI)
 - RTL language testing and refinement
 - Enhanced accessibility testing with real screen readers

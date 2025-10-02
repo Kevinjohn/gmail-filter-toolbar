@@ -1,6 +1,10 @@
 import { MODES, currentMode, debugOn } from './state.js';
 import { SELECTORS, ATTACHMENT_TYPE_CONFIG } from './constants.js';
 
+/**
+ * Checks if an email row is a calendar invitation.
+ * @stable
+ */
 export function isCalendarRow(row, chromeApi = chrome) {
   const hasIcs = !!row.querySelector(SELECTORS.icsImage);
   const calendarEventAltText = chromeApi.i18n.getMessage('alt_calendar_event');
@@ -8,6 +12,10 @@ export function isCalendarRow(row, chromeApi = chrome) {
   return hasIcs || hasCalendarEventIcon;
 }
 
+/**
+ * Checks if an email row has Google Doc attachments.
+ * @stable
+ */
 export function isGoogleDocAttachment(row) {
   const attachmentChips = row.querySelectorAll(SELECTORS.attachmentChip);
   for (const chip of attachmentChips) {
@@ -19,6 +27,10 @@ export function isGoogleDocAttachment(row) {
   return false;
 }
 
+/**
+ * Checks if an email row has any attachments.
+ * @stable
+ */
 export function hasAttachmentRow(row) {
   const hasBywClass = row.classList.contains(SELECTORS.attachmentRowClass);
   const hasAttachmentTooltip = !!row.querySelector(SELECTORS.attachmentTooltip);
@@ -26,6 +38,10 @@ export function hasAttachmentRow(row) {
   return hasBywClass || hasAttachmentTooltip || hasPaperclipIcon || isGoogleDocAttachment(row);
 }
 
+/**
+ * Checks if an email row is starred/favourited.
+ * @stable
+ */
 export function isFavouriteRow(row, chromeApi = chrome) {
   const starredAltText = chromeApi.i18n.getMessage('alt_starred');
   return !!row.querySelector(`span[data-tooltip="${starredAltText}"]`);
@@ -33,6 +49,7 @@ export function isFavouriteRow(row, chromeApi = chrome) {
 
 /**
  * Checks if an email row contains a specific type of attachment.
+ * @stable
  * @param {HTMLElement} row - The DOM element for the email row.
  * @param {string} attachmentType - The key from ATTACHMENT_TYPE_CONFIG (e.g., 'IMAGE').
  * @returns {boolean} True if a matching attachment is found, otherwise false.

@@ -7,9 +7,22 @@ import {
   THEMES,
 } from './constants.js';
 
+/**
+ * Storage key for current filter mode.
+ * @stable
+ */
 export const KEY_MODE = 'gmailCalMode';
+
+/**
+ * Storage key for debug mode.
+ * @stable
+ */
 export const KEY_DEBUG = 'gmailCalDebug';
 
+/**
+ * Available filter modes.
+ * @stable
+ */
 export const MODES = {
   ALL: 'ALL',
   EMAIL: 'EMAIL',
@@ -25,11 +38,40 @@ export const MODES = {
 
 const THEME_VALUES = new Set(Object.values(THEMES));
 
+/**
+ * Current active filter mode.
+ * @stable
+ */
 export let currentMode = MODES.ALL;
+
+/**
+ * Debug mode flag.
+ * @stable
+ */
 export let debugOn = false;
+
+/**
+ * Show button text preference.
+ * @stable
+ */
 export let showButtonText = true;
+
+/**
+ * Theme preference.
+ * @stable
+ */
 export let themePreference = THEMES.SYSTEM;
+
+/**
+ * Favourites button visibility.
+ * @stable
+ */
 export let showFavouritesButton = false;
+
+/**
+ * Toolbar alignment preference.
+ * @stable
+ */
 export let toolbarAlignment = ALIGNMENTS.START;
 
 export function setCurrentMode(mode) {

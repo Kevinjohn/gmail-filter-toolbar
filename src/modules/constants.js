@@ -1,13 +1,41 @@
+/**
+ * Storage key for button text visibility preference.
+ * @stable
+ */
 export const SHOW_BUTTON_TEXT_KEY = 'showButtonText';
+
+/**
+ * Storage key for favourites button visibility.
+ * @stable
+ */
 export const SHOW_FAVOURITES_KEY = 'showFavourites';
+
+/**
+ * Storage key for toolbar alignment preference.
+ * @stable
+ */
 export const ALIGNMENT_KEY = 'toolbarAlignment';
+
+/**
+ * Storage key for theme preference.
+ * @stable
+ */
 export const THEME_KEY = 'gmailCalTheme';
+
+/**
+ * Theme options enum.
+ * @stable
+ */
 export const THEMES = {
   SYSTEM: 'system',
   LIGHT: 'light',
   DARK: 'dark',
 };
 
+/**
+ * Toolbar alignment options enum.
+ * @stable
+ */
 export const ALIGNMENTS = {
   START: 'start',
   CENTER: 'center',
@@ -20,6 +48,7 @@ export const ALIGNMENTS = {
  * - gdriveIdentifier: String to identify Google Drive file types from the icon src.
  * - icon: Material Icon name for the filter button.
  * - labelKey: i18n message key for the button's label.
+ * @stable
  */
 export const ATTACHMENT_TYPE_CONFIG = {
   IMAGE: {
@@ -54,6 +83,10 @@ export const ATTACHMENT_TYPE_CONFIG = {
   },
 };
 
+/**
+ * DOM selectors for Gmail elements.
+ * @stable
+ */
 export const SELECTORS = {
   /**
    * Selector for the primary Gmail toolbar (newer versions).

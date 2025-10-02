@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.5.0] - 2025-10-02
+
+### Changed
+- **Build System**: Split build output into browser-specific directories
+  - Chrome builds to `dist/chrome/`, Firefox builds to `dist/firefox/`
+  - `npm run build` now builds both browsers simultaneously
+  - Prevents manifest conflicts when testing multiple browsers
+  - Updated all tooling: Vite config, npm scripts, Playwright fixtures, release script
+  - **BREAKING CHANGE**: Extension loading paths changed from `dist/` to `dist/chrome/` or `dist/firefox/`
+  - Both browser builds can now coexist without conflicts
+
+### Documentation
+- **CLAUDE.md**: Updated loading instructions for new browser-specific directories
+  - Chrome/Edge: Load `dist/chrome/` folder
+  - Firefox: Load `dist/firefox/manifest.json`
+  - Added note about simultaneous builds
+- **README.md**: Updated all references to use browser-specific paths
+  - Quick Start sections updated for both browsers
+  - Building for Production sections clarified
+  - Project Structure diagram updated
+
 ## [2.4.0] - 2025-10-02
 
 ### Changed

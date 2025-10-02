@@ -1,10 +1,10 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-The extension source lives under `src/`, with feature logic in `src/modules/` (e.g., `background.js`, `filter.js`, `toolbar.js`) and shared helpers in `src/utils/`. UI assets such as icons, styles, and option markup sit in `src/icons/`, `src/styles.css`, and `src/options.html`. Localized strings are versioned in `src/_locales/`. Jest specs mirror module names in `tests/` (for example `tests/filter.test.js`) with common bootstrapping in `tests/setup.js`. Production bundles are emitted to `dist/` via Vite.
+The extension source lives under `src/`, with feature logic in `src/modules/` (e.g., `background.js`, `filter.js`, `toolbar.js`) and shared helpers in `src/utils/`. UI assets such as icons, styles, and option markup sit in `src/icons/`, `src/styles.css`, and `src/options.html`. Localized strings are versioned in `src/_locales/`. Jest specs mirror module names in `tests/` (for example `tests/filter.test.js`) with common bootstrapping in `tests/setup.js`. Production bundles are emitted to browser-specific directories: `dist/chrome/` and `dist/firefox/` via Vite.
 
 ## Build, Test, and Development Commands
-Use `npm run build` to produce the Vite bundle in `dist/`. Run `npm test` for the Jest unit suite with preconfigured JSDOM shims. Execute `npm run e2e` for Playwright flows that exercise extension UI; install browsers once using `npx playwright install`. Lint code with `npm run lint`, and normalize formatting through `npm run format` before committing.
+Use `npm run build` to produce both Chrome and Firefox bundles in `dist/chrome/` and `dist/firefox/`. Use `npm run build:chrome` or `npm run build:firefox` to build a single browser. Run `npm test` for the Jest unit suite with preconfigured JSDOM shims. Execute `npm run e2e` for Playwright flows that exercise extension UI; install browsers once using `npx playwright install`. Lint code with `npm run lint`, and normalize formatting through `npm run format` before committing. When loading the extension in browsers, use `dist/chrome/` for Chrome/Edge and `dist/firefox/` for Firefox.
 
 ## Coding Style & Naming Conventions
 Write ES2022 modules with top-level `import`/`export` syntax. Follow two-space indentation, single quotes, and 100-character lines enforced by Prettier. Use camelCase for variables and functions, PascalCase for exported factories, and kebab-case for asset filenames. Keep files organized by feature so `toolbar.js` pairs with `toolbar.test.js` and relevant assets.

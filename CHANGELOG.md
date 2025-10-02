@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.3.1] - 2025-10-02
+
+### Fixed
+- **Tests**: Updated contentScript integration test mocks to include new AI & Transcription exports
+  - Added `showAiNotetakersButton` and `setShowAiNotetakersButton` to state.js mock
+  - Added `updateAiNotetakersVisibility` to toolbar.js mock
+  - Added `AI_NOTETAKERS` to MODES enum in mock
+  - All 115 unit tests now pass
+
 ## [2.3.0] - 2025-10-02
 
 ### Added

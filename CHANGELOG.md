@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.2.2] - 2025-10-02
+
+### Changed
+- **Code Quality**: Removed inline styles from options page HTML
+  - Moved `margin-bottom`, `font-style`, and `line-height` from inline styles to options.css
+  - All styling now properly separated into stylesheets
+
 ## [2.2.1] - 2025-10-02
 
 ### Changed

@@ -4,7 +4,7 @@
     "description": "Name of the extension."
   },
   "extension_description": {
-    "message": "تبديل ظهور دعوات التقويم داخل Gmail.",
+    "message": "تصفية Gmail حسب دعوات التقويم ونوع المرفقات وملاحظات AI أو البريد العادي.",
     "description": "Description of the extension."
   },
   "label_toolbar": {

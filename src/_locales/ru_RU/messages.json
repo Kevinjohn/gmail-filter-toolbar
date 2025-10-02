@@ -4,7 +4,7 @@
     "description": "Name of the extension."
   },
   "extension_description": {
-    "message": "Переключение видимости приглашений календаря в Gmail.",
+    "message": "Фильтруйте Gmail по приглашениям календаря, типу вложения, заметкам ИИ или обычной почте.",
     "description": "Description of the extension."
   },
   "label_toolbar": {

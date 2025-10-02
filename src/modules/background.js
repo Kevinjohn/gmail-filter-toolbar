@@ -11,7 +11,7 @@ function logDuration(label, durationMs) {
 }
 
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('Gmail Calendar Options installed');
+  console.log('Gmail Filter Toolbar installed');
   const start = performance.now();
   chrome.storage.sync.set(
     {

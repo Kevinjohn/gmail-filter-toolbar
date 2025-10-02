@@ -4,7 +4,7 @@
     "description": "Name of the extension."
   },
   "extension_description": {
-    "message": "Alternar la visibilidad de las invitaciones del calendario dentro de Gmail.",
+    "message": "Filtra Gmail por invitaciones de calendario, tipo de archivo adjunto, notas de IA o correo normal.",
     "description": "Description of the extension."
   },
   "label_toolbar": {

@@ -4,7 +4,7 @@
     "description": "Name of the extension."
   },
   "extension_description": {
-    "message": "Veksle synlighet av kalenderinvitasjoner i Gmail.",
+    "message": "Filtrer Gmail etter kalenderinvitasjoner, vedleggstype, AI-notater eller vanlig e-post.",
     "description": "Description of the extension."
   },
   "label_toolbar": {

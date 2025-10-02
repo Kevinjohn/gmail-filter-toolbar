@@ -1,10 +1,10 @@
 {
   "extension_name": {
-    "message": "Gmail Calendar Options",
+    "message": "Gmail Filter Toolbar",
     "description": "Name of the extension."
   },
   "extension_description": {
-    "message": "Toggle visibility of calendar invites inside Gmail.",
+    "message": "Filter Gmail by calendar invites, attachment type, AI notes, or regular mail.",
     "description": "Description of the extension."
   },
   "label_toolbar": {

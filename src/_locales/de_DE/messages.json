@@ -4,7 +4,7 @@
     "description": "Name of the extension."
   },
   "extension_description": {
-    "message": "Sichtbarkeit von Kalendereinladungen in Gmail ein-/ausblenden.",
+    "message": "Gmail nach Kalendereinladungen, Anlagentyp, KI-Notizen oder normalen Mails filtern.",
     "description": "Description of the extension."
   },
   "label_toolbar": {

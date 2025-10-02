@@ -4,7 +4,7 @@
     "description": "Name of the extension."
   },
   "extension_description": {
-    "message": "Εναλλαγή ορατότητας των προσκλήσεων ημερολογίου μέσα στο Gmail.",
+    "message": "Φιλτράρετε το Gmail ανά προσκλήσεις ημερολογίου, τύπο συνημμένου, σημειώσεις AI ή κανονικό email.",
     "description": "Description of the extension."
   },
   "label_toolbar": {

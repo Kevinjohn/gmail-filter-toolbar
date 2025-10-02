@@ -4,7 +4,7 @@
     "description": "Name of the extension."
   },
   "extension_description": {
-    "message": "Attiva o disattiva la visibilità degli inviti del calendario all'interno di Gmail.",
+    "message": "Filtra Gmail per inviti del calendario, tipo di allegato, note AI o posta normale.",
     "description": "Description of the extension."
   },
   "label_toolbar": {

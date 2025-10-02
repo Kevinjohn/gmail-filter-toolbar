@@ -4,7 +4,7 @@
     "description": "Name of the extension."
   },
   "extension_description": {
-    "message": "Gmail içindeki takvim davetlerinin görünürlüğünü değiştirin.",
+    "message": "Gmail'i takvim davetleri, ek türü, AI notları veya normal postaya göre filtreleyin.",
     "description": "Description of the extension."
   },
   "label_toolbar": {

@@ -44,7 +44,7 @@ document.title = getMessage('page_title', 'Calendar Options');
 document.getElementById('pageTitle').textContent = getMessage('page_title', 'Calendar Options');
 document.getElementById('pageDescription').textContent = getMessage(
   'options_page_description',
-  'Settings for the Gmail Calendar Options extension.',
+  'Settings for the Gmail Filter Toolbar extension.',
 );
 document.getElementById('debugLegend').textContent = getMessage('options_debug_legend', 'Debugging');
 document.getElementById('debugLabel').textContent = getMessage(

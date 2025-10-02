@@ -4,7 +4,7 @@
     "description": "Name of the extension."
   },
   "extension_description": {
-    "message": "Comutați vizibilitatea invitațiilor din calendar în Gmail.",
+    "message": "Filtrează Gmail după invitații de calendar, tipul atașamentului, notițe AI sau e-mail obișnuit.",
     "description": "Description of the extension."
   },
   "label_toolbar": {

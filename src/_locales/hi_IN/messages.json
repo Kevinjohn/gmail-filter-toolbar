@@ -4,7 +4,7 @@
     "description": "Name of the extension."
   },
   "extension_description": {
-    "message": "Gmail में कैलेंडर निमंत्रण की दृश्यता चालू या बंद करें।",
+    "message": "कैलेंडर आमंत्रण, अनुलग्नक प्रकार, AI नोट्स या नियमित मेल द्वारा Gmail को फ़िल्टर करें।",
     "description": "Description of the extension."
   },
   "label_toolbar": {

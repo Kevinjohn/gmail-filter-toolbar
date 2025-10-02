@@ -4,7 +4,7 @@
     "description": "Name of the extension."
   },
   "extension_description": {
-    "message": "Zichtbaarheid van agenda-uitnodigingen in Gmail in- of uitschakelen.",
+    "message": "Filter Gmail op agenda-uitnodigingen, bijlagetype, AI-notities of gewone mail.",
     "description": "Description of the extension."
   },
   "label_toolbar": {

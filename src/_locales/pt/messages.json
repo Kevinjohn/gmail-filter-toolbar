@@ -4,7 +4,7 @@
     "description": "Name of the extension."
   },
   "extension_description": {
-    "message": "Ativar ou desativar a visibilidade dos convites do calendário no Gmail.",
+    "message": "Filtre o Gmail por convites de calendário, tipo de anexo, notas de IA ou email normal.",
     "description": "Description of the extension."
   },
   "label_toolbar": {

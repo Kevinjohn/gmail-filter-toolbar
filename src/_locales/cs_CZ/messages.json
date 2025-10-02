@@ -4,7 +4,7 @@
     "description": "Name of the extension."
   },
   "extension_description": {
-    "message": "Přepínání viditelnosti pozvánek do kalendáře v Gmailu.",
+    "message": "Filtrujte Gmail podle pozvánek do kalendáře, typu přílohy, AI poznámek nebo běžné pošty.",
     "description": "Description of the extension."
   },
   "label_toolbar": {

@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.4.0] - 2025-10-02
+
+### Changed
+- **Rebranding**: Updated extension name from "Gmail Calendar Options" to "Gmail Filter Toolbar"
+  - Updated extension name across all 27 locales
+  - Updated extension description to "Filter Gmail by calendar invites, attachment type, AI notes, or regular mail."
+  - Updated console logs and fallback text in options.js and background.js
+  - Name now accurately reflects the full filtering capabilities beyond just calendars
+
+### Documentation
+- **CLAUDE.md**: Added critical warning about browser-specific builds
+  - Clarified that `dist/` folder only works for ONE browser at a time
+  - Chrome requires `npm run build:chrome` (uses `src/manifest.json`)
+  - Firefox requires `npm run build:firefox` (uses `src/manifest.firefox.json`)
+  - Added separate loading instructions for Chrome/Edge and Firefox
+  - Prevents manifest compatibility errors when switching between browsers
+
 ## [2.3.2] - 2025-10-02
 
 ### Fixed

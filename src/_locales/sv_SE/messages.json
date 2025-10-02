@@ -1,10 +1,10 @@
 {
   "extension_name": {
-    "message": "Alternativ för Gmail-kalender",
+    "message": "Gmail Filter Toolbar",
     "description": "Name of the extension."
   },
   "extension_description": {
-    "message": "Växla synlighet för kalenderinbjudningar i Gmail.",
+    "message": "Filtrera Gmail efter kalenderinbjudningar, bilagstyp, AI-anteckningar eller vanlig e-post.",
     "description": "Description of the extension."
   },
   "label_toolbar": {

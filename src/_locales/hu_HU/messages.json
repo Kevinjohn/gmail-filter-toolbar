@@ -4,7 +4,7 @@
     "description": "Name of the extension."
   },
   "extension_description": {
-    "message": "A naptár meghívásainak láthatóságának beállítása a Gmailben.",
+    "message": "Gmail szűrése naptármeghívók, melléklet típusa, AI jegyzetek vagy normál levelek szerint.",
     "description": "Description of the extension."
   },
   "label_toolbar": {

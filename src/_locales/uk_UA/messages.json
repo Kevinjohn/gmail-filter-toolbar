@@ -4,7 +4,7 @@
     "description": "Name of the extension."
   },
   "extension_description": {
-    "message": "Увімкніть видимість запрошень календаря в Gmail.",
+    "message": "Фільтруйте Gmail за запрошеннями календаря, типом вкладення, нотатками ШІ або звичайною поштою.",
     "description": "Description of the extension."
   },
   "label_toolbar": {

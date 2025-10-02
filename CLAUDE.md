@@ -48,11 +48,28 @@ npm run release:build     # Build release artifacts for distribution
 ```
 
 ### Loading the Extension
-1. Run `npm run build` to create `dist/` folder
-2. Open `chrome://extensions`
+
+**IMPORTANT**: Always build for the correct browser before loading:
+- **Chrome/Edge**: `npm run build:chrome` (uses `src/manifest.json`)
+- **Firefox**: `npm run build:firefox` (uses `src/manifest.firefox.json`)
+
+The `dist/` folder contains the **last built version**. Running the wrong build command will replace the manifest with the wrong browser's configuration.
+
+**Chrome/Edge**:
+1. Run `npm run build:chrome`
+2. Open `chrome://extensions` (or `edge://extensions`)
 3. Enable "Developer mode"
 4. Click "Load unpacked" → select `dist/` folder
 5. Open https://mail.google.com to see the toolbar
+
+**Firefox**:
+1. Run `npm run build:firefox`
+2. Open `about:debugging#/runtime/this-firefox`
+3. Click "Load Temporary Add-on"
+4. Navigate to `dist/manifest.json` and select it
+5. Open https://mail.google.com to see the toolbar
+
+Or use: `npm run firefox:run` to automatically build and launch Firefox with the extension
 
 ### Running a Single Test
 ```bash

@@ -12,7 +12,13 @@
       "Bash(npm run build:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(npm run build:chrome:*)",
+      "Bash(cat:*)",
+      "Bash(npm run build:firefox:*)",
+      "Bash(npm run test:unit:*)",
+      "Bash(npm run version:minor:*)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []

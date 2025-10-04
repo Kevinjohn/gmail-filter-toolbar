@@ -150,8 +150,9 @@ Firefox natively supports the `chrome.*` namespace alongside its preferred `brow
 
 ### Firefox-Specific Behaviors
 1. **Background Scripts**: Firefox executes `background.js` as a background script (event page) rather than a service worker. The code works identically in both contexts.
-2. **Host Permissions**: Firefox users must manually grant permissions to mail.google.com when first visiting Gmail (Chrome grants automatically).
-3. **Storage Sync**: Firefox's `chrome.storage.sync` has the same 100KB quota as Chrome - extension is well within limits.
+2. **Manifest Dual Declaration**: The Firefox manifest (`src/manifest.firefox.json`) includes both `service_worker` and `scripts` in the `background` field. Firefox only uses `scripts`, but both are declared for forward compatibility as Firefox continues MV3 development. This dual declaration is intentional and required.
+3. **Host Permissions**: Firefox users must manually grant permissions to mail.google.com when first visiting Gmail (Chrome grants automatically).
+4. **Storage Sync**: Firefox's `chrome.storage.sync` has the same 100KB quota as Chrome - extension is well within limits.
 
 ## Build System
 

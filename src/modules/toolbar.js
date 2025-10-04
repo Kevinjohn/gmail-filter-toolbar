@@ -123,10 +123,6 @@ export function injectToolbar(doc = document, headerElement) {
   updateAiNotetakersVisibility(showAiNotetakersButton, doc);
   refreshUI(doc);
 
-  // NOTE: Commented out listener flag check (line 62 always creates a new bar element,
-  // so this flag never exists and the condition is always true, making it dead code).
-  // Keeping the commented code for now in case removing it causes unexpected issues.
-  // if (!bar.dataset.listenerAdded) {
   bar.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       const list = ensureListElement(doc);
@@ -134,8 +130,6 @@ export function injectToolbar(doc = document, headerElement) {
     }
   });
   btnGroup.addEventListener('keydown', handleArrowNavigation);
-  // bar.dataset.listenerAdded = 'true';
-  // }
 }
 
 /**

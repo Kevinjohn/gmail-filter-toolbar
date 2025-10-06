@@ -1,6 +1,6 @@
 {
   "name": "gmail-filter-toolbar",
-  "version": "2.5.2",
+  "version": "2.5.3",
   "description": "Filter Gmail by calendar invites, attachments, starred messages, or regular mail.",
   "type": "module",
   "scripts": {

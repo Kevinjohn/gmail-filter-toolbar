@@ -133,16 +133,16 @@ function save_options() {
 function restore_options() {
   chrome.storage.sync.get(
     ['gmailCalDebug', SHOW_BUTTON_TEXT_KEY, SHOW_FAVOURITES_KEY, SHOW_AI_NOTETAKERS_KEY, ALIGNMENT_KEY, THEME_KEY],
-    (res) => {
+    (storageData) => {
       if (chrome.runtime.lastError) {
         console.error('Error retrieving options:', chrome.runtime.lastError);
       } else {
-        debugCheckbox.checked = !!res.gmailCalDebug;
-        showButtonTextCheckbox.checked = !!res[SHOW_BUTTON_TEXT_KEY];
-        const restoredTheme = normalizeTheme(res[THEME_KEY] ?? THEMES.SYSTEM);
-        const restoredAlignment = normalizeAlignment(res[ALIGNMENT_KEY]);
-        const showFavourites = !!res[SHOW_FAVOURITES_KEY];
-        const showAiNotetakers = !!res[SHOW_AI_NOTETAKERS_KEY];
+        debugCheckbox.checked = !!storageData.gmailCalDebug;
+        showButtonTextCheckbox.checked = !!storageData[SHOW_BUTTON_TEXT_KEY];
+        const restoredTheme = normalizeTheme(storageData[THEME_KEY] ?? THEMES.SYSTEM);
+        const restoredAlignment = normalizeAlignment(storageData[ALIGNMENT_KEY]);
+        const showFavourites = !!storageData[SHOW_FAVOURITES_KEY];
+        const showAiNotetakers = !!storageData[SHOW_AI_NOTETAKERS_KEY];
         if (themeSelect) {
           themeSelect.value = restoredTheme;
         }

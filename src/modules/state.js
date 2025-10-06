@@ -118,7 +118,7 @@ export function loadState() {
   return new Promise((resolve, reject) => {
     chrome.storage.sync.get(
       [KEY_MODE, KEY_DEBUG, SHOW_BUTTON_TEXT_KEY, SHOW_FAVOURITES_KEY, SHOW_AI_NOTETAKERS_KEY, ALIGNMENT_KEY, THEME_KEY],
-      (res) => {
+      (storageData) => {
         if (chrome.runtime.lastError) {
           console.error('Error retrieving storage data:', chrome.runtime.lastError);
           currentMode = MODES.ALL;
@@ -130,14 +130,14 @@ export function loadState() {
           toolbarAlignment = ALIGNMENTS.START;
           reject(chrome.runtime.lastError); // Reject the promise on error
         } else {
-          currentMode = res[KEY_MODE] || MODES.ALL;
-          debugOn = !!res[KEY_DEBUG];
+          currentMode = storageData[KEY_MODE] || MODES.ALL;
+          debugOn = !!storageData[KEY_DEBUG];
           showButtonText =
-            res[SHOW_BUTTON_TEXT_KEY] !== undefined ? res[SHOW_BUTTON_TEXT_KEY] : true; // Default to true if not set
-          setThemePreference(res[THEME_KEY]);
-          setShowFavouritesButton(res[SHOW_FAVOURITES_KEY]);
-          setShowAiNotetakersButton(res[SHOW_AI_NOTETAKERS_KEY]);
-          setToolbarAlignment(res[ALIGNMENT_KEY]);
+            storageData[SHOW_BUTTON_TEXT_KEY] !== undefined ? storageData[SHOW_BUTTON_TEXT_KEY] : true; // Default to true if not set
+          setThemePreference(storageData[THEME_KEY]);
+          setShowFavouritesButton(storageData[SHOW_FAVOURITES_KEY]);
+          setShowAiNotetakersButton(storageData[SHOW_AI_NOTETAKERS_KEY]);
+          setToolbarAlignment(storageData[ALIGNMENT_KEY]);
           resolve(); // Resolve the promise on success
         }
       },

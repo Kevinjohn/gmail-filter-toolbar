@@ -34,7 +34,7 @@ import {
   updateAiNotetakersVisibility,
 } from './modules/toolbar.js';
 import {
-  waitForGmailChrome,
+  waitForGmailToolbar,
   waitForMessageTable,
   observeMessageList,
   setupGmailToolbarObserver,
@@ -53,7 +53,7 @@ function main() {
   injectFont();
   loadState().then(() => {
     applyTheme(document, themePreference);
-    waitForGmailChrome()
+    waitForGmailToolbar()
       .then((gmailToolbarHeader) => {
         injectToolbar(document, gmailToolbarHeader);
         updateButtonTextView(showButtonText); // Apply initial state
@@ -79,10 +79,10 @@ function main() {
 
 // Listen for button clicks
 document.addEventListener('click', (e) => {
-  const btn = e.target.closest(SELECTORS.filterButtons);
-  if (!btn) return;
+  const filterButton = e.target.closest(SELECTORS.filterButtons);
+  if (!filterButton) return;
 
-  setCurrentMode(btn.dataset.mode);
+  setCurrentMode(filterButton.dataset.mode);
   saveState()
     .then(() => {
       applyFilter(document);

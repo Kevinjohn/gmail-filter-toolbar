@@ -19,7 +19,7 @@ describe('contentScript main lifecycle', () => {
   let updateButtonTextViewMock;
   let updateFavouritesVisibilityMock;
   let updateAiNotetakersVisibilityMock;
-  let waitForGmailChromeMock;
+  let waitForGmailToolbarMock;
   let waitForMessageTableMock;
   let observeMessageListMock;
   let setupGmailToolbarObserverMock;
@@ -59,7 +59,7 @@ describe('contentScript main lifecycle', () => {
     updateButtonTextViewMock = jest.fn();
     updateFavouritesVisibilityMock = jest.fn();
     updateAiNotetakersVisibilityMock = jest.fn();
-    waitForGmailChromeMock = jest.fn(() => Promise.resolve(header));
+    waitForGmailToolbarMock = jest.fn(() => Promise.resolve(header));
     waitForMessageTableMock = jest.fn(() => Promise.resolve());
     observeMessageListMock = jest.fn();
     setupGmailToolbarObserverMock = jest.fn();
@@ -98,7 +98,7 @@ describe('contentScript main lifecycle', () => {
     }));
 
     jest.unstable_mockModule('../src/modules/observers.js', () => ({
-      waitForGmailChrome: waitForGmailChromeMock,
+      waitForGmailToolbar: waitForGmailToolbarMock,
       waitForMessageTable: waitForMessageTableMock,
       observeMessageList: observeMessageListMock,
       setupGmailToolbarObserver: setupGmailToolbarObserverMock,
@@ -122,7 +122,7 @@ describe('contentScript main lifecycle', () => {
   test('initialises toolbar and observers', async () => {
     expect(loadStateMock).toHaveBeenCalled();
     expect(applyThemeMock).toHaveBeenCalledWith(document, 'system');
-    expect(waitForGmailChromeMock).toHaveBeenCalled();
+    expect(waitForGmailToolbarMock).toHaveBeenCalled();
     expect(injectToolbarMock).toHaveBeenCalledWith(document, header);
     expect(updateButtonTextViewMock).toHaveBeenCalledWith(true);
     expect(updateAlignmentViewMock).toHaveBeenCalledWith('start');

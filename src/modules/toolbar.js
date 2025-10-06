@@ -249,15 +249,15 @@ export function refreshUI(doc = document) {
   const bar = doc.querySelector(SELECTORS.filterBar);
   if (!bar) return;
 
-  bar.querySelectorAll('button[data-mode]').forEach((btn) => {
-    if (btn.hidden) {
-      btn.setAttribute('aria-checked', 'false');
-      btn.setAttribute('tabindex', '-1');
+  bar.querySelectorAll('button[data-mode]').forEach((filterButton) => {
+    if (filterButton.hidden) {
+      filterButton.setAttribute('aria-checked', 'false');
+      filterButton.setAttribute('tabindex', '-1');
       return;
     }
-    const isChecked = btn.dataset.mode === currentMode;
-    btn.setAttribute('aria-checked', isChecked);
-    btn.setAttribute('tabindex', isChecked ? '0' : '-1');
+    const isChecked = filterButton.dataset.mode === currentMode;
+    filterButton.setAttribute('aria-checked', isChecked);
+    filterButton.setAttribute('tabindex', isChecked ? '0' : '-1');
   });
 
   const liveRegion = doc.querySelector(SELECTORS.liveRegion);

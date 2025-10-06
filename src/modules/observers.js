@@ -56,7 +56,7 @@ export function setupGmailToolbarObserver(doc = document) {
   gmailToolbarObserver.observe(doc.body, { childList: true, subtree: true });
 }
 
-export function waitForGmailChrome() {
+export function waitForGmailToolbar() {
   return new Promise((resolve, reject) => {
     const timeoutId = setTimeout(() => {
       reject(new Error('Gmail toolbar not found within 10 seconds.'));

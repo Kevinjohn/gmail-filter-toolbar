@@ -184,8 +184,8 @@ describe('setupGmailToolbarObserver', () => {
 });
 
 describe('waiters', () => {
-  test('waitForGmailChrome resolves with toolbar header', async () => {
-    const promise = observers.waitForGmailChrome();
+  test('waitForGmailToolbar resolves with toolbar header', async () => {
+    const promise = observers.waitForGmailToolbar();
     const header = document.createElement('div');
     header.className = 'aeH';
     const toolbar = document.createElement('div');
@@ -208,9 +208,9 @@ describe('waiters', () => {
     await promise;
   });
 
-  test('waitForGmailChrome retries until header materialises', async () => {
+  test('waitForGmailToolbar retries until header materialises', async () => {
     jest.useFakeTimers();
-    const promise = observers.waitForGmailChrome();
+    const promise = observers.waitForGmailToolbar();
     const toolbar = document.createElement('div');
     toolbar.className = 'G-atb';
     toolbar.setAttribute('role', 'toolbar');
@@ -230,7 +230,7 @@ describe('waiters', () => {
     jest.useRealTimers();
   });
 
-  test('waitForGmailChrome polls until closest header appears', async () => {
+  test('waitForGmailToolbar polls until closest header appears', async () => {
     jest.useFakeTimers();
     const header = document.createElement('div');
     header.className = 'aeH';
@@ -255,7 +255,7 @@ describe('waiters', () => {
       return originalQuery(selector);
     });
 
-    const promise = observers.waitForGmailChrome();
+    const promise = observers.waitForGmailToolbar();
     jest.runOnlyPendingTimers();
     await promise;
 
@@ -264,10 +264,10 @@ describe('waiters', () => {
     jest.useRealTimers();
   });
 
-  test('waitForGmailChrome rejects after timeout', async () => {
+  test('waitForGmailToolbar rejects after timeout', async () => {
     jest.useFakeTimers();
     document.body.innerHTML = '';
-    const promise = observers.waitForGmailChrome();
+    const promise = observers.waitForGmailToolbar();
     jest.advanceTimersByTime(10000);
     jest.runOnlyPendingTimers();
     await expect(promise).rejects.toThrow('Gmail toolbar not found within 10 seconds.');

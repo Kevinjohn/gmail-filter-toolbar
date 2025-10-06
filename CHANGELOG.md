@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.5.3] - 2025-10-06
+
+### Code Quality
+- **Variable Naming**: Improved variable naming for better code clarity and maintainability
+  - Renamed `btn` → `filterButton` in contentScript.js and toolbar.js for clearer button references
+  - Renamed `res` → `storageData` in state.js and options.js for more descriptive storage callbacks
+  - Renamed `waitForGmailChrome` → `waitForGmailToolbar` in observers.js and all references - removes misleading "Chrome" from cross-browser function name
+  - Updated all test files to reflect new naming conventions
+  - All 115 unit tests passing with no breaking changes
+
 ## [2.5.2] - 2025-10-06
 
 ### Documentation

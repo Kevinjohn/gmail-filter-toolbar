@@ -59,6 +59,9 @@ export function injectToolbar(doc = document, headerElement) {
     // If wrapper doesn't exist or is not our filter wrapper, create a new one
     wrapper = doc.createElement('div');
     wrapper.className = 'gcal-filter-wrapper';
+    // WHY: insertAdjacentElement('afterend') places our toolbar as a SIBLING to Gmail's toolbar, not a child.
+    // This is critical: if Gmail replaces its toolbar during pagination/navigation, a child element gets destroyed,
+    // but a sibling survives. This pattern prevents toolbar placement regressions. See _remember_toolbar-placement.md
     header.insertAdjacentElement('afterend', wrapper);
   }
 

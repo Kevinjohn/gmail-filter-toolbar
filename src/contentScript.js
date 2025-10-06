@@ -110,6 +110,9 @@ chrome.storage.onChanged.addListener((changes) => {
     const nextValue = !!changes[SHOW_FAVOURITES_KEY].newValue;
     setShowFavouritesButton(nextValue);
     updateFavouritesVisibility(nextValue);
+    // WHY: If user disables favourites button while actively using FAVOURITES mode, reset to ALL mode.
+    // Without this, user would be stuck in an invisible filter mode with no way to change it (button is hidden).
+    // Same pattern applies to AI_NOTETAKERS mode below.
     if (!nextValue && currentMode === MODES.FAVOURITES) {
       setCurrentMode(MODES.ALL);
       saveState()

@@ -137,6 +137,8 @@ const FILTER_CONFIG = {
   },
   [MODES.ATTACH]: {
     labelKey: 'btn_attach',
+    // WHY: Hide rows that lack attachments OR are calendar invites. Business logic dictates that calendar invites
+    // should never appear in attachment view, even though they technically have .ics file attachments.
     filterFn: (row) => !hasAttachmentRow(row) || isCalendarRow(row),
   },
   [MODES.FAVOURITES]: {

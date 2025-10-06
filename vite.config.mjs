@@ -1,7 +1,9 @@
 import { defineConfig } from 'vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
-// Determine which manifest and output directory to use based on environment variable
+// WHY: Firefox requires different manifest fields (browser_specific_settings.gecko.id, dual background script declaration)
+// than Chrome/Edge. We maintain separate manifests and output directories to support both browsers from a single codebase.
+// Default to Chrome build when BROWSER env var is not set.
 const browser = process.env.BROWSER || 'chrome';
 const manifestFile = browser === 'firefox'
   ? 'src/manifest.firefox.json'

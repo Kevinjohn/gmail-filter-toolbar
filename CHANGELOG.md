@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.5.2] - 2025-10-06
+
+### Documentation
+- **Code Comments**: Added strategic "WHY" comments to preserve architectural knowledge
+  - Toolbar sibling placement strategy (toolbar.js) - prevents toolbar destruction during Gmail DOM updates
+  - Observer idempotency pattern (observers.js) - handles Gmail's SPA navigation safely
+  - Body-level observer strategy (observers.js) - stable parent survives DOM replacements
+  - Toolbar re-injection safety net (observers.js) - handles edge cases during pagination
+  - Favourites mode reset logic (contentScript.js) - prevents users stuck in hidden filter mode
+  - Attachment filter business logic (filter.js) - calendar invites excluded from attachment view
+  - Debounced filter optimization (observers.js) - performance during rapid DOM mutations
+  - Browser-specific build strategy (vite.config.mjs) - Firefox vs Chrome manifest differences
+  - All comments reference `_remember_*.md` lessons learned documents where applicable
+
 ## [2.5.0] - 2025-10-02
 
 ### Changed

@@ -206,8 +206,8 @@ The extension uses a unified storage abstraction (`src/modules/storage.js`) for 
 This abstraction is transparent to the rest of the codebase - all modules import `storageGet`/`storageSet` from `storage.js`.
 
 ### Firefox-Specific Behaviors
-1. **Background Scripts**: Firefox executes `background.js` as a background script (event page) rather than a service worker. The code works identically in both contexts.
-2. **Manifest Dual Declaration**: The Firefox manifest (`src/manifest.firefox.json`) includes both `service_worker` and `scripts` in the `background` field. Firefox only uses `scripts`, but both are declared for forward compatibility as Firefox continues MV3 development. This dual declaration is intentional and required.
+1. **Background Scripts**: Firefox executes `background.js` as a background script (event page) rather than a service worker. The code works identically in both contexts. The Firefox manifest uses only `scripts` (not `service_worker`) in the `background` field.
+2. **Data Collection Permissions**: Firefox requires `data_collection_permissions` in `browser_specific_settings.gecko`. This extension declares `"required": ["none"]` since it doesn't collect user data.
 3. **Host Permissions**: Firefox users must manually grant permissions to mail.google.com when first visiting Gmail (Chrome grants automatically).
 4. **Storage Sync**: Firefox's `chrome.storage.sync` has the same 100KB quota as Chrome - extension is well within limits.
 

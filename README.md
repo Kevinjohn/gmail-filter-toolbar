@@ -64,6 +64,7 @@ Transform your Gmail inbox with instant, client-side filtering. A custom toolbar
 
 * **Google Chrome / Microsoft Edge ≥ 114** (desktop)
 * **Mozilla Firefox ≥ 121** (desktop)
+* **Safari ≥ 15.4** (macOS only, requires Xcode)
 * **Node ≥ 18** (for build & test tooling)
 * macOS, Windows, or Linux
 
@@ -112,6 +113,31 @@ Firefox will open automatically with the extension loaded.
 2. Click "Load Temporary Add-on"
 3. Navigate to `dist/firefox/` folder
 4. Select `manifest.json`
+
+### For Safari (macOS only)
+
+```bash
+git clone https://github.com/Kevinjohn/chome-extension-gmail-calendar-options.git
+cd chome-extension-gmail-calendar-options
+
+# install dev dependencies
+npm ci
+
+# create dist/safari/ and generate Xcode project
+npm run safari:convert
+
+# open in Xcode
+npm run safari:open
+```
+
+In Xcode:
+1. Build and Run (Cmd+R)
+2. Safari will launch
+3. Go to Safari > Preferences > Extensions
+4. Enable "Gmail Filter Toolbar"
+5. Grant permissions when prompted
+
+**Note:** Safari extensions require an Xcode wrapper app. Settings are stored locally only (no cross-device sync).
 
 ---
 

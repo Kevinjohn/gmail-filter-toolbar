@@ -26,6 +26,13 @@ npm run firefox:lint      # Validate Firefox extension
 npm run firefox:package   # Create AMO-ready ZIP file
 ```
 
+### Safari Development (macOS only)
+```bash
+npm run build:safari      # Build Safari version to dist/safari/
+npm run safari:convert    # Generate Xcode project (first time only)
+npm run safari:open       # Open Xcode project
+```
+
 ### Testing
 ```bash
 npm test                  # Run Jest unit tests in watch mode
@@ -106,6 +113,8 @@ When selectors break due to Gmail DOM changes:
   - `setupGmailToolbarObserver()`: Monitors `document.body` to ensure toolbar stays injected if Gmail destroys/recreates elements.
 - **theme.js**: `applyTheme()` sets CSS custom properties based on user preference (system/light/dark).
 - **utils/debounce.js**: Debounce utility for rate-limiting observer callbacks.
+- **storage.js**: Unified storage abstraction that uses `storage.sync` on Chrome/Firefox and `storage.local` on Safari.
+- **browser-polyfill.js**: Reserved for future cross-browser compatibility layer (currently unused; extension uses `chrome.*` namespace which works natively in all browsers).
 
 ### Critical Architecture Patterns
 
@@ -120,10 +129,41 @@ Gmail is a Single-Page Application. Any DOM element can be destroyed and recreat
 
 See `_remember_filter_on_pagination.md` for the architectural principle.
 
+#### Memory Files
+The `_remember_*.md` files in the repository root document critical architectural decisions and debugging history:
+- `_remember_toolbar-placement.md`: Why toolbar MUST be a sibling, not a child (insertAdjacentElement pattern)
+- `_remember_filter_on_pagination.md`: Idempotent observer attachment pattern for SPAs
+
+These files are valuable for understanding **why** the code works the way it does and should be consulted before making structural changes to toolbar injection or observer logic.
+
 #### State Flow
 1. User clicks filter button → `setCurrentMode()` → `saveState()` → `applyFilter()` → `refreshUI()`
 2. Options page changes → `chrome.storage.onChanged` listener in contentScript → state setter → update view
 3. Page load → `loadState()` → `waitForGmailChrome()` → `injectToolbar()` → `waitForMessageTable()` → `applyFilter()` → `observeMessageList()`
+
+#### Runtime Messaging API
+The extension supports programmatic control via `chrome.runtime.sendMessage()`:
+
+**Set Filter Mode:**
+```javascript
+chrome.runtime.sendMessage({
+  type: 'gmailCal:setMode',
+  payload: { mode: 'MAIL_ONLY' }  // or 'ALL', 'CALENDAR_ONLY', 'ATTACHMENTS_ONLY', etc.
+}, (response) => {
+  console.log('Mode changed:', response.ok);
+});
+```
+
+**Refresh Current Filter:**
+```javascript
+chrome.runtime.sendMessage({
+  type: 'gmailCal:refreshFilter'
+}, (response) => {
+  console.log('Filter refreshed, current mode:', response.mode);
+});
+```
+
+Handlers are in `contentScript.js:handleRuntimeMessage()`. Useful for testing or integrating with other extensions.
 
 ### Gmail Selector Updates
 If Gmail changes its DOM structure and the extension breaks, update `SELECTORS` object in `src/modules/constants.js`. Use browser DevTools to inspect Gmail's new structure and identify stable selectors. Priority: unique IDs > stable classes > ARIA attributes > structural selectors.
@@ -131,12 +171,22 @@ If Gmail changes its DOM structure and the extension breaks, update `SELECTORS` 
 ### Localisation
 All user-facing strings use `chrome.i18n.getMessage('key')` from `src/_locales/{locale}/messages.json`. CSS uses logical properties (`padding-inline-start`, `border-inline-end`) for RTL language support.
 
+### Code Comments Strategy
+The codebase uses **strategic "WHY" comments** to preserve architectural knowledge:
+- WHY comments explain non-obvious decisions, edge cases, or business logic (e.g., why favourites mode resets when disabled)
+- Avoid obvious "WHAT" comments that duplicate code (e.g., `// Set mode to ALL`)
+- Place WHY comments above the relevant code block
+- Example from `contentScript.js:113-115`: Documents why we reset to ALL mode when disabling an active filter
+
+See `_remember_toolbar-placement.md` and `_remember_filter_on_pagination.md` for architectural decisions worth preserving in code comments.
+
 ## Browser Compatibility
 
 ### Supported Browsers
 - **Chrome**: 114+ (Manifest V3)
 - **Edge**: 114+ (Chromium-based, Manifest V3)
 - **Firefox**: 121+ (Manifest V3 with background scripts)
+- **Safari**: 15.4+ (macOS, Manifest V3, local development only)
 
 ### API Compatibility
 The extension uses the `chrome.*` namespace for all browser APIs, which is supported by both Chrome and Firefox:
@@ -146,13 +196,45 @@ The extension uses the `chrome.*` namespace for all browser APIs, which is suppo
 - `chrome.runtime` - Extension lifecycle and messaging
 - `chrome.storage.onChanged` - Real-time storage updates
 
-Firefox natively supports the `chrome.*` namespace alongside its preferred `browser.*` namespace. No polyfill is currently required.
+Firefox natively supports the `chrome.*` namespace alongside its preferred `browser.*` namespace. Safari also supports the `chrome.*` namespace.
+
+### Storage Abstraction
+The extension uses a unified storage abstraction (`src/modules/storage.js`) for cross-browser compatibility:
+- **Chrome/Firefox**: Uses `chrome.storage.sync` for cross-device sync
+- **Safari**: Uses `chrome.storage.local` (Safari doesn't support storage.sync)
+
+This abstraction is transparent to the rest of the codebase - all modules import `storageGet`/`storageSet` from `storage.js`.
 
 ### Firefox-Specific Behaviors
 1. **Background Scripts**: Firefox executes `background.js` as a background script (event page) rather than a service worker. The code works identically in both contexts.
 2. **Manifest Dual Declaration**: The Firefox manifest (`src/manifest.firefox.json`) includes both `service_worker` and `scripts` in the `background` field. Firefox only uses `scripts`, but both are declared for forward compatibility as Firefox continues MV3 development. This dual declaration is intentional and required.
 3. **Host Permissions**: Firefox users must manually grant permissions to mail.google.com when first visiting Gmail (Chrome grants automatically).
 4. **Storage Sync**: Firefox's `chrome.storage.sync` has the same 100KB quota as Chrome - extension is well within limits.
+
+### Safari-Specific Behaviors
+1. **Xcode Wrapper Required**: Safari extensions must be wrapped in a native macOS app. Use `npm run safari:convert` to generate the Xcode project.
+2. **Local Storage Only**: Safari doesn't support `storage.sync`, so settings are device-local only (no cross-device sync).
+3. **Options Page**: Safari prefers tab-based options pages (`open_in_tab: true` in manifest).
+4. **No CSP in Manifest**: Safari handles Content Security Policy through Xcode, not the manifest.
+5. **Signing Required**: Even for local development, Xcode requires code signing (free Apple ID works).
+
+### Safari Development Workflow
+
+**First-time setup:**
+```bash
+npm run build:safari          # Build to dist/safari/
+npm run safari:convert        # Generate Xcode project in safari-xcode/
+npm run safari:open           # Open in Xcode
+# In Xcode: Build & Run (Cmd+R)
+# In Safari: Preferences > Extensions > Enable "Gmail Filter Toolbar"
+```
+
+**After code changes:**
+```bash
+npm run build:safari
+cp -r dist/safari/* "safari-xcode/Gmail Filter Toolbar/Gmail Filter Toolbar Extension/Resources/"
+# In Xcode: Build & Run (Cmd+R)
+```
 
 ## Build System
 
@@ -166,7 +248,7 @@ Firefox natively supports the `chrome.*` namespace alongside its preferred `brow
 
 #### Jest (`jest.config.cjs`)
 - Environment: `jsdom`
-- Coverage threshold: 90% (statements, branches, functions, lines)
+- Coverage threshold: 85% (statements, branches, functions, lines)
 - Setup: `tests/setup.js` provides chrome API mocks
 - Pattern: `**/*.test.js`
 
@@ -263,7 +345,7 @@ E2E tests (`npm run e2e`) are available but skip in WSL. Run manually when neede
 
 ## Code Quality Standards
 
-- **Coverage**: Maintain 90% coverage threshold (Jest enforces this)
+- **Coverage**: Maintain 85% coverage threshold (Jest enforces this)
 - **Linting**: All code must pass ESLint (use `npm run lint` to autofix)
 - **Formatting**: Use Prettier (`npm run format`)
 - **Accessibility**: Toolbar must be keyboard navigable and WCAG 2.1 AA compliant

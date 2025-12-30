@@ -7,6 +7,7 @@ import {
   THEME_KEY,
   THEMES,
 } from './constants.js';
+import { storageGet, storageSet } from './storage.js';
 
 /**
  * Storage key for current filter mode.
@@ -115,45 +116,33 @@ export function setToolbarAlignment(value) {
 }
 
 export function loadState() {
-  return new Promise((resolve, reject) => {
-    chrome.storage.sync.get(
-      [KEY_MODE, KEY_DEBUG, SHOW_BUTTON_TEXT_KEY, SHOW_FAVOURITES_KEY, SHOW_AI_NOTETAKERS_KEY, ALIGNMENT_KEY, THEME_KEY],
-      (storageData) => {
-        if (chrome.runtime.lastError) {
-          console.error('Error retrieving storage data:', chrome.runtime.lastError);
-          currentMode = MODES.ALL;
-          debugOn = false;
-          showButtonText = true; // Default to true on error
-          themePreference = THEMES.SYSTEM;
-          showFavouritesButton = false;
-          showAiNotetakersButton = false;
-          toolbarAlignment = ALIGNMENTS.START;
-          reject(chrome.runtime.lastError); // Reject the promise on error
-        } else {
-          currentMode = storageData[KEY_MODE] || MODES.ALL;
-          debugOn = !!storageData[KEY_DEBUG];
-          showButtonText =
-            storageData[SHOW_BUTTON_TEXT_KEY] !== undefined ? storageData[SHOW_BUTTON_TEXT_KEY] : true; // Default to true if not set
-          setThemePreference(storageData[THEME_KEY]);
-          setShowFavouritesButton(storageData[SHOW_FAVOURITES_KEY]);
-          setShowAiNotetakersButton(storageData[SHOW_AI_NOTETAKERS_KEY]);
-          setToolbarAlignment(storageData[ALIGNMENT_KEY]);
-          resolve(); // Resolve the promise on success
-        }
-      },
-    );
-  });
+  return storageGet([KEY_MODE, KEY_DEBUG, SHOW_BUTTON_TEXT_KEY, SHOW_FAVOURITES_KEY, SHOW_AI_NOTETAKERS_KEY, ALIGNMENT_KEY, THEME_KEY])
+    .then((storageData) => {
+      currentMode = storageData[KEY_MODE] || MODES.ALL;
+      debugOn = !!storageData[KEY_DEBUG];
+      showButtonText =
+        storageData[SHOW_BUTTON_TEXT_KEY] !== undefined ? storageData[SHOW_BUTTON_TEXT_KEY] : true; // Default to true if not set
+      setThemePreference(storageData[THEME_KEY]);
+      setShowFavouritesButton(storageData[SHOW_FAVOURITES_KEY]);
+      setShowAiNotetakersButton(storageData[SHOW_AI_NOTETAKERS_KEY]);
+      setToolbarAlignment(storageData[ALIGNMENT_KEY]);
+    })
+    .catch((error) => {
+      console.error('Error retrieving storage data:', error);
+      currentMode = MODES.ALL;
+      debugOn = false;
+      showButtonText = true; // Default to true on error
+      themePreference = THEMES.SYSTEM;
+      showFavouritesButton = false;
+      showAiNotetakersButton = false;
+      toolbarAlignment = ALIGNMENTS.START;
+      throw error; // Re-throw to propagate the error
+    });
 }
 
 export function saveState() {
-  return new Promise((resolve, reject) => {
-    chrome.storage.sync.set({ [KEY_MODE]: currentMode }, () => {
-      if (chrome.runtime.lastError) {
-        console.error('Error saving mode:', chrome.runtime.lastError);
-        reject(chrome.runtime.lastError); // Reject the promise on error
-      } else {
-        resolve(); // Resolve the promise on success
-      }
-    });
+  return storageSet({ [KEY_MODE]: currentMode }).catch((error) => {
+    console.error('Error saving mode:', error);
+    throw error; // Re-throw to propagate the error
   });
 }

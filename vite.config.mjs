@@ -1,14 +1,22 @@
 import { defineConfig } from 'vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
-// WHY: Firefox requires different manifest fields (browser_specific_settings.gecko.id, dual background script declaration)
-// than Chrome/Edge. We maintain separate manifests and output directories to support both browsers from a single codebase.
+// WHY: Each browser requires different manifest fields:
+// - Chrome/Edge: Standard MV3 with service_worker
+// - Firefox: browser_specific_settings.gecko.id, dual background script declaration
+// - Safari: No CSP (handled by Xcode), open_in_tab options
+// We maintain separate manifests and output directories to support all browsers from a single codebase.
 // Default to Chrome build when BROWSER env var is not set.
 const browser = process.env.BROWSER || 'chrome';
-const manifestFile = browser === 'firefox'
-  ? 'src/manifest.firefox.json'
-  : 'src/manifest.json';
-const outDir = browser === 'firefox' ? 'dist/firefox' : 'dist/chrome';
+
+const manifestMap = {
+  chrome: 'src/manifest.json',
+  firefox: 'src/manifest.firefox.json',
+  safari: 'src/manifest.safari.json',
+};
+
+const manifestFile = manifestMap[browser] || manifestMap.chrome;
+const outDir = `dist/${browser}`;
 
 export default defineConfig({
   build: {
@@ -16,10 +24,21 @@ export default defineConfig({
     emptyOutDir: true,
 
     rollupOptions: {
-      /* ONE real entry stops the error */
-      input: { background: 'src/modules/background.js', contentScript: 'src/contentScript.js' },
-      /* keep the default file-naming */
-      output: { entryFileNames: '[name].js' }
+      input: browser === 'safari'
+        // WHY: Safari doesn't support dynamic imports in content scripts.
+        // Build contentScript as single IIFE bundle. Background is copied statically.
+        ? { contentScript: 'src/contentScript.js' }
+        : { background: 'src/modules/background.js', contentScript: 'src/contentScript.js' },
+      output: browser === 'safari'
+        ? {
+            entryFileNames: '[name].js',
+            format: 'iife',
+            inlineDynamicImports: true,
+          }
+        : {
+            entryFileNames: '[name].js',
+            chunkFileNames: 'assets/[name]-[hash].js',
+          },
     },
 
     copyPublicDir: false
@@ -38,6 +57,9 @@ export default defineConfig({
         { src: 'src/modules/options.js', dest: 'modules' },
         { src: 'src/modules/constants.js', dest: 'modules' },
         { src: 'src/modules/theme.js', dest: 'modules' },
+        { src: 'src/modules/storage.js', dest: 'modules' },
+        // Safari: background.js built as static copy since it's simple and avoids IIFE multi-entry issues
+        ...(browser === 'safari' ? [{ src: 'src/modules/background.js', dest: '.', rename: 'background.js' }] : []),
         { src: 'src/icons',             dest: '.' },
         { src: 'src/_locales',          dest: '.' }, // if present
         { src: 'src/assets/fonts',          dest: '.' }

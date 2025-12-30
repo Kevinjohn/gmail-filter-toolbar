@@ -266,6 +266,9 @@ describe('Integration: DOM + Message Passing', () => {
     await import('../../src/modules/options.js');
     document.dispatchEvent(createEvent('DOMContentLoaded'));
 
+    // Wait for async storage operations (restore_options uses Promises)
+    await flushPromises();
+
     const filterBar = document.querySelector('.gcal-filter-bar');
     expect(filterBar).not.toBeNull();
 

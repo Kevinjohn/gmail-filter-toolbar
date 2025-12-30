@@ -227,7 +227,10 @@ describe('options module', () => {
 
     document.dispatchEvent(new Event('DOMContentLoaded'));
 
-    expect(errorSpy).toHaveBeenCalledWith('Error retrieving options:', chrome.runtime.lastError);
+    // Wait for Promise rejection to be handled
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(errorSpy).toHaveBeenCalledWith('Error retrieving options:', expect.any(Error));
     errorSpy.mockRestore();
   });
 
@@ -239,7 +242,10 @@ describe('options module', () => {
 
     debugBox.dispatchEvent(new Event('change'));
 
-    expect(errorSpy).toHaveBeenCalledWith('Error saving options:', chrome.runtime.lastError);
+    // Wait for Promise rejection to be handled
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(errorSpy).toHaveBeenCalledWith('Error saving options:', expect.any(Error));
     errorSpy.mockRestore();
   });
 

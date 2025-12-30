@@ -53,6 +53,11 @@ const createBaseChromeMock = () => ({
       set: jest.fn((items, callback) => callback?.()),
       remove: jest.fn((keys, callback) => callback?.()),
     },
+    local: {
+      get: jest.fn((keys, callback) => callback?.({})),
+      set: jest.fn((items, callback) => callback?.()),
+      remove: jest.fn((keys, callback) => callback?.()),
+    },
     onChanged: createListenerMock(),
   },
 });

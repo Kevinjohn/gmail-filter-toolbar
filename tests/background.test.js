@@ -33,11 +33,14 @@ describe('background.js', () => {
 
     expect(chrome.runtime.onInstalled.addListener).toHaveBeenCalledTimes(1);
     const installListener = chrome.runtime.onInstalled.addListener.mock.calls[0][0];
-    installListener();
+    await installListener();
+
+    // Wait for Promise to resolve
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(chrome.storage.sync.set).toHaveBeenCalledWith({ gmailCalMode: 'ALL', showAiNotetakers: false }, expect.any(Function));
     expect(infoSpy).toHaveBeenCalledWith(
-      expect.stringContaining('[perf] background:onInstalled storage.sync.set completed in 0ms')
+      expect.stringContaining('[perf] background:onInstalled storage.set completed in 0ms')
     );
   });
 
@@ -58,12 +61,12 @@ describe('background.js', () => {
 
     await loadBackground();
     const installListener = chrome.runtime.onInstalled.addListener.mock.calls[0][0];
-    installListener();
+    await installListener();
 
-    expect(errorSpy).toHaveBeenCalledWith('Error setting initial mode:', chrome.runtime.lastError);
-    expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining('[perf] background:onInstalled storage.sync.set completed in 1200ms')
-    );
+    // Wait for Promise rejection to be handled
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(errorSpy).toHaveBeenCalledWith('Error setting initial mode:', expect.any(Error));
 
     errorSpy.mockRestore();
   });

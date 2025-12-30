@@ -8,6 +8,7 @@ import {
   THEMES,
 } from './constants.js';
 import { applyTheme, normalizeTheme } from './theme.js';
+import { storageGet, storageSet } from './storage.js';
 
 const debugCheckbox = document.getElementById('debug');
 const showButtonTextCheckbox = document.getElementById('show-button-text-checkbox');
@@ -105,60 +106,52 @@ if (showAiNotetakersLabel) {
   showAiNotetakersLabel.textContent = getMessage('options_show_ai_notetakers', 'Show AI & Transcription button');
 }
 
-// Save options to chrome.storage.sync
+// Save options to storage (sync on Chrome/Firefox, local on Safari)
 function save_options() {
   const themeValue = themeSelect ? themeSelect.value : THEMES.SYSTEM;
   const alignmentValue = alignmentSelect ? alignmentSelect.value : ALIGNMENTS.START;
   const favouritesValue = showFavouritesCheckbox ? showFavouritesCheckbox.checked : false;
   const aiNotetakersValue = showAiNotetakersCheckbox ? showAiNotetakersCheckbox.checked : false;
-  chrome.storage.sync.set(
-    {
-      gmailCalDebug: debugCheckbox.checked,
-      [SHOW_BUTTON_TEXT_KEY]: showButtonTextCheckbox.checked,
-      [SHOW_FAVOURITES_KEY]: favouritesValue,
-      [SHOW_AI_NOTETAKERS_KEY]: aiNotetakersValue,
-      [ALIGNMENT_KEY]: alignmentValue,
-      [THEME_KEY]: themeValue,
-    },
-    () => {
-      if (chrome.runtime.lastError) {
-        console.error('Error saving options:', chrome.runtime.lastError);
-      }
-    },
-  );
+  storageSet({
+    gmailCalDebug: debugCheckbox.checked,
+    [SHOW_BUTTON_TEXT_KEY]: showButtonTextCheckbox.checked,
+    [SHOW_FAVOURITES_KEY]: favouritesValue,
+    [SHOW_AI_NOTETAKERS_KEY]: aiNotetakersValue,
+    [ALIGNMENT_KEY]: alignmentValue,
+    [THEME_KEY]: themeValue,
+  }).catch((error) => {
+    console.error('Error saving options:', error);
+  });
   applyTheme(document, themeValue);
 }
 
-// Restore options from chrome.storage.sync
+// Restore options from storage (sync on Chrome/Firefox, local on Safari)
 function restore_options() {
-  chrome.storage.sync.get(
-    ['gmailCalDebug', SHOW_BUTTON_TEXT_KEY, SHOW_FAVOURITES_KEY, SHOW_AI_NOTETAKERS_KEY, ALIGNMENT_KEY, THEME_KEY],
-    (storageData) => {
-      if (chrome.runtime.lastError) {
-        console.error('Error retrieving options:', chrome.runtime.lastError);
-      } else {
-        debugCheckbox.checked = !!storageData.gmailCalDebug;
-        showButtonTextCheckbox.checked = !!storageData[SHOW_BUTTON_TEXT_KEY];
-        const restoredTheme = normalizeTheme(storageData[THEME_KEY] ?? THEMES.SYSTEM);
-        const restoredAlignment = normalizeAlignment(storageData[ALIGNMENT_KEY]);
-        const showFavourites = !!storageData[SHOW_FAVOURITES_KEY];
-        const showAiNotetakers = !!storageData[SHOW_AI_NOTETAKERS_KEY];
-        if (themeSelect) {
-          themeSelect.value = restoredTheme;
-        }
-        if (alignmentSelect) {
-          alignmentSelect.value = restoredAlignment;
-        }
-        if (showFavouritesCheckbox) {
-          showFavouritesCheckbox.checked = showFavourites;
-        }
-        if (showAiNotetakersCheckbox) {
-          showAiNotetakersCheckbox.checked = showAiNotetakers;
-        }
-        applyTheme(document, restoredTheme);
+  storageGet(['gmailCalDebug', SHOW_BUTTON_TEXT_KEY, SHOW_FAVOURITES_KEY, SHOW_AI_NOTETAKERS_KEY, ALIGNMENT_KEY, THEME_KEY])
+    .then((storageData) => {
+      debugCheckbox.checked = !!storageData.gmailCalDebug;
+      showButtonTextCheckbox.checked = !!storageData[SHOW_BUTTON_TEXT_KEY];
+      const restoredTheme = normalizeTheme(storageData[THEME_KEY] ?? THEMES.SYSTEM);
+      const restoredAlignment = normalizeAlignment(storageData[ALIGNMENT_KEY]);
+      const showFavourites = !!storageData[SHOW_FAVOURITES_KEY];
+      const showAiNotetakers = !!storageData[SHOW_AI_NOTETAKERS_KEY];
+      if (themeSelect) {
+        themeSelect.value = restoredTheme;
       }
-    },
-  );
+      if (alignmentSelect) {
+        alignmentSelect.value = restoredAlignment;
+      }
+      if (showFavouritesCheckbox) {
+        showFavouritesCheckbox.checked = showFavourites;
+      }
+      if (showAiNotetakersCheckbox) {
+        showAiNotetakersCheckbox.checked = showAiNotetakers;
+      }
+      applyTheme(document, restoredTheme);
+    })
+    .catch((error) => {
+      console.error('Error retrieving options:', error);
+    });
 }
 
 // Event Listeners

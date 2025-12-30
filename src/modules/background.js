@@ -1,3 +1,5 @@
+import { storageSet } from './storage.js';
+
 const SLOW_TASK_THRESHOLD_MS = 500;
 
 function logDuration(label, durationMs) {
@@ -13,17 +15,15 @@ function logDuration(label, durationMs) {
 chrome.runtime.onInstalled.addListener(() => {
   console.log('Gmail Filter Toolbar installed');
   const start = performance.now();
-  chrome.storage.sync.set(
-    {
-      gmailCalMode: 'ALL',
-      showAiNotetakers: false,
-    },
-    () => {
+  storageSet({
+    gmailCalMode: 'ALL',
+    showAiNotetakers: false,
+  })
+    .then(() => {
       const duration = performance.now() - start;
-      logDuration('background:onInstalled storage.sync.set', duration);
-      if (chrome.runtime.lastError) {
-        console.error('Error setting initial mode:', chrome.runtime.lastError);
-      }
-    }
-  );
+      logDuration('background:onInstalled storage.set', duration);
+    })
+    .catch((error) => {
+      console.error('Error setting initial mode:', error);
+    });
 });

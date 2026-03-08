@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **Dev Notifications Filter** *(experimental)*: New filter button to show only GitHub and GitLab notification emails
+  - Detects sender email domains (`github.com`, `gitlab.com`) for reliable matching
+  - Hidden by default – enable via Options > Experimental > "Show Dev Notifications button"
+  - Button label: "Dev" with `code` Material Symbol icon
+  - Full unit test coverage for detection logic (GitLab, GitHub, regular sender, case-insensitive)
+  - Added to all 27 locale files
+
+### Fixed
+- **Build System**: Content scripts are now built as self-contained IIFE bundles across all browsers
+  - Fixes "Cannot use import statement outside a module" error in Chrome, Firefox, and Safari
+  - Content scripts don't support ES modules in any browser; `"type": "module"` in `content_scripts` was silently ignored
+  - Removed invalid `"type": "module"` from Chrome manifest `content_scripts` field
+  - Background service worker (Chrome) still uses ES modules via static copy + manifest `"type": "module"`
+  - Firefox and Safari background scripts are also statically copied with `storage.js` at root level
+
 ## [2.5.3] - 2025-10-06
 
 ### Code Quality

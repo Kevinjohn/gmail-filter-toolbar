@@ -103,7 +103,7 @@ When selectors break due to Gmail DOM changes:
 
 ### Module Structure (`src/modules/`)
 - **constants.js**: All selectors, config objects (attachment types), storage keys, enums (THEMES, ALIGNMENTS, MODES).
-- **state.js**: Global state management (`currentMode`, `debugOn`, `showButtonText`, `themePreference`, `toolbarAlignment`, `showFavouritesButton`) with getters/setters and `loadState()`/`saveState()` functions that interact with `chrome.storage.sync`.
+- **state.js**: Global state management (`currentMode`, `debugOn`, `showButtonText`, `themePreference`, `toolbarAlignment`, `showFavouritesButton`, `showAiNotetakersButton`, `showDevNotificationsButton`) with getters/setters and `loadState()`/`saveState()` functions that interact with `chrome.storage.sync`.
 - **toolbar.js**: `injectToolbar()` creates and inserts the custom filter toolbar. Uses `insertAdjacentElement('afterend')` to place toolbar as a **sibling** after Gmail's native toolbar (critical for stability during Gmail DOM updates).
 - **filter.js**: `applyFilter()` iterates email rows (`.UI tr.zA`) and shows/hides them based on `currentMode`. Contains detection functions like `isCalendarRow()`, `hasAttachmentRow()`, `hasSpecificAttachment()`.
 - **observers.js**:
@@ -239,9 +239,11 @@ cp -r dist/safari/* "safari-xcode/Gmail Filter Toolbar/Gmail Filter Toolbar Exte
 ## Build System
 
 ### Vite Configuration (`vite.config.mjs`)
-- **Entry points**: `background.js` and `contentScript.js` are bundled as ES modules
-- **Static copy**: `vite-plugin-static-copy` copies `manifest.json`, CSS, HTML, options.js, constants.js, theme.js, icons, locales, and fonts to output directory
-- **Output**: Browser-specific directories (`dist/chrome/` or `dist/firefox/`) determined by `BROWSER` environment variable
+- **Entry point**: Only `contentScript.js` is bundled by Vite as a self-contained IIFE (no bare `import` statements)
+- **Why IIFE**: Content scripts are always loaded as classic scripts in all browsers — `"type": "module"` in `content_scripts` is not supported (silently ignored by Chrome, unsupported by Firefox/Safari)
+- **Background**: `background.js` and `storage.js` are statically copied (not bundled). Chrome's service worker loads `background.js` as ESM via `"type": "module"` in the manifest `background` field. Firefox/Safari load it as a classic script.
+- **Static copy**: `vite-plugin-static-copy` copies `manifest.json`, CSS, HTML, options.js, constants.js, theme.js, storage.js, background.js, icons, locales, and fonts to output directory
+- **Output**: Browser-specific directories (`dist/chrome/`, `dist/firefox/`, or `dist/safari/`) determined by `BROWSER` environment variable
 - **Default**: When `BROWSER` is unset, defaults to Chrome build (`dist/chrome/`)
 
 ### Testing Setup
@@ -288,7 +290,7 @@ E2E tests (`npm run e2e`) are available but skip in WSL. Run manually when neede
 
 ### Manual Testing Checklist
 1. Load unpacked extension and verify toolbar appears below Gmail's action bar
-2. Test all filter modes: All Mail, Mail Only, Calendar Only, Attachments Only, Favourites Only (if enabled)
+2. Test all filter modes: All Mail, Mail Only, Calendar Only, Attachments Only, Favourites Only (if enabled), Dev (if enabled)
 3. Test pagination - filter should persist
 4. Enable debug mode from options page - filtered rows should show blue tint at 50% opacity
 5. Test keyboard navigation (<kbd>Esc</kbd> returns focus to message list)

@@ -4,6 +4,7 @@ import {
   SHOW_BUTTON_TEXT_KEY,
   SHOW_FAVOURITES_KEY,
   SHOW_AI_NOTETAKERS_KEY,
+  SHOW_DEV_NOTIFICATIONS_KEY,
   THEME_KEY,
   THEMES,
 } from './constants.js';
@@ -32,6 +33,7 @@ export const MODES = {
   ATTACH: 'ATTACH',
   FAVOURITES: 'FAVOURITES',
   AI_NOTETAKERS: 'AI_NOTETAKERS',
+  DEV_NOTIFICATIONS: 'DEV_NOTIFICATIONS',
   IMAGE: 'IMAGE',
   PDF: 'PDF',
   DOCUMENT: 'DOCUMENT',
@@ -79,6 +81,13 @@ export let showFavouritesButton = false;
 export let showAiNotetakersButton = false;
 
 /**
+ * Dev Notifications button visibility.
+ * @experimental
+ * @since 2.4.0
+ */
+export let showDevNotificationsButton = false;
+
+/**
  * Toolbar alignment preference.
  * @stable
  */
@@ -109,6 +118,15 @@ export function setShowAiNotetakersButton(value) {
   showAiNotetakersButton = !!value;
 }
 
+/**
+ * Sets Dev Notifications button visibility.
+ * @experimental
+ * @param {boolean} value
+ */
+export function setShowDevNotificationsButton(value) {
+  showDevNotificationsButton = !!value;
+}
+
 const ALIGNMENT_VALUES = new Set(Object.values(ALIGNMENTS));
 
 export function setToolbarAlignment(value) {
@@ -116,7 +134,7 @@ export function setToolbarAlignment(value) {
 }
 
 export function loadState() {
-  return storageGet([KEY_MODE, KEY_DEBUG, SHOW_BUTTON_TEXT_KEY, SHOW_FAVOURITES_KEY, SHOW_AI_NOTETAKERS_KEY, ALIGNMENT_KEY, THEME_KEY])
+  return storageGet([KEY_MODE, KEY_DEBUG, SHOW_BUTTON_TEXT_KEY, SHOW_FAVOURITES_KEY, SHOW_AI_NOTETAKERS_KEY, SHOW_DEV_NOTIFICATIONS_KEY, ALIGNMENT_KEY, THEME_KEY])
     .then((storageData) => {
       currentMode = storageData[KEY_MODE] || MODES.ALL;
       debugOn = !!storageData[KEY_DEBUG];
@@ -125,6 +143,7 @@ export function loadState() {
       setThemePreference(storageData[THEME_KEY]);
       setShowFavouritesButton(storageData[SHOW_FAVOURITES_KEY]);
       setShowAiNotetakersButton(storageData[SHOW_AI_NOTETAKERS_KEY]);
+      setShowDevNotificationsButton(storageData[SHOW_DEV_NOTIFICATIONS_KEY]);
       setToolbarAlignment(storageData[ALIGNMENT_KEY]);
     })
     .catch((error) => {
@@ -135,6 +154,7 @@ export function loadState() {
       themePreference = THEMES.SYSTEM;
       showFavouritesButton = false;
       showAiNotetakersButton = false;
+      showDevNotificationsButton = false;
       toolbarAlignment = ALIGNMENTS.START;
       throw error; // Re-throw to propagate the error
     });

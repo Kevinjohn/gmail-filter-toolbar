@@ -4,6 +4,7 @@ import {
   SHOW_BUTTON_TEXT_KEY,
   SHOW_FAVOURITES_KEY,
   SHOW_AI_NOTETAKERS_KEY,
+  SHOW_DEV_NOTIFICATIONS_KEY,
   THEME_KEY,
 } from './modules/constants.js';
 import {
@@ -20,6 +21,8 @@ import {
   setShowFavouritesButton,
   showAiNotetakersButton,
   setShowAiNotetakersButton,
+  showDevNotificationsButton,
+  setShowDevNotificationsButton,
   MODES,
   themePreference,
   setThemePreference,
@@ -32,6 +35,7 @@ import {
   updateButtonTextView,
   updateFavouritesVisibility,
   updateAiNotetakersVisibility,
+  updateDevNotificationsVisibility,
 } from './modules/toolbar.js';
 import {
   waitForGmailToolbar,
@@ -60,6 +64,7 @@ function main() {
         updateAlignmentView(toolbarAlignment);
         updateFavouritesVisibility(showFavouritesButton);
         updateAiNotetakersVisibility(showAiNotetakersButton);
+        updateDevNotificationsVisibility(showDevNotificationsButton);
         refreshUI(document);
 
         waitForMessageTable().then(() => {
@@ -132,6 +137,24 @@ chrome.storage.onChanged.addListener((changes) => {
     setShowAiNotetakersButton(nextValue);
     updateAiNotetakersVisibility(nextValue);
     if (!nextValue && currentMode === MODES.AI_NOTETAKERS) {
+      setCurrentMode(MODES.ALL);
+      saveState()
+        .then(() => {
+          applyFilter(document);
+          refreshUI(document);
+        })
+        .catch((error) => {
+          console.error('Error saving mode:', error);
+        });
+    } else {
+      refreshUI(document);
+    }
+  }
+  if (SHOW_DEV_NOTIFICATIONS_KEY in changes) {
+    const nextValue = !!changes[SHOW_DEV_NOTIFICATIONS_KEY].newValue;
+    setShowDevNotificationsButton(nextValue);
+    updateDevNotificationsVisibility(nextValue);
+    if (!nextValue && currentMode === MODES.DEV_NOTIFICATIONS) {
       setCurrentMode(MODES.ALL);
       saveState()
         .then(() => {

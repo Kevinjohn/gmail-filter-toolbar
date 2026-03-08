@@ -23,6 +23,7 @@ const baseMessages = {
   experimental_legend: 'Experimental',
   experimental_description: 'Experimental features are in active testing and may only be available in English.',
   options_show_ai_notetakers: 'Show AI & Transcription button',
+  options_show_dev_notifications: 'Show Dev Notifications button',
 };
 
 const getTextContent = (id) => document.getElementById(id)?.textContent ?? null;
@@ -68,6 +69,8 @@ const serializeOptionsUi = () => ({
     description: document.querySelector('[data-i18n="experimental_description"]')?.textContent ?? null,
     showAiNotetakersLabel: document.querySelector('[data-i18n="options_show_ai_notetakers"]')?.textContent ?? null,
     showAiNotetakersChecked: document.getElementById('show-ai-notetakers-checkbox')?.checked ?? false,
+    showDevNotificationsLabel: document.querySelector('[data-i18n="options_show_dev_notifications"]')?.textContent ?? null,
+    showDevNotificationsChecked: document.getElementById('show-dev-notifications-checkbox')?.checked ?? false,
   },
 });
 
@@ -118,6 +121,10 @@ const renderHtml = ({
       <div class="option-row">
         <label for="show-ai-notetakers-checkbox" data-i18n="options_show_ai_notetakers">Show AI & Transcription button</label>
         <input type="checkbox" id="show-ai-notetakers-checkbox">
+      </div>
+      <div class="option-row">
+        <label for="show-dev-notifications-checkbox" data-i18n="options_show_dev_notifications">Show Dev Notifications button</label>
+        <input type="checkbox" id="show-dev-notifications-checkbox">
       </div>
     </fieldset>` : ''}
   `;
@@ -176,7 +183,7 @@ describe('options module', () => {
     const chrome = await loadModule();
 
     expect(chrome.storage.sync.get).toHaveBeenCalledWith(
-      ['gmailCalDebug', 'showButtonText', 'showFavourites', 'showAiNotetakers', 'toolbarAlignment', 'gmailCalTheme'],
+      ['gmailCalDebug', 'showButtonText', 'showFavourites', 'showAiNotetakers', 'showDevNotifications', 'toolbarAlignment', 'gmailCalTheme'],
       expect.any(Function),
     );
     expect(document.getElementById('pageTitle').textContent).toBe('Mock Page Title');
@@ -217,6 +224,7 @@ describe('options module', () => {
       showButtonText: false,
       showFavourites: true,
       showAiNotetakers: false,
+      showDevNotifications: false,
       toolbarAlignment: 'center',
     });
   });

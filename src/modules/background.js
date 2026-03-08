@@ -18,6 +18,7 @@ chrome.runtime.onInstalled.addListener(() => {
   storageSet({
     gmailCalMode: 'ALL',
     showAiNotetakers: false,
+    showDevNotifications: false,
   })
     .then(() => {
       const duration = performance.now() - start;

@@ -38,7 +38,7 @@ describe('background.js', () => {
     // Wait for Promise to resolve
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    expect(chrome.storage.sync.set).toHaveBeenCalledWith({ gmailCalMode: 'ALL', showAiNotetakers: false }, expect.any(Function));
+    expect(chrome.storage.sync.set).toHaveBeenCalledWith({ gmailCalMode: 'ALL', showAiNotetakers: false, showDevNotifications: false }, expect.any(Function));
     expect(infoSpy).toHaveBeenCalledWith(
       expect.stringContaining('[perf] background:onInstalled storage.set completed in 0ms')
     );

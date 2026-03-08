@@ -36,6 +36,7 @@ Transform your Gmail inbox with instant, client-side filtering. A custom toolbar
 | **Attachments Only** | Emails with files attached (documents, images, etc.) |
 | **Favourites Only** | Your starred/important messages |
 | **AI & Transcription** *(experimental)* | Emails from AI services (Gemini, ChatGPT, Claude, etc.) and transcription tools (Otter.ai, Fathom, Fireflies.ai) – enable in options |
+| **Dev** *(experimental)* | GitHub and GitLab notification emails – enable in options |
 
 **Works everywhere in Gmail** – inbox, sent items, labels, search results, any folder you navigate to.
 
@@ -210,6 +211,8 @@ Access the extension options page via:
 | **Toolbar Alignment** | Position toolbar left, center, or right within Gmail's interface |
 | **Theme** | Choose light, dark, or system theme preference |
 | **Show Favourites Button** | Enable/disable the Favourites Only filter button |
+| **Show AI & Transcription Button** *(experimental)* | Enable/disable the AI & Transcription filter button |
+| **Show Dev Notifications Button** *(experimental)* | Enable/disable the Dev Notifications filter button |
 
 ---
 
@@ -354,7 +357,7 @@ See `docs/testing-playbook.md` for the full test pyramid, fixtures, and debuggin
 
 ### Manual Smoke
 1. Load the unpacked extension and confirm the toolbar injects beneath Gmail’s action bar.
-2. Exercise all filter modes (All Mail, Mail Only, Calendar Only, Attachments Only, Favourites Only).
+2. Exercise all filter modes (All Mail, Mail Only, Calendar Only, Attachments Only, Favourites Only, AI & Transcription, Dev).
 3. Toggle debug mode from the options page – filtered rows should tint blue at 50 % opacity.
 4. Check keyboard navigation and ensure <kbd>Esc</kbd> returns focus to Gmail’s message list.
 5. Force RTL (`dir="rtl"`) in DevTools and confirm icons/text mirror correctly.

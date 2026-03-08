@@ -24,21 +24,19 @@ export default defineConfig({
     emptyOutDir: true,
 
     rollupOptions: {
-      input: browser === 'safari'
-        // WHY: Safari doesn't support dynamic imports in content scripts.
-        // Build contentScript as single IIFE bundle. Background is copied statically.
-        ? { contentScript: 'src/contentScript.js' }
-        : { background: 'src/modules/background.js', contentScript: 'src/contentScript.js' },
-      output: browser === 'safari'
-        ? {
-            entryFileNames: '[name].js',
-            format: 'iife',
-            inlineDynamicImports: true,
-          }
-        : {
-            entryFileNames: '[name].js',
-            chunkFileNames: 'assets/[name]-[hash].js',
-          },
+      // WHY: Content scripts are loaded as classic scripts in ALL browsers — "type": "module"
+      // in content_scripts is silently ignored by Chrome and unsupported by Firefox/Safari.
+      // Only background service workers (Chrome) support ES modules, but Rollup can't mix
+      // IIFE and ESM output formats in a single build with multiple entries.
+      // Solution: build only contentScript as a self-contained IIFE bundle, and copy
+      // background.js as a static file. Chrome's service worker loads it as ESM via the
+      // manifest's "type": "module". Firefox/Safari load it as a background script.
+      input: { contentScript: 'src/contentScript.js' },
+      output: {
+        entryFileNames: '[name].js',
+        format: 'iife',
+        inlineDynamicImports: true,
+      },
     },
 
     copyPublicDir: false
@@ -49,7 +47,7 @@ export default defineConfig({
       targets: [
         // Use dynamic manifest based on browser target
         { src: manifestFile, dest: '.', rename: 'manifest.json' },
-        
+
         { src: 'src/styles.css',        dest: '.' },
         { src: 'src/colours.css',      dest: '.' },
         { src: 'src/options.html',      dest: '.' },
@@ -58,10 +56,13 @@ export default defineConfig({
         { src: 'src/modules/constants.js', dest: 'modules' },
         { src: 'src/modules/theme.js', dest: 'modules' },
         { src: 'src/modules/storage.js', dest: 'modules' },
-        // Safari: background.js built as static copy since it's simple and avoids IIFE multi-entry issues
-        ...(browser === 'safari' ? [{ src: 'src/modules/background.js', dest: '.', rename: 'background.js' }] : []),
+        // WHY: background.js is copied statically (not bundled) because contentScript is the
+        // only Rollup entry point (IIFE format). background.js imports './storage.js', so
+        // storage.js must also exist at the root level alongside it.
+        { src: 'src/modules/background.js', dest: '.', rename: 'background.js' },
+        { src: 'src/modules/storage.js', dest: '.' },
         { src: 'src/icons',             dest: '.' },
-        { src: 'src/_locales',          dest: '.' }, // if present
+        { src: 'src/_locales',          dest: '.' },
         { src: 'src/assets/fonts',          dest: '.' }
       ]
     })

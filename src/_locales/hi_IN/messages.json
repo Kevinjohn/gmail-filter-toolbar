@@ -154,5 +154,13 @@
   "options_show_ai_notetakers": {
     "message": "Show AI & Transcription button",
     "description": "Checkbox label in options page to enable/disable AI & Transcription filter button."
+  },
+  "btn_dev_notifications": {
+    "message": "Dev",
+    "description": "Button to show emails from developer platforms like GitHub and GitLab."
+  },
+  "options_show_dev_notifications": {
+    "message": "Show Dev Notifications button",
+    "description": "Checkbox label in options page to enable/disable Dev Notifications filter button."
   }
 }

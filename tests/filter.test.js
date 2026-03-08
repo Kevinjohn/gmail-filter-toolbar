@@ -7,6 +7,7 @@ import {
   hasSpecificAttachmentType,
   isGoogleDocAttachment,
   isAiNotetakerRow,
+  isDevNotificationRow,
 } from '../src/modules/filter.js';
 import {
   MODES,
@@ -356,6 +357,76 @@ describe('isAiNotetakerRow', () => {
     doc.querySelector('.UI').appendChild(row);
 
     expect(isAiNotetakerRow(row)).toBe(true);
+  });
+});
+
+describe('isDevNotificationRow', () => {
+  test('returns true for GitLab sender', () => {
+    const doc = makeMailDocument();
+    const row = doc.createElement('tr');
+    const senderSpan = doc.createElement('span');
+    senderSpan.className = 'yP';
+    senderSpan.setAttribute('email', 'gitlab@mg.gitlab.com');
+    senderSpan.setAttribute('name', 'GitLab');
+
+    const container = doc.createElement('div');
+    container.className = 'yW';
+    container.appendChild(senderSpan);
+    row.appendChild(container);
+    doc.querySelector('.UI').appendChild(row);
+
+    expect(isDevNotificationRow(row)).toBe(true);
+  });
+
+  test('returns true for GitHub sender', () => {
+    const doc = makeMailDocument();
+    const row = doc.createElement('tr');
+    const senderSpan = doc.createElement('span');
+    senderSpan.className = 'yP';
+    senderSpan.setAttribute('email', 'notifications@github.com');
+    senderSpan.setAttribute('name', 'GitHub');
+
+    const container = doc.createElement('div');
+    container.className = 'yW';
+    container.appendChild(senderSpan);
+    row.appendChild(container);
+    doc.querySelector('.UI').appendChild(row);
+
+    expect(isDevNotificationRow(row)).toBe(true);
+  });
+
+  test('returns false for regular sender', () => {
+    const doc = makeMailDocument();
+    const row = doc.createElement('tr');
+    const senderSpan = doc.createElement('span');
+    senderSpan.className = 'yP';
+    senderSpan.setAttribute('email', 'john@example.com');
+    senderSpan.setAttribute('name', 'John Doe');
+
+    const container = doc.createElement('div');
+    container.className = 'yW';
+    container.appendChild(senderSpan);
+    row.appendChild(container);
+    doc.querySelector('.UI').appendChild(row);
+
+    expect(isDevNotificationRow(row)).toBe(false);
+  });
+
+  test('is case-insensitive', () => {
+    const doc = makeMailDocument();
+    const row = doc.createElement('tr');
+    const senderSpan = doc.createElement('span');
+    senderSpan.className = 'yP';
+    senderSpan.setAttribute('email', 'noreply@GITHUB.COM');
+    senderSpan.setAttribute('name', 'GitHub');
+
+    const container = doc.createElement('div');
+    container.className = 'yW';
+    container.appendChild(senderSpan);
+    row.appendChild(container);
+    doc.querySelector('.UI').appendChild(row);
+
+    expect(isDevNotificationRow(row)).toBe(true);
   });
 });
 

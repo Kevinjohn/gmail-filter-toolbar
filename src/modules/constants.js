@@ -18,6 +18,13 @@ export const SHOW_FAVOURITES_KEY = 'showFavourites';
 export const SHOW_AI_NOTETAKERS_KEY = 'showAiNotetakers';
 
 /**
+ * Storage key for Dev Notifications button visibility.
+ * @experimental
+ * @since 2.4.0
+ */
+export const SHOW_DEV_NOTIFICATIONS_KEY = 'showDevNotifications';
+
+/**
  * Storage key for toolbar alignment preference.
  * @stable
  */
@@ -104,6 +111,17 @@ export const AI_NOTETAKER_PATTERNS = [
   /otter\.ai/i,      // Otter.ai transcription service
   /fathom/i,         // Fathom video transcription
   /fireflies\.ai/i,  // Fireflies.ai transcription service
+];
+
+/**
+ * Regex patterns to match dev platform notification email domains.
+ * Patterns are case-insensitive and match against the domain portion of the sender email.
+ * @experimental
+ * @since 2.4.0
+ */
+export const DEV_NOTIFICATION_PATTERNS = [
+  /github\.com$/i,   // matches notifications@github.com, noreply@github.com
+  /gitlab\.com$/i,   // matches gitlab@mg.gitlab.com, noreply@gitlab.com
 ];
 
 /**
@@ -201,4 +219,10 @@ export const SELECTORS = {
    * @experimental - Used by AI & Transcription filter
    */
   senderName: '.yW span.zF[name]',
+  /**
+   * Selector for the sender email element within an email row.
+   * Targets the span with an email attribute containing the sender's address.
+   * @experimental - Used by Dev Notifications filter
+   */
+  senderEmail: '.yW span.yP[email]',
 };

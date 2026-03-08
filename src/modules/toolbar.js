@@ -1,5 +1,5 @@
 import { ALIGNMENTS, ATTACHMENT_TYPE_CONFIG, SELECTORS } from './constants.js';
-import { MODES, currentMode, showFavouritesButton, showAiNotetakersButton, toolbarAlignment } from './state.js';
+import { MODES, currentMode, showFavouritesButton, showAiNotetakersButton, showDevNotificationsButton, toolbarAlignment } from './state.js';
 
 // Define the base filter configurations for non-attachment modes
 const BASE_FILTER_CONFIG = {
@@ -26,6 +26,10 @@ const BASE_FILTER_CONFIG = {
   [MODES.AI_NOTETAKERS]: {
     icon: 'smart_toy',
     labelKey: 'btn_ai_notetakers',
+  },
+  [MODES.DEV_NOTIFICATIONS]: {
+    icon: 'code',
+    labelKey: 'btn_dev_notifications',
   },
 };
 
@@ -113,6 +117,16 @@ export function injectToolbar(doc = document, headerElement) {
   }
   btnGroup.appendChild(aiButton);
 
+  // Add Dev Notifications button
+  const devConfig = BASE_FILTER_CONFIG[MODES.DEV_NOTIFICATIONS];
+  const devButton = createFilterButton(doc, MODES.DEV_NOTIFICATIONS, devConfig.icon, devConfig.labelKey);
+  if (!showDevNotificationsButton) {
+    devButton.hidden = true;
+    devButton.setAttribute('aria-hidden', 'true');
+    devButton.setAttribute('tabindex', '-1');
+  }
+  btnGroup.appendChild(devButton);
+
   bar.appendChild(btnGroup);
 
   const liveRegion = doc.createElement('div');
@@ -124,6 +138,7 @@ export function injectToolbar(doc = document, headerElement) {
   updateAlignmentView(toolbarAlignment, doc);
   updateFavouritesVisibility(showFavouritesButton, doc);
   updateAiNotetakersVisibility(showAiNotetakersButton, doc);
+  updateDevNotificationsVisibility(showDevNotificationsButton, doc);
   refreshUI(doc);
 
   bar.addEventListener('keydown', (e) => {
@@ -231,6 +246,28 @@ export function updateFavouritesVisibility(show, doc = document) {
  */
 export function updateAiNotetakersVisibility(show, doc = document) {
   const button = doc.querySelector('#filter-AI_NOTETAKERS');
+  if (!button) {
+    return;
+  }
+
+  button.hidden = !show;
+  if (show) {
+    button.removeAttribute('aria-hidden');
+  } else {
+    button.setAttribute('aria-hidden', 'true');
+    button.setAttribute('aria-checked', 'false');
+    button.setAttribute('tabindex', '-1');
+  }
+}
+
+/**
+ * Shows or hides the Dev Notifications filter button.
+ * @experimental
+ * @param {boolean} show - Whether to show the button.
+ * @param {Document} doc - The document object.
+ */
+export function updateDevNotificationsVisibility(show, doc = document) {
+  const button = doc.querySelector('#filter-DEV_NOTIFICATIONS');
   if (!button) {
     return;
   }

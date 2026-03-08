@@ -1,5 +1,5 @@
 import { MODES, currentMode, debugOn } from './state.js';
-import { SELECTORS, ATTACHMENT_TYPE_CONFIG, AI_NOTETAKER_PATTERNS } from './constants.js';
+import { SELECTORS, ATTACHMENT_TYPE_CONFIG, AI_NOTETAKER_PATTERNS, DEV_NOTIFICATION_PATTERNS } from './constants.js';
 
 /**
  * Checks if an email row is a calendar invitation.
@@ -87,6 +87,38 @@ export function isAiNotetakerRow(row) {
 }
 
 /**
+ * Checks if an email row is from a dev platform (GitHub, GitLab).
+ * Matches sender email domain against patterns in DEV_NOTIFICATION_PATTERNS.
+ * @experimental
+ * @since 2.4.0
+ * @param {HTMLElement} row - The DOM element for the email row.
+ * @returns {boolean} True if sender matches any dev notification pattern.
+ */
+export function isDevNotificationRow(row) {
+  // Try primary selector for sender email
+  let senderElement = row.querySelector(SELECTORS.senderEmail);
+
+  // Fallback: try to find any span with email attribute in the sender area
+  if (!senderElement) {
+    senderElement = row.querySelector('.yW span[email]');
+  }
+
+  if (!senderElement) {
+    return false;
+  }
+
+  const email = senderElement.getAttribute('email') || '';
+  // WHY: Extract domain portion to match against patterns. The @ split handles full email addresses.
+  const domain = email.split('@').pop() || '';
+
+  if (debugOn) {
+    console.log('[Dev Notifications Debug] Sender email:', email, 'Domain:', domain);
+  }
+
+  return DEV_NOTIFICATION_PATTERNS.some(pattern => pattern.test(domain));
+}
+
+/**
  * Checks if an email row contains a specific type of attachment.
  * @stable
  * @param {HTMLElement} row - The DOM element for the email row.
@@ -168,6 +200,10 @@ const FILTER_CONFIG = {
   [MODES.AI_NOTETAKERS]: {
     labelKey: 'btn_ai_notetakers',
     filterFn: (row) => !isAiNotetakerRow(row),
+  },
+  [MODES.DEV_NOTIFICATIONS]: {
+    labelKey: 'btn_dev_notifications',
+    filterFn: (row) => !isDevNotificationRow(row),
   },
 };
 

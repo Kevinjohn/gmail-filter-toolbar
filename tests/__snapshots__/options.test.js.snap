@@ -28,6 +28,8 @@ exports[`options module serialises localised labels for regression safety 1`] = 
     "legend": "Experimental",
     "showAiNotetakersChecked": false,
     "showAiNotetakersLabel": "Show AI & Transcription button",
+    "showDevNotificationsChecked": false,
+    "showDevNotificationsLabel": "Show Dev Notifications button",
   },
   "pageDescription": "Mock Page Description",
   "pageTitle": "Mock Page Title",

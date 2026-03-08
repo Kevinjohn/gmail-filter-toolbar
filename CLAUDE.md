@@ -51,8 +51,10 @@ npm run test:e2e:ci       # Run e2e tests with CI reporters (JUnit + HTML)
 npm run version:major     # Bump major version (e.g., 1.0.0 → 2.0.0)
 npm run version:minor     # Bump minor version (e.g., 1.0.0 → 1.1.0)
 npm run version:patch     # Bump patch version (e.g., 1.0.0 → 1.0.1)
-npm run release:build     # Build release artifacts for distribution
+npm run release:build     # Build release artifacts for distribution (Chrome + Firefox)
 ```
+
+**Note:** `release:build` produces tarballs for Chrome and Firefox only. Safari is excluded because it requires submission through Xcode/App Store Connect, not a packaged archive. Safari builds are manual (`npm run build:safari` → copy to Xcode project → archive in Xcode). This may be automated in a future release.
 
 ### Loading the Extension
 

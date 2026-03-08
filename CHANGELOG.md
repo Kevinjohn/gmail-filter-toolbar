@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- **Button Labels**: Shortened English toolbar button labels for better UI density
+  - "Everything" → "All", "Documents" → "Docs", "Spreadsheets" → "Sheets", "Presentations" → "Slides", "AI & Transcription" → "AI & Notes"
+  - Updated in both `en` and `en_GB` locales
+
 ### Added
 - **Dev Notifications Filter** *(experimental)*: New filter button to show only GitHub and GitLab notification emails
   - Detects sender email domains (`github.com`, `gitlab.com`) for reliable matching

@@ -16,7 +16,7 @@
     "description": "Label preceding the filter buttons."
   },
   "btn_all": {
-    "message": "Everything",
+    "message": "All",
     "description": "Button to show every e-mail."
   },
   "btn_mail": {
@@ -36,7 +36,7 @@
     "description": "Button to show starred/favourite e-mails."
   },
   "btn_ai_notetakers": {
-    "message": "AI & Transcription",
+    "message": "AI & Notes",
     "description": "Button to show emails from AI services and transcription tools."
   },
   "button_filter_images": {
@@ -48,15 +48,15 @@
     "description": "Button to show only emails with PDF attachments."
   },
   "button_filter_documents": {
-    "message": "Documents",
+    "message": "Docs",
     "description": "Button to show only emails with document attachments."
   },
   "button_filter_spreadsheets": {
-    "message": "Spreadsheets",
+    "message": "Sheets",
     "description": "Button to show only emails with spreadsheet attachments."
   },
   "button_filter_presentations": {
-    "message": "Presentations",
+    "message": "Slides",
     "description": "Button to show only emails with presentation attachments."
   },
   "page_title": {

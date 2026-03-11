@@ -1,0 +1,108 @@
+.gcal-filter-bar {
+  display: flex;
+  justify-content: flex-start;
+  margin-block: 4px;
+  margin-inline: 0;
+  padding-block: 2px;
+  padding-inline: 12px;
+  background: var(--gcal-bg-color);
+  border-radius: 0;
+  font-size: 12px;
+  flex: 0 0 100%; /* NEW: occupy a whole flex line */
+  width: 100%; /* belt-and-braces */
+  box-sizing: border-box; /* ensure padding/border stay within Gmail column */
+  border: 1px solid var(--gcal-border-color);
+  color: var(--gcal-text-color);
+  margin-top: 10px;
+  z-index: 4;
+  position: relative;
+}
+
+/* 1 — let Gmail’s toolbar wrap */
+.G-atb {
+  /* Gmail sets display:flex; align-items:center; nowrap  */
+  flex-wrap: wrap !important; /* NEW: allow a second row */
+  height: auto !important;
+  padding-top: 16px !important;
+}
+
+.gcal-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.gcal-btn-group.gcal-align-center {
+  justify-content: center;
+}
+
+.gcal-filter-bar.gcal-align-center {
+  justify-content: center;
+}
+
+.gcal-btn-group button {
+  background: none;
+  border: 1px solid var(--gcal-border-color);
+  color: var(--gcal-text-color);
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-inline-end: 8px;
+  margin-block: 6px;
+  display: flex;
+  align-items: center;
+}
+
+.gcal-btn-group button[hidden] {
+  display: none !important;
+}
+
+.gcal-btn-group button[aria-checked='true'] {
+  font-weight: bold;
+  color: var(--gcal-active-button-text);
+  border-color: var(--gcal-active-button-text);
+}
+
+.visually-hidden {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 18px !important;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+span.gcal-label {
+  display: none;
+}
+
+span.text-label {
+  margin-inline-start: 4px;
+  margin-inline-end: 2px;
+}
+
+.gcal-text-label {
+  font-size: 12px;
+  padding-inline-start: 4px;
+  padding-inline-end: 2px;
+  margin-inline-start: 4px;
+}
+
+.gcal-filter-bar.show-icon-only .gcal-text-label {
+  display: none;
+}

@@ -1,0 +1,166 @@
+{
+  "extension_name": {
+    "message": "Gmail-kalenterin asetukset",
+    "description": "Name of the extension."
+  },
+  "extension_description": {
+    "message": "Suodata Gmail kalenterikutsut, liitetyypin, tekoälymuistiinpanojen tai tavallisen sähköpostin mukaan.",
+    "description": "Description of the extension."
+  },
+  "label_toolbar": {
+    "message": "Kalenterin suodatin",
+    "description": "ARIA label for the main toolbar."
+  },
+  "label_options": {
+    "message": "Sähköpostisuodatin: ",
+    "description": "Label preceding the filter buttons."
+  },
+  "btn_all": {
+    "message": "Kaikki sähköpostit",
+    "description": "Button to show all e-mails."
+  },
+  "btn_mail": {
+    "message": "Vain sähköposti",
+    "description": "Button to hide calendar e-mails."
+  },
+  "btn_cal": {
+    "message": "Vain kalenteri",
+    "description": "Button to show only calendar e-mails."
+  },
+  "btn_attach": {
+    "message": "Vain liitteet",
+    "description": "Button to show only e-mails with attachments."
+  },
+  "btn_fav": {
+    "message": "Vain suosikit",
+    "description": "Button to show only starred/favourite e-mails."
+  },
+  "button_filter_images": {
+    "message": "Kuvat",
+    "description": "Button to show only emails with image attachments."
+  },
+  "button_filter_pdfs": {
+    "message": "PDF-tiedostot",
+    "description": "Button to show only emails with PDF attachments."
+  },
+  "button_filter_documents": {
+    "message": "Asiakirjat",
+    "description": "Button to show only emails with document attachments."
+  },
+  "button_filter_spreadsheets": {
+    "message": "Taulukot",
+    "description": "Button to show only emails with spreadsheet attachments."
+  },
+  "button_filter_presentations": {
+    "message": "Esitykset",
+    "description": "Button to show only emails with presentation attachments."
+  },
+  "page_title": {
+    "message": "Kalenterin asetukset",
+    "description": "Title for the extension's options page."
+  },
+  "options_debug": {
+    "message": "Ota vianetsintätila käyttöön (näytä suodatetut rivit sinisenä)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_page_description": {
+    "message": "Gmail-kalenterin asetusten laajennuksen asetukset.",
+    "description": "A short summary of the options page."
+  },
+  "options_debug_legend": {
+    "message": "Virheenkorjaus",
+    "description": "Legend for the debug settings fieldset."
+  },
+  "options_debug_label": {
+    "message": "Ota vianetsintätila käyttöön (korostaa suodatetut rivit sinisellä sen sijaan, että piilottaisi ne)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_show_text_legend": {
+    "message": "Näyttö",
+    "description": "Legend heading for button text options."
+  },
+  "options_alignment_legend": {
+    "message": "Työkalurivin asettelu",
+    "description": "Legend heading for toolbar layout options."
+  },
+  "options_alignment_label": {
+    "message": "Työkalurivin tasaus",
+    "description": "Label for the toolbar alignment control."
+  },
+  "options_alignment_start": {
+    "message": "Alku",
+    "description": "Option to align the toolbar buttons to the start."
+  },
+  "options_alignment_center": {
+    "message": "Keskitä",
+    "description": "Option to align the toolbar buttons to the centre."
+  },
+  "options_show_favourites_label": {
+    "message": "Näytä Suosikit-painike",
+    "description": "Label for the option to display the Favourites filter button."
+  },
+  "options_theme_legend": {
+    "message": "Ulkoasu",
+    "description": "Legend heading for theme options."
+  },
+  "options_theme_label": {
+    "message": "Laajennuksen teema",
+    "description": "Label for the theme selection control."
+  },
+  "options_theme_system": {
+    "message": "Käytä järjestelmän teemaa",
+    "description": "Option to follow the operating system theme preference."
+  },
+  "options_theme_light": {
+    "message": "Vaalea",
+    "description": "Option to always use the light theme."
+  },
+  "options_theme_dark": {
+    "message": "Tumma",
+    "description": "Option to always use the dark theme."
+  },
+  "alt_calendar_event": {
+    "message": "Kalenteritapahtuma",
+    "description": "The alt text for the calendar event icon in an email row."
+  },
+  "filter_status_update": {
+    "message": "Suodatin asetettu arvoon $1",
+    "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
+  },
+  "extension_action_title": {
+    "message": "Kalenterisuodatin on upotettu Gmail-sivuille",
+    "description": "The title of the extension's action button in the browser toolbar."
+  },
+  "alt_starred": {
+    "message": "Tähdellä merkityt",
+    "description": "Alt text for the starred icon/tooltip"
+  },
+  "optionShowButtonText": {
+    "message": "Näytä teksti suodatinpainikkeissa",
+    "description": "Label for the option to show or hide text on the filter buttons."
+  },
+  "experimental_legend": {
+    "message": "Experimental",
+    "description": "Legend for experimental features section in options page."
+  },
+  "experimental_description": {
+    "message": "Experimental features are in active testing and may only be available in English.",
+    "description": "Description text explaining experimental features may not be fully localized."
+  },
+  "btn_ai_notetakers": {
+    "message": "AI & Transcription",
+    "description": "Button to show emails from AI services and transcription tools."
+  },
+  "options_show_ai_notetakers": {
+    "message": "Show AI & Transcription button",
+    "description": "Checkbox label in options page to enable/disable AI & Transcription filter button."
+  },
+  "btn_dev_notifications": {
+    "message": "Dev",
+    "description": "Button to show emails from developer platforms like GitHub and GitLab."
+  },
+  "options_show_dev_notifications": {
+    "message": "Show Dev Notifications button",
+    "description": "Checkbox label in options page to enable/disable Dev Notifications filter button."
+  }
+}

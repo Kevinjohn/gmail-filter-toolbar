@@ -1,0 +1,42 @@
+body {
+  font-family: sans-serif;
+  padding: 1em;
+  background-color: var(--gcal-bg-color);
+  color: var(--gcal-text-color);
+}
+fieldset {
+  border: 1px solid var(--gcal-border-color);
+  border-radius: 4px;
+  padding-top: 1em;
+  margin-bottom: 1rem;
+}
+legend {
+  font-weight: bold;
+  padding-inline: 0.5em;
+}
+
+.option-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.option-row label {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.option-row select {
+  padding: 4px 8px;
+  border: 1px solid var(--gcal-border-color);
+  border-radius: 4px;
+  background-color: var(--gcal-bg-color);
+  color: var(--gcal-text-color);
+}
+
+#experimentalDescription {
+  margin-bottom: 1em;
+  font-style: italic;
+  line-height: 1.4;
+}

@@ -1,0 +1,166 @@
+{
+  "extension_name": {
+    "message": "Gmail 日历选项",
+    "description": "Name of the extension."
+  },
+  "extension_description": {
+    "message": "按日历邀请、附件类型、AI 笔记或常规邮件过滤 Gmail。",
+    "description": "Description of the extension."
+  },
+  "label_toolbar": {
+    "message": "日历筛选器",
+    "description": "ARIA label for the main toolbar."
+  },
+  "label_options": {
+    "message": "邮件筛选：",
+    "description": "Label preceding the filter buttons."
+  },
+  "btn_all": {
+    "message": "全部邮件",
+    "description": "Button to show all e-mails."
+  },
+  "btn_mail": {
+    "message": "仅邮件",
+    "description": "Button to hide calendar e-mails."
+  },
+  "btn_cal": {
+    "message": "仅日历",
+    "description": "Button to show only calendar e-mails."
+  },
+  "btn_attach": {
+    "message": "仅附件",
+    "description": "Button to show only e-mails with attachments."
+  },
+  "btn_fav": {
+    "message": "仅收藏",
+    "description": "Button to show only starred/favourite e-mails."
+  },
+  "button_filter_images": {
+    "message": "图片",
+    "description": "Button to show only emails with image attachments."
+  },
+  "button_filter_pdfs": {
+    "message": "PDF",
+    "description": "Button to show only emails with PDF attachments."
+  },
+  "button_filter_documents": {
+    "message": "文档",
+    "description": "Button to show only emails with document attachments."
+  },
+  "button_filter_spreadsheets": {
+    "message": "表格",
+    "description": "Button to show only emails with spreadsheet attachments."
+  },
+  "button_filter_presentations": {
+    "message": "演示文稿",
+    "description": "Button to show only emails with presentation attachments."
+  },
+  "page_title": {
+    "message": "日历选项",
+    "description": "Title for the extension's options page."
+  },
+  "options_debug": {
+    "message": "启用调试模式（以蓝色显示筛选的行）",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_page_description": {
+    "message": "Gmail 日历选项扩展的设置。",
+    "description": "A short summary of the options page."
+  },
+  "options_debug_legend": {
+    "message": "调试",
+    "description": "Legend for the debug settings fieldset."
+  },
+  "options_debug_label": {
+    "message": "启用调试模式（将筛选的行用蓝色高亮而不是隐藏）",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_show_text_legend": {
+    "message": "显示",
+    "description": "Legend heading for button text options."
+  },
+  "options_alignment_legend": {
+    "message": "工具栏布局",
+    "description": "Legend heading for toolbar layout options."
+  },
+  "options_alignment_label": {
+    "message": "工具栏对齐",
+    "description": "Label for the toolbar alignment control."
+  },
+  "options_alignment_start": {
+    "message": "开头",
+    "description": "Option to align the toolbar buttons to the start."
+  },
+  "options_alignment_center": {
+    "message": "居中",
+    "description": "Option to align the toolbar buttons to the centre."
+  },
+  "options_show_favourites_label": {
+    "message": "显示收藏按钮",
+    "description": "Label for the option to display the Favourites filter button."
+  },
+  "options_theme_legend": {
+    "message": "外观",
+    "description": "Legend heading for theme options."
+  },
+  "options_theme_label": {
+    "message": "扩展主题",
+    "description": "Label for the theme selection control."
+  },
+  "options_theme_system": {
+    "message": "跟随系统主题",
+    "description": "Option to follow the operating system theme preference."
+  },
+  "options_theme_light": {
+    "message": "浅色",
+    "description": "Option to always use the light theme."
+  },
+  "options_theme_dark": {
+    "message": "深色",
+    "description": "Option to always use the dark theme."
+  },
+  "alt_calendar_event": {
+    "message": "日历事件",
+    "description": "The alt text for the calendar event icon in an email row."
+  },
+  "filter_status_update": {
+    "message": "筛选器设为 $1",
+    "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
+  },
+  "extension_action_title": {
+    "message": "日历筛选器已嵌入 Gmail 页面",
+    "description": "The title of the extension's action button in the browser toolbar."
+  },
+  "alt_starred": {
+    "message": "星标",
+    "description": "Alt text for the starred icon/tooltip"
+  },
+  "optionShowButtonText": {
+    "message": "在筛选按钮上显示文本",
+    "description": "Label for the option to show or hide text on the filter buttons."
+  },
+  "experimental_legend": {
+    "message": "Experimental",
+    "description": "Legend for experimental features section in options page."
+  },
+  "experimental_description": {
+    "message": "Experimental features are in active testing and may only be available in English.",
+    "description": "Description text explaining experimental features may not be fully localized."
+  },
+  "btn_ai_notetakers": {
+    "message": "AI & Transcription",
+    "description": "Button to show emails from AI services and transcription tools."
+  },
+  "options_show_ai_notetakers": {
+    "message": "Show AI & Transcription button",
+    "description": "Checkbox label in options page to enable/disable AI & Transcription filter button."
+  },
+  "btn_dev_notifications": {
+    "message": "Dev",
+    "description": "Button to show emails from developer platforms like GitHub and GitLab."
+  },
+  "options_show_dev_notifications": {
+    "message": "Show Dev Notifications button",
+    "description": "Checkbox label in options page to enable/disable Dev Notifications filter button."
+  }
+}

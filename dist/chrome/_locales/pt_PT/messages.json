@@ -1,0 +1,166 @@
+{
+  "extension_name": {
+    "message": "Opções do Calendário do Gmail",
+    "description": "Name of the extension."
+  },
+  "extension_description": {
+    "message": "Filtre o Gmail por convites de calendário, tipo de anexo, notas de IA ou email normal.",
+    "description": "Description of the extension."
+  },
+  "label_toolbar": {
+    "message": "Filtro de calendário",
+    "description": "ARIA label for the main toolbar."
+  },
+  "label_options": {
+    "message": "Filtro de e-mail: ",
+    "description": "Label preceding the filter buttons."
+  },
+  "btn_all": {
+    "message": "Todos os e-mails",
+    "description": "Button to show all e-mails."
+  },
+  "btn_mail": {
+    "message": "Apenas e-mail",
+    "description": "Button to hide calendar e-mails."
+  },
+  "btn_cal": {
+    "message": "Apenas calendário",
+    "description": "Button to show only calendar e-mails."
+  },
+  "btn_attach": {
+    "message": "Apenas anexos",
+    "description": "Button to show only e-mails with attachments."
+  },
+  "btn_fav": {
+    "message": "Apenas favoritos",
+    "description": "Button to show only starred/favourite e-mails."
+  },
+  "button_filter_images": {
+    "message": "Imagens",
+    "description": "Button to show only emails with image attachments."
+  },
+  "button_filter_pdfs": {
+    "message": "PDF",
+    "description": "Button to show only emails with PDF attachments."
+  },
+  "button_filter_documents": {
+    "message": "Documentos",
+    "description": "Button to show only emails with document attachments."
+  },
+  "button_filter_spreadsheets": {
+    "message": "Folhas de cálculo",
+    "description": "Button to show only emails with spreadsheet attachments."
+  },
+  "button_filter_presentations": {
+    "message": "Apresentações",
+    "description": "Button to show only emails with presentation attachments."
+  },
+  "page_title": {
+    "message": "Opções de calendário",
+    "description": "Title for the extension's options page."
+  },
+  "options_debug": {
+    "message": "Ativar o modo de depuração (mostrar linhas filtradas a azul)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_page_description": {
+    "message": "Definições para a extensão de Opções de Calendário do Gmail.",
+    "description": "A short summary of the options page."
+  },
+  "options_debug_legend": {
+    "message": "Depuração",
+    "description": "Legend for the debug settings fieldset."
+  },
+  "options_debug_label": {
+    "message": "Ativar o modo de depuração (realça as linhas filtradas a azul em vez de as ocultar)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_show_text_legend": {
+    "message": "Visualização",
+    "description": "Legend heading for button text options."
+  },
+  "options_alignment_legend": {
+    "message": "Disposição da barra de ferramentas",
+    "description": "Legend heading for toolbar layout options."
+  },
+  "options_alignment_label": {
+    "message": "Alinhamento da barra de ferramentas",
+    "description": "Label for the toolbar alignment control."
+  },
+  "options_alignment_start": {
+    "message": "Início",
+    "description": "Option to align the toolbar buttons to the start."
+  },
+  "options_alignment_center": {
+    "message": "Centro",
+    "description": "Option to align the toolbar buttons to the centre."
+  },
+  "options_show_favourites_label": {
+    "message": "Mostrar botão Favoritos",
+    "description": "Label for the option to display the Favourites filter button."
+  },
+  "options_theme_legend": {
+    "message": "Aspeto",
+    "description": "Legend heading for theme options."
+  },
+  "options_theme_label": {
+    "message": "Tema da extensão",
+    "description": "Label for the theme selection control."
+  },
+  "options_theme_system": {
+    "message": "Seguir tema do sistema",
+    "description": "Option to follow the operating system theme preference."
+  },
+  "options_theme_light": {
+    "message": "Claro",
+    "description": "Option to always use the light theme."
+  },
+  "options_theme_dark": {
+    "message": "Escuro",
+    "description": "Option to always use the dark theme."
+  },
+  "alt_calendar_event": {
+    "message": "Evento de calendário",
+    "description": "The alt text for the calendar event icon in an email row."
+  },
+  "filter_status_update": {
+    "message": "Filtro definido para $1",
+    "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
+  },
+  "extension_action_title": {
+    "message": "O filtro de calendário está incorporado nas páginas do Gmail",
+    "description": "The title of the extension's action button in the browser toolbar."
+  },
+  "alt_starred": {
+    "message": "Marcado com estrela",
+    "description": "Alt text for the starred icon/tooltip"
+  },
+  "optionShowButtonText": {
+    "message": "Mostrar texto nos botões de filtro",
+    "description": "Label for the option to show or hide text on the filter buttons."
+  },
+  "experimental_legend": {
+    "message": "Experimental",
+    "description": "Legend for experimental features section in options page."
+  },
+  "experimental_description": {
+    "message": "Experimental features are in active testing and may only be available in English.",
+    "description": "Description text explaining experimental features may not be fully localized."
+  },
+  "btn_ai_notetakers": {
+    "message": "AI & Transcription",
+    "description": "Button to show emails from AI services and transcription tools."
+  },
+  "options_show_ai_notetakers": {
+    "message": "Show AI & Transcription button",
+    "description": "Checkbox label in options page to enable/disable AI & Transcription filter button."
+  },
+  "btn_dev_notifications": {
+    "message": "Dev",
+    "description": "Button to show emails from developer platforms like GitHub and GitLab."
+  },
+  "options_show_dev_notifications": {
+    "message": "Show Dev Notifications button",
+    "description": "Checkbox label in options page to enable/disable Dev Notifications filter button."
+  }
+}

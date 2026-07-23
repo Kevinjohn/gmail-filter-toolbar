@@ -5,12 +5,39 @@ import process from 'node:process';
 
 const localesDir = path.join(process.cwd(), 'src', '_locales');
 const baseLocale = 'en';
+const supportedLocales = new Set([
+  'ar',
+  'cs',
+  'da',
+  'de',
+  'el',
+  'en',
+  'en_GB',
+  'es',
+  'es_419',
+  'fi',
+  'fr',
+  'hi',
+  'hu',
+  'it',
+  'nl',
+  'no',
+  'pl',
+  'pt_BR',
+  'pt_PT',
+  'ro',
+  'ru',
+  'sv',
+  'tr',
+  'uk',
+  'zh_CN',
+]);
 
 const baseMessages = JSON.parse(
-  readFileSync(path.join(localesDir, baseLocale, 'messages.json'), 'utf8')
+  readFileSync(path.join(localesDir, baseLocale, 'messages.json'), 'utf8'),
 );
 
-const placeholderTokenPattern = /\$[a-zA-Z0-9_]+/g;
+const placeholderTokenPattern = /\$(?:\d+|[a-zA-Z][a-zA-Z0-9_]*\$)/g;
 
 const summariseEntry = (entry) => {
   const placeholders = entry.placeholders ? Object.keys(entry.placeholders) : [];
@@ -25,22 +52,38 @@ const summariseEntry = (entry) => {
       matches.forEach((match) => tokens.add(match));
     }
   }
+  const namedTokens = Array.from(tokens)
+    .filter((token) => token.endsWith('$'))
+    .map((token) => token.slice(1, -1).toLowerCase())
+    .sort();
+  const placeholderNames = placeholders.map((name) => name.toLowerCase()).sort();
+  const unmatchedText = (entry.message ?? '').replace(placeholderTokenPattern, '');
   return {
     placeholders: placeholders.sort(),
     pluralPlaceholders: pluralPlaceholders.sort(),
-    tokens: Array.from(tokens).sort()
+    tokens: Array.from(tokens).sort(),
+    valid: !unmatchedText.includes('$') && namedTokens.join(',') === placeholderNames.join(','),
   };
 };
 
 const baseSummary = new Map(
-  Object.entries(baseMessages).map(([key, entry]) => [key, summariseEntry(entry)])
+  Object.entries(baseMessages).map(([key, entry]) => [key, summariseEntry(entry)]),
 );
 
 const errors = [];
 
-const locales = readdirSync(localesDir).filter((dir) => dir !== baseLocale);
+const locales = readdirSync(localesDir);
+
+for (const locale of supportedLocales) {
+  if (!locales.includes(locale)) {
+    errors.push(`${locale}: required locale directory is missing`);
+  }
+}
 
 for (const locale of locales) {
+  if (!supportedLocales.has(locale)) {
+    errors.push(`${locale}: unsupported Chrome locale directory`);
+  }
   const localePath = path.join(localesDir, locale, 'messages.json');
   const localeMessages = JSON.parse(readFileSync(localePath, 'utf8'));
   for (const [key, baseEntrySummary] of baseSummary.entries()) {
@@ -54,11 +97,15 @@ for (const locale of locales) {
 
     const mismatchDetails = [];
 
+    if (!localeSummary.valid) {
+      mismatchDetails.push('placeholder tokens and definitions are not internally consistent');
+    }
+
     if (baseEntrySummary.tokens.join(',') !== localeSummary.tokens.join(',')) {
       mismatchDetails.push(
         `placeholder tokens ${localeSummary.tokens.join(',') || '[none]'} do not match base ${
           baseEntrySummary.tokens.join(',') || '[none]'
-        }`
+        }`,
       );
     }
 
@@ -66,24 +113,31 @@ for (const locale of locales) {
       mismatchDetails.push(
         `placeholders definition ${localeSummary.placeholders.join(',') || '[none]'} does not match base ${
           baseEntrySummary.placeholders.join(',') || '[none]'
-        }`
+        }`,
       );
     }
 
     if (
-      baseEntrySummary.pluralPlaceholders.join(',') !==
-      localeSummary.pluralPlaceholders.join(',')
+      baseEntrySummary.pluralPlaceholders.join(',') !== localeSummary.pluralPlaceholders.join(',')
     ) {
       mismatchDetails.push(
         `plural placeholders ${localeSummary.pluralPlaceholders.join(',') || '[none]'} do not match base ${
           baseEntrySummary.pluralPlaceholders.join(',') || '[none]'
-        }`
+        }`,
       );
     }
 
     if (mismatchDetails.length > 0) {
       errors.push(`${locale}:${key} -> ${mismatchDetails.join('; ')}`);
     }
+  }
+  for (const key of Object.keys(localeMessages)) {
+    if (!baseSummary.has(key)) {
+      errors.push(`${locale}: unexpected message key \"${key}\"`);
+    }
+  }
+  if (localeMessages.extension_name?.message !== 'Gmail Filter Toolbar') {
+    errors.push(`${locale}: extension_name must use the invariant product brand`);
   }
 }
 

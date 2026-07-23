@@ -1,0 +1,166 @@
+{
+  "extension_name": {
+    "message": "Gmail Filter Toolbar",
+    "description": "Name of the extension."
+  },
+  "extension_description": {
+    "message": "Φιλτράρετε το Gmail ανά προσκλήσεις ημερολογίου, τύπο συνημμένου, σημειώσεις AI ή κανονικό email.",
+    "description": "Description of the extension."
+  },
+  "label_toolbar": {
+    "message": "Φίλτρο ημερολογίου",
+    "description": "ARIA label for the main toolbar."
+  },
+  "label_options": {
+    "message": "Φίλτρο email: ",
+    "description": "Label preceding the filter buttons."
+  },
+  "btn_all": {
+    "message": "Όλα τα email",
+    "description": "Button to show all e-mails."
+  },
+  "btn_mail": {
+    "message": "Μόνο email",
+    "description": "Button to hide calendar e-mails."
+  },
+  "btn_cal": {
+    "message": "Μόνο ημερολόγιο",
+    "description": "Button to show only calendar e-mails."
+  },
+  "btn_attach": {
+    "message": "Μόνο συνημμένα",
+    "description": "Button to show only e-mails with attachments."
+  },
+  "btn_fav": {
+    "message": "Μόνο αγαπημένα",
+    "description": "Button to show only starred/favourite e-mails."
+  },
+  "button_filter_images": {
+    "message": "Εικόνες",
+    "description": "Button to show only emails with image attachments."
+  },
+  "button_filter_pdfs": {
+    "message": "PDF",
+    "description": "Button to show only emails with PDF attachments."
+  },
+  "button_filter_documents": {
+    "message": "Έγγραφα",
+    "description": "Button to show only emails with document attachments."
+  },
+  "button_filter_spreadsheets": {
+    "message": "Υπολογιστικά φύλλα",
+    "description": "Button to show only emails with spreadsheet attachments."
+  },
+  "button_filter_presentations": {
+    "message": "Παρουσιάσεις",
+    "description": "Button to show only emails with presentation attachments."
+  },
+  "page_title": {
+    "message": "Επιλογές ημερολογίου",
+    "description": "Title for the extension's options page."
+  },
+  "options_debug": {
+    "message": "Ενεργοποίηση λειτουργίας εντοπισμού σφαλμάτων (εμφάνιση φιλτραρισμένων γραμμών με μπλε χρώμα)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_page_description": {
+    "message": "Ρυθμίσεις για την επέκταση Επιλογές Ημερολογίου Gmail.",
+    "description": "A short summary of the options page."
+  },
+  "options_debug_legend": {
+    "message": "Εντοπισμός σφαλμάτων",
+    "description": "Legend for the debug settings fieldset."
+  },
+  "options_debug_label": {
+    "message": "Ενεργοποίηση λειτουργίας εντοπισμού σφαλμάτων (επισημαίνει τις φιλτραρισμένες σειρές με μπλε χρώμα αντί να τις αποκρύπτει)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_show_text_legend": {
+    "message": "Εμφάνιση",
+    "description": "Legend heading for button text options."
+  },
+  "options_alignment_legend": {
+    "message": "Διάταξη γραμμής εργαλείων",
+    "description": "Legend heading for toolbar layout options."
+  },
+  "options_alignment_label": {
+    "message": "Στοίχιση γραμμής εργαλείων",
+    "description": "Label for the toolbar alignment control."
+  },
+  "options_alignment_start": {
+    "message": "Αρχή",
+    "description": "Option to align the toolbar buttons to the start."
+  },
+  "options_alignment_center": {
+    "message": "Κέντρο",
+    "description": "Option to align the toolbar buttons to the centre."
+  },
+  "options_show_favourites_label": {
+    "message": "Εμφάνιση κουμπιού Αγαπημένων",
+    "description": "Label for the option to display the Favourites filter button."
+  },
+  "options_theme_legend": {
+    "message": "Εμφάνιση",
+    "description": "Legend heading for theme options."
+  },
+  "options_theme_label": {
+    "message": "Θέμα επέκτασης",
+    "description": "Label for the theme selection control."
+  },
+  "options_theme_system": {
+    "message": "Προσαρμογή στο θέμα συστήματος",
+    "description": "Option to follow the operating system theme preference."
+  },
+  "options_theme_light": {
+    "message": "Φωτεινό",
+    "description": "Option to always use the light theme."
+  },
+  "options_theme_dark": {
+    "message": "Σκούρο",
+    "description": "Option to always use the dark theme."
+  },
+  "alt_calendar_event": {
+    "message": "Συμβάν ημερολογίου",
+    "description": "The alt text for the calendar event icon in an email row."
+  },
+  "filter_status_update": {
+    "message": "Το φίλτρο έχει οριστεί σε $1",
+    "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
+  },
+  "extension_action_title": {
+    "message": "Το φίλτρο ημερολογίου είναι ενσωματωμένο στις σελίδες του Gmail",
+    "description": "The title of the extension's action button in the browser toolbar."
+  },
+  "alt_starred": {
+    "message": "Με αστέρι",
+    "description": "Alt text for the starred icon/tooltip"
+  },
+  "optionShowButtonText": {
+    "message": "Εμφάνιση κειμένου στα κουμπιά φίλτρου",
+    "description": "Label for the option to show or hide text on the filter buttons."
+  },
+  "experimental_legend": {
+    "message": "Πειραματικό",
+    "description": "Legend for experimental features section in options page."
+  },
+  "experimental_description": {
+    "message": "Οι πειραματικές λειτουργίες δοκιμάζονται ενεργά και ενδέχεται να αλλάξουν.",
+    "description": "Description text explaining experimental features may not be fully localized."
+  },
+  "btn_ai_notetakers": {
+    "message": "AI και σημειώσεις",
+    "description": "Button to show emails from AI services and transcription tools."
+  },
+  "options_show_ai_notetakers": {
+    "message": "Εμφάνιση κουμπιού AI και μεταγραφής",
+    "description": "Checkbox label in options page to enable/disable AI & Transcription filter button."
+  },
+  "btn_dev_notifications": {
+    "message": "Dev",
+    "description": "Button to show emails from developer platforms like GitHub and GitLab."
+  },
+  "options_show_dev_notifications": {
+    "message": "Εμφάνιση κουμπιού ειδοποιήσεων προγραμματιστών",
+    "description": "Checkbox label in options page to enable/disable Dev Notifications filter button."
+  }
+}

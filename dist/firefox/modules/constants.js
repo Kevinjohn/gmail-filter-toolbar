@@ -120,9 +120,11 @@ export const AI_NOTETAKER_PATTERNS = [
  * @since 2.4.0
  */
 export const DEV_NOTIFICATION_PATTERNS = [
-  /github\.com$/i, // matches notifications@github.com, noreply@github.com
-  /gitlab\.com$/i, // matches gitlab@mg.gitlab.com, noreply@gitlab.com
+  /(^|\.)github\.com$/i, // matches notifications@github.com, noreply@github.com
+  /(^|\.)gitlab\.com$/i, // matches gitlab@mg.gitlab.com, noreply@gitlab.com
 ];
+
+export const FILTER_WRAPPER_CLASS = 'gcal-filter-wrapper';
 
 /**
  * DOM selectors for Gmail elements.
@@ -193,6 +195,8 @@ export const SELECTORS = {
    * Targets `img` elements whose `alt` attribute contains ".ics".
    */
   icsImage: 'img[alt*=".ics"]',
+  calendarIcon: 'img[src*="/mail/images/calendar"]',
+  starredIcon: '.T-KT-Jp, [aria-checked="true"].T-KT',
   /**
    * Selector for the custom filter bar injected by the extension.
    * This is the main container for the extension's toolbar.
@@ -202,7 +206,7 @@ export const SELECTORS = {
    * Selector for the wrapper element around the custom filter bar.
    * This element helps with positioning the toolbar within Gmail's UI.
    */
-  filterWrapper: '.gcal-filter-wrapper',
+  filterWrapper: `.${FILTER_WRAPPER_CLASS}`,
   /**
    * Selector for the filter buttons within the custom toolbar.
    * Targets all buttons that have a `data-mode` attribute.

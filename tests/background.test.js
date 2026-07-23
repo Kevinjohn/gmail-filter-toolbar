@@ -33,14 +33,66 @@ describe('background.js', () => {
 
     expect(chrome.runtime.onInstalled.addListener).toHaveBeenCalledTimes(1);
     const installListener = chrome.runtime.onInstalled.addListener.mock.calls[0][0];
-    await installListener();
+    await installListener({ reason: 'install' });
 
     // Wait for Promise to resolve
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    expect(chrome.storage.sync.set).toHaveBeenCalledWith({ gmailCalMode: 'ALL', showAiNotetakers: false, showDevNotifications: false }, expect.any(Function));
+    expect(chrome.storage.sync.set).toHaveBeenCalledWith(
+      { gmailCalMode: 'ALL', showAiNotetakers: false, showDevNotifications: false },
+      expect.any(Function),
+    );
     expect(infoSpy).toHaveBeenCalledWith(
-      expect.stringContaining('[perf] background:onInstalled storage.set completed in 0ms')
+      expect.stringContaining('[perf] background:onInstalled storage.set completed in 0ms'),
+    );
+  });
+
+  test('preserves preferences on extension updates', async () => {
+    const chrome = useChromeMock();
+    await loadBackground();
+    const installListener = chrome.runtime.onInstalled.addListener.mock.calls[0][0];
+
+    await installListener({ reason: 'update' });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(chrome.storage.sync.get).not.toHaveBeenCalled();
+    expect(chrome.storage.sync.set).not.toHaveBeenCalled();
+  });
+
+  test('only seeds missing install defaults', async () => {
+    const chrome = useChromeMock({
+      storage: {
+        sync: {
+          get: jest.fn((keys, callback) =>
+            callback({ gmailCalMode: 'CALENDAR', showAiNotetakers: true }),
+          ),
+          set: jest.fn((data, callback) => callback?.()),
+        },
+      },
+    });
+    await loadBackground();
+    const installListener = chrome.runtime.onInstalled.addListener.mock.calls[0][0];
+
+    await installListener({ reason: 'install' });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(chrome.storage.sync.set).toHaveBeenCalledWith(
+      { showDevNotifications: false },
+      expect.any(Function),
+    );
+  });
+
+  test('warns when installing defaults is slow', async () => {
+    const chrome = useChromeMock();
+    nowSpy.mockImplementationOnce(() => 0).mockImplementationOnce(() => 750);
+    await loadBackground();
+    const installListener = chrome.runtime.onInstalled.addListener.mock.calls[0][0];
+
+    await installListener({ reason: 'install' });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('[perf] background:onInstalled storage.set completed in 750ms'),
     );
   });
 
@@ -61,7 +113,7 @@ describe('background.js', () => {
 
     await loadBackground();
     const installListener = chrome.runtime.onInstalled.addListener.mock.calls[0][0];
-    await installListener();
+    await installListener({ reason: 'install' });
 
     // Wait for Promise rejection to be handled
     await new Promise((resolve) => setTimeout(resolve, 0));

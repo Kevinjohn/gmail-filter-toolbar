@@ -1,10 +1,16 @@
-import { ALIGNMENTS, ATTACHMENT_TYPE_CONFIG, SELECTORS } from './constants.js';
+import {
+  ALIGNMENTS,
+  ATTACHMENT_TYPE_CONFIG,
+  FILTER_WRAPPER_CLASS,
+  SELECTORS,
+} from './constants.js';
 import {
   MODES,
   currentMode,
   showFavouritesButton,
   showAiNotetakersButton,
   showDevNotificationsButton,
+  showButtonText,
   toolbarAlignment,
 } from './state.js';
 
@@ -54,21 +60,18 @@ export function injectToolbar(doc = document, headerElement) {
   const header = headerElement || doc.querySelector(SELECTORS.gmailToolbarHeader);
   if (!header) return;
 
-  let wrapper = header.nextElementSibling;
-  if (wrapper && wrapper.classList.contains('gcal-filter-wrapper')) {
-    // If wrapper exists and is our filter wrapper, clear its children
-    while (wrapper.firstChild) {
-      wrapper.removeChild(wrapper.firstChild);
-    }
-  } else {
-    // If wrapper doesn't exist or is not our filter wrapper, create a new one
+  const wrappers = Array.from(doc.querySelectorAll(SELECTORS.filterWrapper));
+  let wrapper = wrappers.shift();
+  wrappers.forEach((duplicate) => duplicate.remove());
+
+  if (!wrapper) {
     wrapper = doc.createElement('div');
-    wrapper.className = 'gcal-filter-wrapper';
-    // WHY: insertAdjacentElement('afterend') places our toolbar as a SIBLING to Gmail's toolbar, not a child.
-    // This is critical: if Gmail replaces its toolbar during pagination/navigation, a child element gets destroyed,
-    // but a sibling survives. This pattern prevents toolbar placement regressions. See _remember_toolbar-placement.md
+    wrapper.className = FILTER_WRAPPER_CLASS;
+  }
+  if (header.nextElementSibling !== wrapper) {
     header.insertAdjacentElement('afterend', wrapper);
   }
+  wrapper.replaceChildren();
 
   // Create the bar element and append it to the wrapper
   const bar = doc.createElement('div'); // Always create a new bar
@@ -142,9 +145,10 @@ export function injectToolbar(doc = document, headerElement) {
   wrapper.appendChild(liveRegion);
 
   updateAlignmentView(toolbarAlignment, doc);
-  updateFavouritesVisibility(showFavouritesButton, doc);
-  updateAiNotetakersVisibility(showAiNotetakersButton, doc);
-  updateDevNotificationsVisibility(showDevNotificationsButton, doc);
+  updateButtonVisibility(MODES.FAVOURITES, showFavouritesButton, doc);
+  updateButtonVisibility(MODES.AI_NOTETAKERS, showAiNotetakersButton, doc);
+  updateButtonVisibility(MODES.DEV_NOTIFICATIONS, showDevNotificationsButton, doc);
+  updateButtonTextView(showButtonText, doc);
   refreshUI(doc);
 
   bar.addEventListener('keydown', (e) => {
@@ -232,52 +236,8 @@ export function updateAlignmentView(alignment, doc = document) {
   }
 }
 
-export function updateFavouritesVisibility(show, doc = document) {
-  const button = doc.querySelector('#filter-FAVOURITES');
-  if (!button) {
-    return;
-  }
-
-  button.hidden = !show;
-  if (show) {
-    button.removeAttribute('aria-hidden');
-  } else {
-    button.setAttribute('aria-hidden', 'true');
-    button.setAttribute('aria-checked', 'false');
-    button.setAttribute('tabindex', '-1');
-  }
-}
-
-/**
- * Shows or hides the AI & Transcription filter button.
- * @experimental
- * @param {boolean} show - Whether to show the button.
- * @param {Document} doc - The document object.
- */
-export function updateAiNotetakersVisibility(show, doc = document) {
-  const button = doc.querySelector('#filter-AI_NOTETAKERS');
-  if (!button) {
-    return;
-  }
-
-  button.hidden = !show;
-  if (show) {
-    button.removeAttribute('aria-hidden');
-  } else {
-    button.setAttribute('aria-hidden', 'true');
-    button.setAttribute('aria-checked', 'false');
-    button.setAttribute('tabindex', '-1');
-  }
-}
-
-/**
- * Shows or hides the Dev Notifications filter button.
- * @experimental
- * @param {boolean} show - Whether to show the button.
- * @param {Document} doc - The document object.
- */
-export function updateDevNotificationsVisibility(show, doc = document) {
-  const button = doc.querySelector('#filter-DEV_NOTIFICATIONS');
+export function updateButtonVisibility(mode, show, doc = document) {
+  const button = doc.querySelector(`#filter-${mode}`);
   if (!button) {
     return;
   }

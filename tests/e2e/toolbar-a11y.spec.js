@@ -36,7 +36,7 @@ test.describe('Keyboard navigation', () => {
     await unstubGmailRoute(page);
   });
 
-  test('Tab key navigates through filter buttons sequentially', async ({ page, extensionId, gmailHtml }) => {
+  test('Arrow keys navigate the roving radio group', async ({ page, extensionId, gmailHtml }) => {
     const gmailPage = new GmailPage(page);
 
     await stubGmailRoute(page, gmailHtml);
@@ -46,16 +46,13 @@ test.describe('Keyboard navigation', () => {
     await gmailPage.allButton.focus();
     await expect(gmailPage.allButton).toBeFocused();
 
-    // Tab to next button
-    await page.keyboard.press('Tab');
+    await page.keyboard.press('ArrowRight');
     await expect(gmailPage.emailButton).toBeFocused();
 
-    // Tab to next button
-    await page.keyboard.press('Tab');
+    await page.keyboard.press('ArrowRight');
     await expect(gmailPage.calendarButton).toBeFocused();
 
-    // Shift+Tab back
-    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press('ArrowLeft');
     await expect(gmailPage.emailButton).toBeFocused();
 
     await unstubGmailRoute(page);

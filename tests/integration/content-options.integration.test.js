@@ -216,7 +216,7 @@ describe('Integration: DOM + Message Passing', () => {
           }),
           hasListener: jest.fn((listener) => storageListeners.includes(listener)),
         },
-    },
+      },
     });
     const overrides = overrideFactory();
     useChromeMock(overrides);
@@ -313,9 +313,47 @@ describe('Integration: DOM + Message Passing', () => {
 
     const payloads = global.chrome.storage.sync.set.mock.calls.map(([payload]) => payload);
     const fallBackPersisted = payloads.some(
-      (payload) => payload.gmailCalMode === stateModule.MODES.ALL && Object.keys(payload).length === 1,
+      (payload) =>
+        payload.gmailCalMode === stateModule.MODES.ALL && Object.keys(payload).length === 1,
     );
     expect(fallBackPersisted).toBe(true);
+  });
+
+  test('keeps All active when hiding the current mode cannot be persisted', async () => {
+    storedState.showFavourites = true;
+    document.body.innerHTML = getGmailMarkup();
+    await loadContentScript();
+
+    const listener = getMessageListener();
+    listener(
+      { type: 'gmailCal:setMode', payload: { mode: stateModule.MODES.FAVOURITES } },
+      {},
+      jest.fn(),
+    );
+    await flushPromises();
+    expect(stateModule.currentMode).toBe(stateModule.MODES.FAVOURITES);
+
+    storedState.showFavourites = false;
+    failNextSet = true;
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    storageListeners.forEach((storageListener) =>
+      storageListener(
+        {
+          showFavourites: {
+            oldValue: true,
+            newValue: false,
+          },
+        },
+        'sync',
+      ),
+    );
+    await flushPromises();
+
+    expect(stateModule.currentMode).toBe(stateModule.MODES.ALL);
+    expect(document.querySelector('#filter-FAVOURITES')?.hidden).toBe(true);
+    expect(document.querySelector('#filter-ALL')?.getAttribute('aria-checked')).toBe('true');
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Error saving mode:', expect.any(Error));
+    consoleErrorSpy.mockRestore();
   });
 
   test('returns an error response when storage write fails', async () => {

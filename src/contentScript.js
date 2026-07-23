@@ -9,19 +9,18 @@ import {
 } from './modules/constants.js';
 import {
   loadState,
-  saveState,
+  persistMode,
   setCurrentMode,
+  isModeAvailable,
+  isValidMode,
   setDebugOn,
-  showButtonText,
+  setShowButtonText,
   KEY_DEBUG,
   currentMode,
   toolbarAlignment,
   setToolbarAlignment,
-  showFavouritesButton,
   setShowFavouritesButton,
-  showAiNotetakersButton,
   setShowAiNotetakersButton,
-  showDevNotificationsButton,
   setShowDevNotificationsButton,
   MODES,
   themePreference,
@@ -33,9 +32,7 @@ import {
   refreshUI,
   updateAlignmentView,
   updateButtonTextView,
-  updateFavouritesVisibility,
-  updateAiNotetakersVisibility,
-  updateDevNotificationsVisibility,
+  updateButtonVisibility,
 } from './modules/toolbar.js';
 import {
   waitForGmailToolbar,
@@ -45,38 +42,83 @@ import {
 } from './modules/observers.js';
 import { applyTheme } from './modules/theme.js';
 
-function main() {
-  loadState().then(() => {
-    applyTheme(document, themePreference);
-    waitForGmailToolbar()
-      .then((gmailToolbarHeader) => {
-        injectToolbar(document, gmailToolbarHeader);
-        updateButtonTextView(showButtonText); // Apply initial state
-        updateAlignmentView(toolbarAlignment);
-        updateFavouritesVisibility(showFavouritesButton);
-        updateAiNotetakersVisibility(showAiNotetakersButton);
-        updateDevNotificationsVisibility(showDevNotificationsButton);
-        refreshUI(document);
+let modePersistenceQueue = Promise.resolve();
 
-        waitForMessageTable()
-          .then(() => {
-            applyFilter(document);
-            observeMessageList(document);
-          })
-          .catch((error) => {
-            // WHY: warn (not error) — an empty inbox legitimately has no message rows. If rows appear
-            // later, setupGmailToolbarObserver re-attaches the list observer and re-applies the filter.
-            console.warn('Gmail message table not found:', error.message);
-          });
-      })
-      .catch((error) => {
-        console.error('Failed to find Gmail toolbar:', error);
-        console.error(
-          'Gmail selectors may have changed. Check SELECTORS in src/modules/constants.js',
-        );
-      });
+function queueModePersistence(mode) {
+  modePersistenceQueue = modePersistenceQueue.catch(() => {}).then(() => persistMode(mode));
+  return modePersistenceQueue;
+}
+
+function selectMode(mode, { allowHidden = false, rollbackOnFailure = true } = {}) {
+  const isAllowed = allowHidden ? isValidMode(mode) : isModeAvailable(mode);
+  if (!isAllowed) {
+    return Promise.reject(new TypeError(`Unavailable filter mode: ${String(mode)}`));
+  }
+
+  const previousMode = currentMode;
+  setCurrentMode(mode);
+  applyFilter(document);
+  refreshUI(document);
+
+  return queueModePersistence(mode).catch((error) => {
+    if (rollbackOnFailure && currentMode === mode) {
+      setCurrentMode(previousMode);
+      applyFilter(document);
+      refreshUI(document);
+    }
+    throw error;
   });
+}
+
+const OPTIONAL_MODE_CONTROLS = {
+  [SHOW_FAVOURITES_KEY]: {
+    mode: MODES.FAVOURITES,
+    setVisibility: setShowFavouritesButton,
+  },
+  [SHOW_AI_NOTETAKERS_KEY]: {
+    mode: MODES.AI_NOTETAKERS,
+    setVisibility: setShowAiNotetakersButton,
+  },
+  [SHOW_DEV_NOTIFICATIONS_KEY]: {
+    mode: MODES.DEV_NOTIFICATIONS,
+    setVisibility: setShowDevNotificationsButton,
+  },
+};
+
+function applyOptionalModeChange(key, change) {
+  const { mode, setVisibility } = OPTIONAL_MODE_CONTROLS[key];
+  const show = !!change.newValue;
+  setVisibility(show);
+  updateButtonVisibility(mode, show);
+
+  if (!show && currentMode === mode) {
+    selectMode(MODES.ALL, { rollbackOnFailure: false }).catch((error) => {
+      console.error('Error saving mode:', error);
+    });
+  } else {
+    refreshUI(document);
+  }
+}
+
+async function main() {
+  await loadState();
   setupGmailToolbarObserver(document);
+  try {
+    applyTheme(document, themePreference);
+    const gmailToolbarHeader = await waitForGmailToolbar(document);
+    injectToolbar(document, gmailToolbarHeader);
+    refreshUI(document);
+    try {
+      await waitForMessageTable(15000, document);
+      applyFilter(document);
+      observeMessageList(document);
+    } catch (error) {
+      console.warn('Gmail message table not found:', error.message);
+    }
+  } catch (error) {
+    console.error('Failed to find Gmail toolbar:', error);
+    console.error('Gmail selectors may have changed. Check SELECTORS in src/modules/constants.js');
+  }
 }
 
 // Listen for button clicks
@@ -84,15 +126,11 @@ document.addEventListener('click', (e) => {
   const filterButton = e.target.closest(SELECTORS.filterButtons);
   if (!filterButton) return;
 
-  setCurrentMode(filterButton.dataset.mode);
-  saveState()
-    .then(() => {
-      applyFilter(document);
-      refreshUI(document);
-    })
-    .catch((error) => {
-      console.error('Error saving state:', error);
-    });
+  const requestedMode = filterButton.dataset.mode;
+  if (!isModeAvailable(requestedMode)) return;
+  selectMode(requestedMode).catch((error) => {
+    console.error('Error saving state:', error);
+  });
 });
 
 // Listen for storage changes (e.g., debug mode or showButtonText toggled in options.html)
@@ -102,67 +140,17 @@ chrome.storage.onChanged.addListener((changes) => {
     applyFilter(document);
   }
   if (SHOW_BUTTON_TEXT_KEY in changes) {
-    updateButtonTextView(changes[SHOW_BUTTON_TEXT_KEY].newValue);
+    const showText = changes[SHOW_BUTTON_TEXT_KEY].newValue !== false;
+    setShowButtonText(showText);
+    updateButtonTextView(showText);
   }
   if (ALIGNMENT_KEY in changes) {
     setToolbarAlignment(changes[ALIGNMENT_KEY].newValue);
     updateAlignmentView(toolbarAlignment);
   }
-  if (SHOW_FAVOURITES_KEY in changes) {
-    const nextValue = !!changes[SHOW_FAVOURITES_KEY].newValue;
-    setShowFavouritesButton(nextValue);
-    updateFavouritesVisibility(nextValue);
-    // WHY: If user disables favourites button while actively using FAVOURITES mode, reset to ALL mode.
-    // Without this, user would be stuck in an invisible filter mode with no way to change it (button is hidden).
-    // Same pattern applies to AI_NOTETAKERS mode below.
-    if (!nextValue && currentMode === MODES.FAVOURITES) {
-      setCurrentMode(MODES.ALL);
-      saveState()
-        .then(() => {
-          applyFilter(document);
-          refreshUI(document);
-        })
-        .catch((error) => {
-          console.error('Error saving mode:', error);
-        });
-    } else {
-      refreshUI(document);
-    }
-  }
-  if (SHOW_AI_NOTETAKERS_KEY in changes) {
-    const nextValue = !!changes[SHOW_AI_NOTETAKERS_KEY].newValue;
-    setShowAiNotetakersButton(nextValue);
-    updateAiNotetakersVisibility(nextValue);
-    if (!nextValue && currentMode === MODES.AI_NOTETAKERS) {
-      setCurrentMode(MODES.ALL);
-      saveState()
-        .then(() => {
-          applyFilter(document);
-          refreshUI(document);
-        })
-        .catch((error) => {
-          console.error('Error saving mode:', error);
-        });
-    } else {
-      refreshUI(document);
-    }
-  }
-  if (SHOW_DEV_NOTIFICATIONS_KEY in changes) {
-    const nextValue = !!changes[SHOW_DEV_NOTIFICATIONS_KEY].newValue;
-    setShowDevNotificationsButton(nextValue);
-    updateDevNotificationsVisibility(nextValue);
-    if (!nextValue && currentMode === MODES.DEV_NOTIFICATIONS) {
-      setCurrentMode(MODES.ALL);
-      saveState()
-        .then(() => {
-          applyFilter(document);
-          refreshUI(document);
-        })
-        .catch((error) => {
-          console.error('Error saving mode:', error);
-        });
-    } else {
-      refreshUI(document);
+  for (const key of Object.keys(OPTIONAL_MODE_CONTROLS)) {
+    if (key in changes) {
+      applyOptionalModeChange(key, changes[key]);
     }
   }
   if (THEME_KEY in changes) {
@@ -178,16 +166,13 @@ function handleRuntimeMessage(message, _sender, sendResponse) {
 
   if (message.type === 'gmailCal:setMode') {
     const mode = message.payload?.mode;
-    if (!mode) {
-      sendResponse?.({ ok: false, error: 'Missing mode payload' });
+    if (!isValidMode(mode)) {
+      sendResponse?.({ ok: false, error: 'Invalid mode payload' });
       return false;
     }
 
-    setCurrentMode(mode);
-    saveState()
+    selectMode(mode, { allowHidden: true })
       .then(() => {
-        applyFilter(document);
-        refreshUI(document);
         sendResponse?.({ ok: true, mode: currentMode });
       })
       .catch((error) => {
@@ -211,4 +196,4 @@ if (chrome.runtime?.onMessage?.addListener) {
   chrome.runtime.onMessage.addListener(handleRuntimeMessage);
 }
 
-main();
+void main();

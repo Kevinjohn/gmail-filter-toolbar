@@ -30,6 +30,13 @@ async function setLocaleSpecificTooltips(page) {
   });
 }
 
+async function waitForStorageOptions(page, expectedOptions) {
+  await page.waitForFunction(async (expected) => {
+    const stored = await chrome.storage.sync.get(Object.keys(expected));
+    return Object.entries(expected).every(([key, value]) => stored[key] === value);
+  }, expectedOptions);
+}
+
 function getBaseButtonOrder(buttons) {
   return buttons.slice(0, 5);
 }
@@ -52,8 +59,12 @@ localeMatrix.forEach(({ label, locale, direction }) => {
         await page.locator('#show-button-text-checkbox').uncheck();
         await page.locator('#theme-select').selectOption(theme);
 
-        // Allow storage writes to settle before navigating away.
-        await page.waitForTimeout(150);
+        await waitForStorageOptions(page, {
+          toolbarAlignment: 'center',
+          showFavourites: true,
+          showButtonText: false,
+          gmailCalTheme: theme,
+        });
 
         await stubGmailRoute(page, gmailHtml);
         await page.goto('https://mail.google.com/mail/u/0/#inbox');
@@ -77,8 +88,8 @@ localeMatrix.forEach(({ label, locale, direction }) => {
 
         const buttonOrder = await page.evaluate(() =>
           Array.from(document.querySelectorAll('.gcal-btn-group button[data-mode]')).map(
-            (btn) => btn.dataset.mode
-          )
+            (btn) => btn.dataset.mode,
+          ),
         );
         expect(getBaseButtonOrder(buttonOrder)).toEqual([
           'ALL',
@@ -91,8 +102,6 @@ localeMatrix.forEach(({ label, locale, direction }) => {
         const attachLabel = await page.locator('#filter-ATTACH').getAttribute('aria-label');
         const expectedAttachLabel = await page.evaluate(() => chrome.i18n.getMessage('btn_attach'));
         expect(attachLabel).toBe(expectedAttachLabel);
-
-        await page.unroute('https://mail.google.com/*');
       });
     });
   });
@@ -110,6 +119,7 @@ test.describe('Toolbar interactions', () => {
 
     await page.waitForSelector('#alignment-select');
     await page.locator('#show-favourites-checkbox').check();
+    await waitForStorageOptions(page, { showFavourites: true });
 
     await stubGmailRoute(page, gmailHtml);
     await page.goto('https://mail.google.com/mail/u/0/#inbox');
@@ -148,14 +158,10 @@ test.describe('Toolbar interactions', () => {
 
     await page.setViewportSize({ width: 480, height: 900 });
     const wraps = await page.evaluate(() => {
-      const buttons = Array.from(
-        document.querySelectorAll('.gcal-btn-group button[role="radio"]')
-      );
+      const buttons = Array.from(document.querySelectorAll('.gcal-btn-group button[role="radio"]'));
       const topOffsets = buttons.map((btn) => btn.getBoundingClientRect().top);
       return new Set(topOffsets.map((value) => Math.round(value))).size > 1;
     });
     expect(wraps).toBe(true);
-
-    await page.unroute('https://mail.google.com/*');
   });
 });

@@ -5,11 +5,13 @@ import { currentMode, MODES } from './state.js';
 import { debounce } from './utils/debounce.js';
 
 let messageListObserver = null;
+let messageListTarget = null;
 let gmailToolbarObserver = null;
 
 export function observeMessageList(doc = document) {
   const target = doc.querySelector(SELECTORS.emailList);
-  if (!target) return;
+  if (!target) return false;
+  if (messageListTarget === target && messageListObserver) return false;
 
   // WHY: Disconnect existing observer before creating a new one to ensure idempotency.
   // Gmail's SPA navigation can destroy/recreate elements, so this function may be called multiple times.
@@ -17,6 +19,7 @@ export function observeMessageList(doc = document) {
   if (messageListObserver) {
     messageListObserver.disconnect();
   }
+  messageListTarget = target;
 
   // WHY: Debounce filter application to avoid performance issues during rapid DOM mutations (scrolling, pagination).
   // Skip filtering when mode is ALL since nothing needs to be hidden anyway - optimization for common case.
@@ -25,7 +28,8 @@ export function observeMessageList(doc = document) {
   }, 200);
 
   messageListObserver = new MutationObserver(debouncedApplyFilter);
-  messageListObserver.observe(target, { childList: true });
+  messageListObserver.observe(target, { childList: true, subtree: true });
+  return true;
 }
 
 export function setupGmailToolbarObserver(doc = document) {
@@ -39,15 +43,22 @@ export function setupGmailToolbarObserver(doc = document) {
   // re-attach the message-list observer, and re-apply the filter — a real CPU/jank cost on large inboxes.
   const handleChildListMutation = debounce(() => {
     const gmailToolbarHeader = doc.querySelector(SELECTORS.gmailToolbarHeader);
-    const filterWrapper = doc.querySelector(SELECTORS.filterWrapper);
+    const filterWrappers = doc.querySelectorAll(SELECTORS.filterWrapper);
+    const filterWrapper = filterWrappers[0];
+    let toolbarReinjected = false;
 
-    // WHY: Re-inject toolbar if Gmail's toolbar exists but ours is missing. This handles Gmail destroying/recreating
-    // its toolbar during pagination or navigation - our toolbar as a sibling should persist, but this is a safety net.
-    if (gmailToolbarHeader && !filterWrapper) {
+    // Reuse and reposition the existing wrapper, or clean up duplicates left by a Gmail reflow.
+    if (
+      gmailToolbarHeader &&
+      (gmailToolbarHeader.nextElementSibling !== filterWrapper || filterWrappers.length > 1)
+    ) {
       injectToolbar(doc, gmailToolbarHeader);
+      toolbarReinjected = true;
     }
-    observeMessageList(doc);
-    applyFilter(doc);
+    const observerAttached = observeMessageList(doc);
+    if ((toolbarReinjected || observerAttached) && currentMode !== MODES.ALL) {
+      applyFilter(doc);
+    }
   }, 200);
 
   // WHY: Observe document.body (not Gmail's toolbar) because it's a stable parent that survives Gmail's SPA navigation.
@@ -61,7 +72,7 @@ export function setupGmailToolbarObserver(doc = document) {
   gmailToolbarObserver.observe(doc.body, { childList: true, subtree: true });
 }
 
-export function waitForGmailToolbar() {
+export function waitForGmailToolbar(doc = document) {
   return new Promise((resolve, reject) => {
     let timedOut = false;
     const timeoutId = setTimeout(() => {
@@ -72,14 +83,14 @@ export function waitForGmailToolbar() {
     (function poll() {
       if (timedOut) return;
       const toolbar =
-        document.querySelector(SELECTORS.gmailToolbar) ||
-        document.querySelector(SELECTORS.gmailToolbarLegacy) ||
-        document.querySelector(SELECTORS.gmailToolbarAria);
+        doc.querySelector(SELECTORS.gmailToolbar) ||
+        doc.querySelector(SELECTORS.gmailToolbarLegacy) ||
+        doc.querySelector(SELECTORS.gmailToolbarAria);
 
       if (toolbar) {
-        clearTimeout(timeoutId); // Clear timeout if toolbar is found
         const header = toolbar.closest(SELECTORS.gmailToolbarHeader);
         if (header) {
+          clearTimeout(timeoutId);
           resolve(header);
         } else {
           requestAnimationFrame(poll);
@@ -91,7 +102,7 @@ export function waitForGmailToolbar() {
   });
 }
 
-export function waitForMessageTable(timeoutMs = 15000) {
+export function waitForMessageTable(timeoutMs = 15000, doc = document) {
   return new Promise((resolve, reject) => {
     // WHY: Time out rather than poll forever. An inbox with no rows (empty inbox, or a Gmail markup change
     // breaking SELECTORS.emailRow) would otherwise leave a permanent requestAnimationFrame loop running.
@@ -104,7 +115,7 @@ export function waitForMessageTable(timeoutMs = 15000) {
 
     (function poll() {
       if (timedOut) return;
-      const table = document.querySelector(SELECTORS.emailRow);
+      const table = doc.querySelector(SELECTORS.emailRow);
       if (table) {
         clearTimeout(timeoutId);
         resolve();

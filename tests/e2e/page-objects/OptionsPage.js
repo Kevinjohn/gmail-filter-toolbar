@@ -32,7 +32,7 @@ export class OptionsPage {
   }
 
   get debugCheckbox() {
-    return this.page.locator('#debug-checkbox');
+    return this.page.locator('#debug');
   }
 
   get pageTitle() {
@@ -84,11 +84,13 @@ export class OptionsPage {
     await this.debugCheckbox.uncheck();
   }
 
-  /**
-   * Waits for chrome.storage.sync writes to complete.
-   * @param {number} ms - Milliseconds to wait (default 150)
-   */
-  async waitForStorageSync(ms = 150) {
-    await this.page.waitForTimeout(ms);
+  async waitForStorageValue(key, expected) {
+    await this.page.waitForFunction(
+      async ({ storageKey, expectedValue }) => {
+        const stored = await chrome.storage.sync.get(storageKey);
+        return stored[storageKey] === expectedValue;
+      },
+      { storageKey: key, expectedValue: expected },
+    );
   }
 }

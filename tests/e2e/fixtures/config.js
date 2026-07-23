@@ -16,20 +16,14 @@ export const GMAIL_FIXTURE_PATH = path.join(
   'tests',
   'e2e',
   'fixtures',
-  'gmail.html'
+  'gmail.html',
 );
-
-/**
- * Directory for Playwright V8 coverage reports.
- * @constant {string}
- */
-export const COVERAGE_DIR = path.join(process.cwd(), 'artifacts', 'coverage', 'playwright');
 
 /**
  * Whether to run Playwright in headed mode (visible browser).
  * @constant {boolean}
  */
-export const HEADFUL = process.env.PLAYWRIGHT_HEADFUL === '1';
+export const HEADFUL = process.env.PLAYWRIGHT_HEADFUL !== '0';
 
 /**
  * Whether to pause Playwright execution on test start for debugging.

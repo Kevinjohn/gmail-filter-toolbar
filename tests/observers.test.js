@@ -46,7 +46,7 @@ beforeEach(async () => {
     refreshUI: jest.fn(),
     updateAlignmentView: jest.fn(),
     updateButtonTextView: jest.fn(),
-    updateFavouritesVisibility: jest.fn(),
+    updateButtonVisibility: jest.fn(),
   }));
   state = await import('../src/modules/state.js');
   observers = await import('../src/modules/observers.js');
@@ -69,7 +69,7 @@ describe('observeMessageList', () => {
 
     expect(MockMutationObserver.instances).toHaveLength(1);
     const instance = MockMutationObserver.instances[0];
-    expect(instance.observe).toHaveBeenCalledWith(list, { childList: true });
+    expect(instance.observe).toHaveBeenCalledWith(list, { childList: true, subtree: true });
 
     instance.trigger();
     jest.advanceTimersByTime(200);
@@ -102,7 +102,7 @@ describe('observeMessageList', () => {
     expect(MockMutationObserver.instances).toHaveLength(0);
   });
 
-  test('disconnects existing observer before attaching new one', () => {
+  test('keeps the existing observer when the message-list node is unchanged', () => {
     const doc = document.implementation.createHTMLDocument('list');
     const list = doc.createElement('div');
     list.className = 'UI';
@@ -111,7 +111,8 @@ describe('observeMessageList', () => {
     observers.observeMessageList(doc);
     observers.observeMessageList(doc);
 
-    expect(MockMutationObserver.instances[0].disconnect).toHaveBeenCalled();
+    expect(MockMutationObserver.instances).toHaveLength(1);
+    expect(MockMutationObserver.instances[0].disconnect).not.toHaveBeenCalled();
   });
 });
 
@@ -125,6 +126,7 @@ describe('setupGmailToolbarObserver', () => {
     const list = doc.createElement('div');
     list.className = 'UI';
     doc.body.appendChild(list);
+    state.setCurrentMode(state.MODES.CALENDAR);
 
     observers.setupGmailToolbarObserver(doc);
 
@@ -136,7 +138,7 @@ describe('setupGmailToolbarObserver', () => {
     expect(injectToolbarMock).toHaveBeenCalledWith(doc, header);
     expect(MockMutationObserver.instances).toHaveLength(2);
     const [, listObserver] = MockMutationObserver.instances;
-    expect(listObserver.observe).toHaveBeenCalledWith(list, { childList: true });
+    expect(listObserver.observe).toHaveBeenCalledWith(list, { childList: true, subtree: true });
     expect(applyFilterMock).toHaveBeenCalled();
     jest.useRealTimers();
   });
@@ -150,6 +152,7 @@ describe('setupGmailToolbarObserver', () => {
     const list = doc.createElement('div');
     list.className = 'UI';
     doc.body.appendChild(list);
+    state.setCurrentMode(state.MODES.CALENDAR);
 
     observers.setupGmailToolbarObserver(doc);
     const instance = MockMutationObserver.instances[0];
@@ -163,7 +166,7 @@ describe('setupGmailToolbarObserver', () => {
     jest.useRealTimers();
   });
 
-  test('skips reinjection when wrapper already exists', () => {
+  test('reinjects when a stale wrapper is not adjacent to the current header', () => {
     jest.useFakeTimers();
     const doc = document.implementation.createHTMLDocument('gmail');
     const header = doc.createElement('div');
@@ -182,7 +185,69 @@ describe('setupGmailToolbarObserver', () => {
     instance.trigger([{ type: 'childList' }]);
     jest.advanceTimersByTime(200);
 
+    expect(injectToolbarMock).toHaveBeenCalledWith(doc, header);
+    jest.useRealTimers();
+  });
+
+  test('reapplies the active filter after reinjection when the list observer is unchanged', () => {
+    jest.useFakeTimers();
+    const doc = document.implementation.createHTMLDocument('gmail');
+    const header = doc.createElement('div');
+    header.className = 'aeH';
+    const wrapper = doc.createElement('div');
+    wrapper.className = 'gcal-filter-wrapper';
+    const list = doc.createElement('div');
+    list.className = 'UI';
+    doc.body.append(header, wrapper, list);
+    state.setCurrentMode(state.MODES.CALENDAR);
+
+    observers.observeMessageList(doc);
+    observers.setupGmailToolbarObserver(doc);
+    const bodyObserver = MockMutationObserver.instances[1];
+    const spacer = doc.createElement('div');
+    header.insertAdjacentElement('afterend', spacer);
+    bodyObserver.trigger([{ type: 'childList' }]);
+    jest.advanceTimersByTime(200);
+
+    expect(injectToolbarMock).toHaveBeenCalledWith(doc, header);
+    expect(applyFilterMock).toHaveBeenCalledTimes(1);
+    jest.useRealTimers();
+  });
+
+  test('skips reinjection when the current header has an adjacent wrapper', () => {
+    jest.useFakeTimers();
+    const doc = document.implementation.createHTMLDocument('gmail');
+    const header = doc.createElement('div');
+    header.className = 'aeH';
+    const wrapper = doc.createElement('div');
+    wrapper.className = 'gcal-filter-wrapper';
+    doc.body.append(header, wrapper);
+
+    observers.setupGmailToolbarObserver(doc);
+    const instance = MockMutationObserver.instances[0];
+    instance.trigger([{ type: 'childList' }]);
+    jest.advanceTimersByTime(200);
+
     expect(injectToolbarMock).not.toHaveBeenCalled();
+    jest.useRealTimers();
+  });
+
+  test('reinjects once to clean up duplicate wrappers', () => {
+    jest.useFakeTimers();
+    const doc = document.implementation.createHTMLDocument('gmail');
+    const header = doc.createElement('div');
+    header.className = 'aeH';
+    const wrapper = doc.createElement('div');
+    wrapper.className = 'gcal-filter-wrapper';
+    const duplicate = wrapper.cloneNode();
+    doc.body.append(header, wrapper, duplicate);
+
+    observers.setupGmailToolbarObserver(doc);
+    const instance = MockMutationObserver.instances[0];
+    instance.trigger([{ type: 'childList' }]);
+    jest.advanceTimersByTime(200);
+
+    expect(injectToolbarMock).toHaveBeenCalledWith(doc, header);
     jest.useRealTimers();
   });
 
@@ -266,7 +331,8 @@ describe('waiters', () => {
     const header = document.createElement('div');
     header.className = 'aeH';
     const toolbar = {
-      closest: jest.fn()
+      closest: jest
+        .fn()
         .mockImplementationOnce(() => null)
         .mockImplementationOnce(() => header),
     };

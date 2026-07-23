@@ -24,7 +24,7 @@ async function ensureDistPresent() {
   const optionsPath = path.join(DIST_DIR, DEFAULT_ENTRY);
   if (!fs.existsSync(optionsPath)) {
     console.error(
-      `${path.relative(process.cwd(), optionsPath)} missing. Run \`npm run build\` before auditing.`,
+      `${path.relative(process.cwd(), optionsPath)} missing. Run \`pnpm run build:chrome\` before auditing.`,
     );
     process.exitCode = 1;
     process.exit();
@@ -36,7 +36,8 @@ function resolveFilePath(requestUrl) {
   const rawPath = url.pathname === '/' ? `/${DEFAULT_ENTRY}` : url.pathname;
   const normalizedPath = path.normalize(rawPath).replace(/^([\\/])+/, '');
   const absolutePath = path.join(DIST_DIR, normalizedPath);
-  if (!absolutePath.startsWith(DIST_DIR)) {
+  const relativePath = path.relative(DIST_DIR, absolutePath);
+  if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
     return null;
   }
   return absolutePath;
@@ -113,15 +114,33 @@ async function runAudit() {
       await fsp.writeFile(
         path.join(REPORT_DIR, 'options-report.json'),
         typeof jsonReport === 'string' ? jsonReport : JSON.stringify(jsonReport, null, 2),
-        'utf8'
+        'utf8',
       );
     }
 
-    const { performance, accessibility } = runnerResult.lhr.categories;
+    const {
+      performance,
+      accessibility,
+      'best-practices': bestPractices,
+    } = runnerResult.lhr.categories;
     const fmt = (value) => Math.round((value.score ?? 0) * 100);
+    const scores = {
+      performance: fmt(performance),
+      accessibility: fmt(accessibility),
+      bestPractices: fmt(bestPractices),
+    };
     console.info(
-      `Lighthouse – performance: ${fmt(performance)} / accessibility: ${fmt(accessibility)}`
+      `Lighthouse – performance: ${scores.performance} / accessibility: ${scores.accessibility} / best practices: ${scores.bestPractices}`,
     );
+    const thresholds = { performance: 90, accessibility: 95, bestPractices: 95 };
+    const failures = Object.entries(thresholds).filter(([key, minimum]) => scores[key] < minimum);
+    if (failures.length) {
+      throw new Error(
+        `Lighthouse thresholds failed: ${failures
+          .map(([key, minimum]) => `${key} ${scores[key]} < ${minimum}`)
+          .join(', ')}`,
+      );
+    }
   } finally {
     await chrome.kill();
     await new Promise((resolve) => server.close(resolve));

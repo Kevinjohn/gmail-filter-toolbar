@@ -2,7 +2,7 @@ import { defineConfig } from '@playwright/test';
 import { execSync } from 'node:child_process';
 
 const isCI = !!process.env.CI;
-const workers = process.env.E2E_WORKERS ? parseInt(process.env.E2E_WORKERS, 10) : (isCI ? 2 : 1);
+const workers = process.env.E2E_WORKERS ? parseInt(process.env.E2E_WORKERS, 10) : isCI ? 2 : 1;
 
 // Detect WSL2 environment
 const isWSL = (() => {
@@ -18,9 +18,11 @@ const isWSL = (() => {
 // Override with E2E_FORCE=1 to attempt running anyway
 const forceRun = process.env.E2E_FORCE === '1';
 if (isWSL && !isCI && !forceRun) {
-  console.warn('\n⚠️  WSL2 detected: Skipping E2E tests (Chrome MV3 extensions unsupported in WSL2)');
+  console.warn(
+    '\n⚠️  WSL2 detected: Skipping E2E tests (Chrome MV3 extensions unsupported in WSL2)',
+  );
   console.warn('   Run tests in CI/CD or native Linux/macOS/Windows environment');
-  console.warn('   Override: E2E_FORCE=1 npm run e2e (tests will likely fail)\n');
+  console.warn('   Override: E2E_FORCE=1 pnpm run e2e (tests will likely fail)\n');
   process.exit(0);
 }
 
@@ -35,20 +37,17 @@ export default defineConfig({
     ? [
         ['list'],
         ['junit', { outputFile: 'artifacts/playwright/junit.xml' }],
-        ['html', { outputFolder: 'artifacts/playwright/html', open: 'never' }]
+        ['html', { outputFolder: 'artifacts/playwright/html', open: 'never' }],
       ]
-    : [
-        ['list'],
-        ['html', { outputFolder: 'artifacts/playwright/html', open: 'on-failure' }]
-      ],
+    : [['list'], ['html', { outputFolder: 'artifacts/playwright/html', open: 'on-failure' }]],
   use: {
-    headless: process.env.PLAYWRIGHT_HEADFUL !== '1',
+    headless: process.env.PLAYWRIGHT_HEADFUL === '0',
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure',
-    video: 'retain-on-failure', // Added video capture
+    video: 'retain-on-failure',
     launchOptions: {
-      args: ['--allow-file-access-from-files']
-    }
+      args: ['--allow-file-access-from-files'],
+    },
   },
   projects: [
     {

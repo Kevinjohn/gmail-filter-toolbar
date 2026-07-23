@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { chromium } from '@playwright/test';
-import { EXTENSION_PATH } from './config.js';
+import { EXTENSION_PATH, HEADFUL } from './config.js';
 
 /**
  * Throws an error if the extension build is missing or incomplete.
@@ -10,14 +10,14 @@ export function ensureExtensionBuild() {
   if (!fs.existsSync(EXTENSION_PATH)) {
     throw new Error(
       `Extension build not found at: ${EXTENSION_PATH}\n` +
-      'Run `npm run build` before executing Playwright specs.'
+        'Run `pnpm run build:chrome` before executing Playwright specs.',
     );
   }
   const manifestPath = path.join(EXTENSION_PATH, 'manifest.json');
   if (!fs.existsSync(manifestPath)) {
     throw new Error(
       `manifest.json missing from: ${EXTENSION_PATH}\n` +
-      'Ensure `npm run build` completed successfully.'
+        'Ensure `pnpm run build:chrome` completed successfully.',
     );
   }
 }
@@ -42,10 +42,10 @@ export async function launchExtensionContext(locale, colorScheme) {
     '--disable-dev-shm-usage',
   ];
 
-  // IMPORTANT: Chrome MV3 service workers don't start in headless mode
-  // Always run in headed mode (use xvfb-run on Linux/WSL for virtual display)
+  // Chrome extension coverage defaults to headed mode. CI supplies Xvfb; callers can explicitly
+  // opt into the browser's extension-capable headless mode with PLAYWRIGHT_HEADFUL=0.
   const context = await chromium.launchPersistentContext('', {
-    headless: false, // Force headed mode for extension support
+    headless: !HEADFUL,
     locale,
     colorScheme,
     args: launchArgs,

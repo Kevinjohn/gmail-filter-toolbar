@@ -54,14 +54,10 @@ export function makeEmailRow(config = {}, doc = makeMailDocument()) {
     text: 'Test Email',
     attachmentChips: [],
   };
-  const {
-    id,
-    isCalendar,
-    hasAttachment,
-    isFavourite,
-    text,
-    attachmentChips,
-  } = { ...defaults, ...config };
+  const { id, isCalendar, hasAttachment, isFavourite, text, attachmentChips } = {
+    ...defaults,
+    ...config,
+  };
 
   const row = doc.createElement('tr');
   row.classList.add('zA');
@@ -104,6 +100,7 @@ export function makeEmailRow(config = {}, doc = makeMailDocument()) {
   if (isFavourite) {
     const favCell = doc.createElement('td');
     const fav = doc.createElement('span');
+    fav.className = 'T-KT T-KT-Jp';
     fav.setAttribute('data-tooltip', 'Starred');
     favCell.appendChild(fav);
     row.appendChild(favCell);

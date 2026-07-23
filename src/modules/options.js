@@ -31,12 +31,15 @@ const showAiNotetakersCheckbox = document.getElementById('show-ai-notetakers-che
 const showDevNotificationsCheckbox = document.getElementById('show-dev-notifications-checkbox');
 
 function getMessage(key, fallback) {
-  const value = chrome.i18n.getMessage(key);
+  const value = globalThis.chrome?.i18n?.getMessage?.(key);
   return value || fallback;
 }
 
 // Set document language dynamically based on browser locale
-document.documentElement.lang = chrome.i18n.getUILanguage();
+const uiLanguage = globalThis.chrome?.i18n?.getUILanguage?.() || 'en';
+const rtlLanguages = new Set(['ar', 'fa', 'he', 'ur']);
+document.documentElement.lang = uiLanguage;
+document.documentElement.dir = rtlLanguages.has(uiLanguage.split(/[-_]/)[0]) ? 'rtl' : 'ltr';
 
 function normalizeAlignment(value) {
   return Object.values(ALIGNMENTS).includes(value) ? value : ALIGNMENTS.START;
@@ -130,31 +133,65 @@ if (showDevNotificationsLabel) {
   );
 }
 
-// Save options to storage (sync on Chrome/Firefox, local on Safari)
-function save_options() {
-  const themeValue = themeSelect ? themeSelect.value : THEMES.SYSTEM;
-  const alignmentValue = alignmentSelect ? alignmentSelect.value : ALIGNMENTS.START;
-  const favouritesValue = showFavouritesCheckbox ? showFavouritesCheckbox.checked : false;
-  const aiNotetakersValue = showAiNotetakersCheckbox ? showAiNotetakersCheckbox.checked : false;
-  const devNotificationsValue = showDevNotificationsCheckbox
-    ? showDevNotificationsCheckbox.checked
-    : false;
-  storageSet({
+let persistedOptions = null;
+
+function readOptionsFromControls() {
+  return {
     gmailCalDebug: debugCheckbox.checked,
     [SHOW_BUTTON_TEXT_KEY]: showButtonTextCheckbox.checked,
-    [SHOW_FAVOURITES_KEY]: favouritesValue,
-    [SHOW_AI_NOTETAKERS_KEY]: aiNotetakersValue,
-    [SHOW_DEV_NOTIFICATIONS_KEY]: devNotificationsValue,
-    [ALIGNMENT_KEY]: alignmentValue,
-    [THEME_KEY]: themeValue,
-  }).catch((error) => {
-    console.error('Error saving options:', error);
-  });
-  applyTheme(document, themeValue);
+    [SHOW_FAVOURITES_KEY]: showFavouritesCheckbox?.checked ?? false,
+    [SHOW_AI_NOTETAKERS_KEY]: showAiNotetakersCheckbox?.checked ?? false,
+    [SHOW_DEV_NOTIFICATIONS_KEY]: showDevNotificationsCheckbox?.checked ?? false,
+    [ALIGNMENT_KEY]: alignmentSelect?.value ?? ALIGNMENTS.START,
+    [THEME_KEY]: themeSelect?.value ?? THEMES.SYSTEM,
+  };
 }
 
-// Restore options from storage (sync on Chrome/Firefox, local on Safari)
+function applyOptionsToControls(options) {
+  debugCheckbox.checked = options.gmailCalDebug;
+  showButtonTextCheckbox.checked = options[SHOW_BUTTON_TEXT_KEY];
+  if (showFavouritesCheckbox) showFavouritesCheckbox.checked = options[SHOW_FAVOURITES_KEY];
+  if (showAiNotetakersCheckbox) {
+    showAiNotetakersCheckbox.checked = options[SHOW_AI_NOTETAKERS_KEY];
+  }
+  if (showDevNotificationsCheckbox) {
+    showDevNotificationsCheckbox.checked = options[SHOW_DEV_NOTIFICATIONS_KEY];
+  }
+  if (alignmentSelect) alignmentSelect.value = options[ALIGNMENT_KEY];
+  if (themeSelect) themeSelect.value = options[THEME_KEY];
+  applyTheme(document, options[THEME_KEY]);
+}
+
+// Save options through the browser-compatible storage abstraction.
+function save_options() {
+  const nextOptions = readOptionsFromControls();
+  applyTheme(document, nextOptions[THEME_KEY]);
+  storageSet(nextOptions)
+    .then(() => {
+      persistedOptions = nextOptions;
+    })
+    .catch((error) => {
+      console.error('Error saving options:', error);
+      if (persistedOptions) applyOptionsToControls(persistedOptions);
+    });
+}
+
+// Restore options through the browser-compatible storage abstraction.
 function restore_options() {
+  if (!globalThis.chrome?.storage) {
+    persistedOptions = {
+      gmailCalDebug: false,
+      [SHOW_BUTTON_TEXT_KEY]: true,
+      [SHOW_FAVOURITES_KEY]: false,
+      [SHOW_AI_NOTETAKERS_KEY]: false,
+      [SHOW_DEV_NOTIFICATIONS_KEY]: false,
+      [ALIGNMENT_KEY]: ALIGNMENTS.START,
+      [THEME_KEY]: THEMES.SYSTEM,
+    };
+    applyOptionsToControls(persistedOptions);
+    return;
+  }
+
   storageGet([
     'gmailCalDebug',
     SHOW_BUTTON_TEXT_KEY,
@@ -165,29 +202,19 @@ function restore_options() {
     THEME_KEY,
   ])
     .then((storageData) => {
-      debugCheckbox.checked = !!storageData.gmailCalDebug;
-      showButtonTextCheckbox.checked = !!storageData[SHOW_BUTTON_TEXT_KEY];
-      const restoredTheme = normalizeTheme(storageData[THEME_KEY] ?? THEMES.SYSTEM);
-      const restoredAlignment = normalizeAlignment(storageData[ALIGNMENT_KEY]);
-      const showFavourites = !!storageData[SHOW_FAVOURITES_KEY];
-      const showAiNotetakers = !!storageData[SHOW_AI_NOTETAKERS_KEY];
-      const showDevNotifications = !!storageData[SHOW_DEV_NOTIFICATIONS_KEY];
-      if (themeSelect) {
-        themeSelect.value = restoredTheme;
-      }
-      if (alignmentSelect) {
-        alignmentSelect.value = restoredAlignment;
-      }
-      if (showFavouritesCheckbox) {
-        showFavouritesCheckbox.checked = showFavourites;
-      }
-      if (showAiNotetakersCheckbox) {
-        showAiNotetakersCheckbox.checked = showAiNotetakers;
-      }
-      if (showDevNotificationsCheckbox) {
-        showDevNotificationsCheckbox.checked = showDevNotifications;
-      }
-      applyTheme(document, restoredTheme);
+      persistedOptions = {
+        gmailCalDebug: !!storageData.gmailCalDebug,
+        [SHOW_BUTTON_TEXT_KEY]:
+          storageData[SHOW_BUTTON_TEXT_KEY] === undefined
+            ? true
+            : !!storageData[SHOW_BUTTON_TEXT_KEY],
+        [SHOW_FAVOURITES_KEY]: !!storageData[SHOW_FAVOURITES_KEY],
+        [SHOW_AI_NOTETAKERS_KEY]: !!storageData[SHOW_AI_NOTETAKERS_KEY],
+        [SHOW_DEV_NOTIFICATIONS_KEY]: !!storageData[SHOW_DEV_NOTIFICATIONS_KEY],
+        [ALIGNMENT_KEY]: normalizeAlignment(storageData[ALIGNMENT_KEY]),
+        [THEME_KEY]: normalizeTheme(storageData[THEME_KEY] ?? THEMES.SYSTEM),
+      };
+      applyOptionsToControls(persistedOptions);
     })
     .catch((error) => {
       console.error('Error retrieving options:', error);

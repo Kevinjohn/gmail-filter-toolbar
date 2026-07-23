@@ -1,47 +1,25 @@
 /**
  * Unified storage abstraction for cross-browser compatibility.
  *
- * WHY: Safari only supports storage.local (not storage.sync).
  * This module provides a consistent API that:
- * - Uses storage.sync on Chrome/Firefox for cross-device sync
- * - Falls back to storage.local on Safari
- *
- * Chrome and Firefox behavior is unchanged - they continue to use storage.sync.
+ * - Uses storage.sync when the browser exposes it
+ * - Falls back to storage.local when sync is unavailable
  *
  * @stable
  */
 
 /**
- * Detect if running in Safari.
- * Safari exposes a global `safari` object that other browsers don't have.
- * @returns {boolean}
- */
-export function isSafari() {
-  return typeof safari !== 'undefined';
-}
-
-/**
  * Get the appropriate storage backend.
- * Returns storage.sync for Chrome/Firefox, storage.local for Safari.
+ * Uses sync when the browser implements it and otherwise falls back to local.
  * @returns {chrome.storage.SyncStorageArea | chrome.storage.LocalStorageArea}
  */
 function getStorageBackend() {
-  if (isSafari()) {
-    return chrome.storage.local;
-  }
-  return chrome.storage.sync;
+  return chrome.storage.sync ?? chrome.storage.local;
 }
 
-/**
- * Get values from storage.
- * Uses storage.sync on Chrome/Firefox, storage.local on Safari.
- *
- * @param {string|string[]|Object} keys - Keys to retrieve
- * @returns {Promise<Object>} - Retrieved values
- */
-export function storageGet(keys) {
+function getFromStorage(area, keys) {
   return new Promise((resolve, reject) => {
-    getStorageBackend().get(keys, (result) => {
+    area.get(keys, (result) => {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError);
       } else {
@@ -51,16 +29,9 @@ export function storageGet(keys) {
   });
 }
 
-/**
- * Set values in storage.
- * Uses storage.sync on Chrome/Firefox, storage.local on Safari.
- *
- * @param {Object} items - Key-value pairs to store
- * @returns {Promise<void>}
- */
-export function storageSet(items) {
+function setInStorage(area, items) {
   return new Promise((resolve, reject) => {
-    getStorageBackend().set(items, () => {
+    area.set(items, () => {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError);
       } else {
@@ -68,6 +39,59 @@ export function storageSet(items) {
       }
     });
   });
+}
+
+function getRequestedKeys(keys) {
+  if (typeof keys === 'string') return [keys];
+  if (Array.isArray(keys)) return keys;
+  if (keys && typeof keys === 'object') return Object.keys(keys);
+  return [];
+}
+
+/**
+ * Get values from storage.
+ * Uses the best storage backend exposed by the browser. When sync storage is available,
+ * missing values are recovered once from local storage so existing Safari preferences survive
+ * the move from the legacy local-only backend.
+ *
+ * @param {string|string[]|Object} keys - Keys to retrieve
+ * @returns {Promise<Object>} - Retrieved values
+ */
+export async function storageGet(keys) {
+  const backend = getStorageBackend();
+  const stored = await getFromStorage(backend, keys);
+  const local = chrome.storage.local;
+
+  if (backend !== chrome.storage.sync || !local || local === backend) {
+    return stored;
+  }
+
+  const missingKeys = getRequestedKeys(keys).filter((key) => stored[key] === undefined);
+  if (!missingKeys.length) {
+    return stored;
+  }
+
+  const legacyValues = await getFromStorage(local, missingKeys);
+  const recovered = Object.fromEntries(
+    missingKeys
+      .filter((key) => legacyValues[key] !== undefined)
+      .map((key) => [key, legacyValues[key]]),
+  );
+  if (Object.keys(recovered).length) {
+    await setInStorage(backend, recovered);
+  }
+  return { ...stored, ...recovered };
+}
+
+/**
+ * Set values in storage.
+ * Uses the best storage backend exposed by the browser.
+ *
+ * @param {Object} items - Key-value pairs to store
+ * @returns {Promise<void>}
+ */
+export function storageSet(items) {
+  return setInStorage(getStorageBackend(), items);
 }
 
 /**

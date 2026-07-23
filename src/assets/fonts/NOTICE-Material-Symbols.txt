@@ -1,0 +1,9 @@
+Material Symbols Outlined
+Copyright Google LLC
+
+This extension distributes a subset of the Material Symbols Outlined font containing only the
+glyphs used by the Gmail Filter Toolbar interface. The upstream font is provided by Google under
+the Apache License, Version 2.0.
+
+Upstream project: https://github.com/google/material-design-icons
+License: LICENSE-Material-Symbols.txt

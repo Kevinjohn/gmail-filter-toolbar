@@ -3,6 +3,9 @@ import {
   loadState,
   saveState,
   setCurrentMode,
+  isValidMode,
+  isModeAvailable,
+  persistMode,
   currentMode,
   MODES,
   debugOn,
@@ -91,7 +94,7 @@ describe('loadState', () => {
       runtime: { lastError: null },
     });
 
-    await expect(loadState()).rejects.toThrow('read failure');
+    await expect(loadState()).resolves.toBeUndefined();
 
     expect(currentMode).toBe(MODES.ALL);
     expect(debugOn).toBe(false);
@@ -100,6 +103,29 @@ describe('loadState', () => {
     expect(toolbarAlignment).toBe(ALIGNMENTS.START);
     expect(themePreference).toBe(THEMES.SYSTEM);
   });
+
+  test('normalises unknown and disabled optional modes to ALL', async () => {
+    const chrome = useChromeMock({
+      storage: {
+        sync: {
+          get: jest
+            .fn()
+            .mockImplementationOnce((keys, callback) => callback({ gmailCalMode: 'UNKNOWN' }))
+            .mockImplementationOnce((keys, callback) =>
+              callback({ gmailCalMode: MODES.FAVOURITES, showFavourites: false }),
+            ),
+          set: jest.fn((payload, cb) => cb?.()),
+        },
+      },
+      runtime: { lastError: null },
+    });
+
+    await loadState();
+    expect(currentMode).toBe(MODES.ALL);
+    await loadState();
+    expect(currentMode).toBe(MODES.ALL);
+    expect(chrome.storage.sync.get).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe('saveState', () => {
@@ -107,7 +133,10 @@ describe('saveState', () => {
     const chrome = useChromeMock();
     setCurrentMode(MODES.ATTACH);
     await expect(saveState()).resolves.toBeUndefined();
-    expect(chrome.storage.sync.set).toHaveBeenCalledWith({ gmailCalMode: MODES.ATTACH }, expect.any(Function));
+    expect(chrome.storage.sync.set).toHaveBeenCalledWith(
+      { gmailCalMode: MODES.ATTACH },
+      expect.any(Function),
+    );
   });
 
   test('propagates storage errors', async () => {
@@ -125,6 +154,34 @@ describe('saveState', () => {
     });
     setCurrentMode(MODES.EMAIL);
     await expect(saveState()).rejects.toThrow('write failure');
+  });
+
+  test('persists a validated mode without mutating current state', async () => {
+    const chrome = useChromeMock();
+    setCurrentMode(MODES.ALL);
+    await persistMode(MODES.CALENDAR);
+    expect(currentMode).toBe(MODES.ALL);
+    expect(chrome.storage.sync.set).toHaveBeenCalledWith(
+      { gmailCalMode: MODES.CALENDAR },
+      expect.any(Function),
+    );
+  });
+
+  test('rejects invalid modes', async () => {
+    expect(isValidMode('UNKNOWN')).toBe(false);
+    expect(setCurrentMode('UNKNOWN')).toBe(false);
+    await expect(persistMode('UNKNOWN')).rejects.toThrow('Invalid filter mode');
+  });
+
+  test('persists valid optional modes while their buttons are disabled', async () => {
+    const chrome = useChromeMock();
+    setShowFavouritesButton(false);
+    expect(isModeAvailable(MODES.FAVOURITES)).toBe(false);
+    await expect(persistMode(MODES.FAVOURITES)).resolves.toBeUndefined();
+    expect(chrome.storage.sync.set).toHaveBeenCalledWith(
+      { gmailCalMode: MODES.FAVOURITES },
+      expect.any(Function),
+    );
   });
 });
 

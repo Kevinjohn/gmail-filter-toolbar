@@ -12,7 +12,7 @@ try {
   accessSync(chromiumPath, constants.X_OK);
 } catch (error) {
   errors.push(
-    `Playwright chromium browser is unavailable. Run \`npx playwright install\` to download it. (${error.message})`
+    `Playwright chromium browser is unavailable. Run \`pnpm exec playwright install\` to download it. (${error.message})`,
   );
 }
 
@@ -21,7 +21,7 @@ const chromeCandidates = [
   process.env.CHROMIUM_BIN,
   process.env.CHROME_PATH,
   process.env.PLAYWRIGHT_CHROMIUM_PATH,
-  chromiumPath
+  chromiumPath,
 ].filter(Boolean);
 
 let chromeFound = false;
@@ -37,7 +37,7 @@ for (const candidate of chromeCandidates) {
 
 if (!chromeFound) {
   errors.push(
-    'No Chrome executable detected. Set CHROME_BIN to a valid binary or install Playwright Chromium.'
+    'No Chrome executable detected. Set CHROME_BIN to a valid binary or install Playwright Chromium.',
   );
 }
 

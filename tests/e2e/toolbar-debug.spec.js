@@ -6,14 +6,18 @@ import { OptionsPage } from './page-objects/OptionsPage.js';
 test.describe('Debug mode', () => {
   test.use({ locale: 'en-US', colorScheme: 'light' });
 
-  test('filtered rows show debug styling when debug mode enabled', async ({ page, extensionId, gmailHtml }) => {
+  test('filtered rows show debug styling when debug mode enabled', async ({
+    page,
+    extensionId,
+    gmailHtml,
+  }) => {
     const optionsPage = new OptionsPage(page, extensionId);
     const gmailPage = new GmailPage(page);
 
     // Enable debug mode in options
     await optionsPage.navigate();
     await optionsPage.enableDebug();
-    await optionsPage.waitForStorageSync();
+    await optionsPage.waitForStorageValue('gmailCalDebug', true);
 
     // Navigate to Gmail and apply mail-only filter
     await stubGmailRoute(page, gmailHtml);
@@ -22,14 +26,16 @@ test.describe('Debug mode', () => {
     await gmailPage.emailButton.click();
 
     // Verify calendar row is hidden but has debug styling
-    const calendarRowStyles = await page.locator('tr[data-testid="row-calendar"]').evaluate((row) => {
-      const styles = getComputedStyle(row);
-      return {
-        display: styles.display,
-        opacity: styles.opacity,
-        backgroundColor: styles.backgroundColor,
-      };
-    });
+    const calendarRowStyles = await page
+      .locator('tr[data-testid="row-calendar"]')
+      .evaluate((row) => {
+        const styles = getComputedStyle(row);
+        return {
+          display: styles.display,
+          opacity: styles.opacity,
+          backgroundColor: styles.backgroundColor,
+        };
+      });
 
     // In debug mode, hidden rows should still be visible with 50% opacity
     expect(parseFloat(calendarRowStyles.opacity)).toBeCloseTo(0.5, 1);
@@ -53,14 +59,18 @@ test.describe('Debug mode', () => {
     await unstubGmailRoute(page);
   });
 
-  test('filtered rows are completely hidden when debug mode disabled', async ({ page, extensionId, gmailHtml }) => {
+  test('filtered rows are completely hidden when debug mode disabled', async ({
+    page,
+    extensionId,
+    gmailHtml,
+  }) => {
     const optionsPage = new OptionsPage(page, extensionId);
     const gmailPage = new GmailPage(page);
 
     // Ensure debug mode is OFF (default state)
     await optionsPage.navigate();
     await optionsPage.disableDebug();
-    await optionsPage.waitForStorageSync();
+    await optionsPage.waitForStorageValue('gmailCalDebug', false);
 
     // Navigate to Gmail and apply mail-only filter
     await stubGmailRoute(page, gmailHtml);

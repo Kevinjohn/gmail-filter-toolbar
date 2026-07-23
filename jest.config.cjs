@@ -14,5 +14,11 @@ module.exports = {
       functions: 85,
       lines: 85,
     },
+    './src/contentScript.js': {
+      statements: 80,
+      branches: 85,
+      functions: 55,
+      lines: 80,
+    },
   },
 };

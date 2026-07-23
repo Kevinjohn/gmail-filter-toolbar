@@ -1,6 +1,11 @@
 import { expect, test, describe, beforeEach } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { isCalendarRow, hasAttachmentRow, isFavouriteRow, applyFilter } from '../src/modules/filter.js';
+import {
+  isCalendarRow,
+  hasAttachmentRow,
+  isFavouriteRow,
+  applyFilter,
+} from '../src/modules/filter.js';
 import { MODES, setCurrentMode } from '../src/modules/state.js';
 import { SELECTORS } from '../src/modules/constants.js';
 
@@ -28,7 +33,9 @@ beforeEach(() => {
 
 describe('hasAttachmentRow', () => {
   test('returns true for a row with attachment tooltip', () => {
-    const doc = setupDOM(`<div class="UI"><div class="zA"><span data-tooltip="Has attachment"></span></div></div>`);
+    const doc = setupDOM(
+      `<div class="UI"><div class="zA"><span data-tooltip="Has attachment"></span></div></div>`,
+    );
     const row = doc.querySelector('.zA');
     expect(hasAttachmentRow(row)).toBe(true);
   });
@@ -40,7 +47,9 @@ describe('hasAttachmentRow', () => {
   });
 
   test('returns true for a row with attachment row class', () => {
-    const doc = setupDOM(`<div class="UI"><div class="${SELECTORS.attachmentRowClass}"></div></div>`);
+    const doc = setupDOM(
+      `<div class="UI"><div class="${SELECTORS.attachmentRowClass}"></div></div>`,
+    );
     const row = doc.querySelector(`.${SELECTORS.attachmentRowClass}`);
     expect(hasAttachmentRow(row)).toBe(true);
   });
@@ -59,8 +68,13 @@ describe('isCalendarRow', () => {
     expect(isCalendarRow(row)).toBe(true);
   });
 
-  test('detects invitation by alt text', () => {
-    const doc = setupDOM(`<table class="UI"><tr class="zA"><td><img alt="Calendar event"></td></tr></table>`);
+  test('detects invitation by language-independent icon URL', () => {
+    const doc = setupDOM(
+      `<table class="UI"><tr class="zA"><td><img
+        alt="Calendar event"
+        src="https://ssl.gstatic.com/ui/v1/icons/mail/images/calendar_2x.png"
+      ></td></tr></table>`,
+    );
     const row = doc.querySelector('tr');
     expect(isCalendarRow(row)).toBe(true);
   });
@@ -74,7 +88,9 @@ describe('isCalendarRow', () => {
 
 describe('isFavouriteRow', () => {
   test('returns true for a row with a starred image', () => {
-    const doc = setupDOM('<div class="UI"><div class="zA"><td class="apU xY"><span id=":ph" class="T-KT T-KT-Jp" aria-label="Starred" role="button" data-tooltip="Starred"><img class="T-KT-JX" src="images/cleardot.gif" alt="Starred"></span></td></div></div>');
+    const doc = setupDOM(
+      '<div class="UI"><div class="zA"><td class="apU xY"><span id=":ph" class="T-KT T-KT-Jp" aria-label="Starred" role="button" data-tooltip="Starred"><img class="T-KT-JX" src="images/cleardot.gif" alt="Starred"></span></td></div></div>',
+    );
     const row = doc.querySelector('.zA');
     expect(isFavouriteRow(row)).toBe(true);
   });

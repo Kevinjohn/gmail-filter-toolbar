@@ -1,18 +1,18 @@
 #!/bin/sh
 
-# Ensure npm is in PATH and executable (e.g. Windows Git GUI may lack it)
-if ! npm --version >/dev/null 2>&1; then
-  echo "⚠️  npm not executable - skipping pre-commit checks"
-  echo "   Run 'npm run lint && npm run test:unit' manually before pushing"
-  exit 0
+# Ensure pnpm is in PATH and executable (e.g. Windows Git GUI may lack it)
+if ! pnpm --version >/dev/null 2>&1; then
+  echo "❌  pnpm is required for pre-commit checks"
+  echo "   Install the packageManager version declared in package.json and retry"
+  exit 1
 fi
 
 # Run linting on all files
 echo "🔍  Pre-commit: Running ESLint..."
-npm run lint || exit 1
+pnpm run lint || exit 1
 
-# Run unit tests (E2E tests skip automatically in WSL2; run manually when needed: npm run e2e)
+# Run unit tests (E2E tests skip automatically in WSL2; run manually when needed: pnpm run e2e)
 echo "🧪  Pre-commit: Running unit tests..."
-npm run test:unit || exit 1
+pnpm run test:unit || exit 1
 
 echo "✅  Pre-commit checks passed!"

@@ -1,6 +1,6 @@
 {
   "extension_name": {
-    "message": "Gmail 日历选项",
+    "message": "Gmail Filter Toolbar",
     "description": "Name of the extension."
   },
   "extension_description": {
@@ -140,19 +140,19 @@
     "description": "Label for the option to show or hide text on the filter buttons."
   },
   "experimental_legend": {
-    "message": "Experimental",
+    "message": "实验性功能",
     "description": "Legend for experimental features section in options page."
   },
   "experimental_description": {
-    "message": "Experimental features are in active testing and may only be available in English.",
+    "message": "实验性功能正在积极测试中，可能会发生变化。",
     "description": "Description text explaining experimental features may not be fully localized."
   },
   "btn_ai_notetakers": {
-    "message": "AI & Transcription",
+    "message": "AI 与笔记",
     "description": "Button to show emails from AI services and transcription tools."
   },
   "options_show_ai_notetakers": {
-    "message": "Show AI & Transcription button",
+    "message": "显示 AI 与转录按钮",
     "description": "Checkbox label in options page to enable/disable AI & Transcription filter button."
   },
   "btn_dev_notifications": {
@@ -160,7 +160,7 @@
     "description": "Button to show emails from developer platforms like GitHub and GitLab."
   },
   "options_show_dev_notifications": {
-    "message": "Show Dev Notifications button",
+    "message": "显示开发者通知按钮",
     "description": "Checkbox label in options page to enable/disable Dev Notifications filter button."
   }
 }

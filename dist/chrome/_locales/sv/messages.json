@@ -1,0 +1,166 @@
+{
+  "extension_name": {
+    "message": "Gmail Filter Toolbar",
+    "description": "Name of the extension."
+  },
+  "extension_description": {
+    "message": "Filtrera Gmail efter kalenderinbjudningar, bilagstyp, AI-anteckningar eller vanlig e-post.",
+    "description": "Description of the extension."
+  },
+  "label_toolbar": {
+    "message": "Kalenderfilter",
+    "description": "ARIA label for the main toolbar."
+  },
+  "label_options": {
+    "message": "E-postfilter: ",
+    "description": "Label preceding the filter buttons."
+  },
+  "btn_all": {
+    "message": "Alla e-postmeddelanden",
+    "description": "Button to show all e-mails."
+  },
+  "btn_mail": {
+    "message": "Endast e-post",
+    "description": "Button to hide calendar e-mails."
+  },
+  "btn_cal": {
+    "message": "Endast kalender",
+    "description": "Button to show only calendar e-mails."
+  },
+  "btn_attach": {
+    "message": "Endast bilagor",
+    "description": "Button to show only e-mails with attachments."
+  },
+  "btn_fav": {
+    "message": "Endast favoriter",
+    "description": "Button to show only starred/favourite e-mails."
+  },
+  "button_filter_images": {
+    "message": "Bilder",
+    "description": "Button to show only emails with image attachments."
+  },
+  "button_filter_pdfs": {
+    "message": "PDF-filer",
+    "description": "Button to show only emails with PDF attachments."
+  },
+  "button_filter_documents": {
+    "message": "Dokument",
+    "description": "Button to show only emails with document attachments."
+  },
+  "button_filter_spreadsheets": {
+    "message": "Kalkylblad",
+    "description": "Button to show only emails with spreadsheet attachments."
+  },
+  "button_filter_presentations": {
+    "message": "Presentationer",
+    "description": "Button to show only emails with presentation attachments."
+  },
+  "page_title": {
+    "message": "Kalenderalternativ",
+    "description": "Title for the extension's options page."
+  },
+  "options_debug": {
+    "message": "Aktivera felsökningsläge (visa filtrerade rader i blått)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_page_description": {
+    "message": "Inställningar för tillägget Gmail Calendar Options.",
+    "description": "A short summary of the options page."
+  },
+  "options_debug_legend": {
+    "message": "Felsökning",
+    "description": "Legend for the debug settings fieldset."
+  },
+  "options_debug_label": {
+    "message": "Aktivera felsökningsläge (markera filtrerade rader i blått istället för att dölja dem)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_show_text_legend": {
+    "message": "Visning",
+    "description": "Legend heading for button text options."
+  },
+  "options_alignment_legend": {
+    "message": "Verktygsfältslayout",
+    "description": "Legend heading for toolbar layout options."
+  },
+  "options_alignment_label": {
+    "message": "Justering av verktygsfält",
+    "description": "Label for the toolbar alignment control."
+  },
+  "options_alignment_start": {
+    "message": "Start",
+    "description": "Option to align the toolbar buttons to the start."
+  },
+  "options_alignment_center": {
+    "message": "Centrera",
+    "description": "Option to align the toolbar buttons to the centre."
+  },
+  "options_show_favourites_label": {
+    "message": "Visa Favoriter-knapp",
+    "description": "Label for the option to display the Favourites filter button."
+  },
+  "options_theme_legend": {
+    "message": "Utseende",
+    "description": "Legend heading for theme options."
+  },
+  "options_theme_label": {
+    "message": "Tilläggstema",
+    "description": "Label for the theme selection control."
+  },
+  "options_theme_system": {
+    "message": "Följ systemets tema",
+    "description": "Option to follow the operating system theme preference."
+  },
+  "options_theme_light": {
+    "message": "Ljust",
+    "description": "Option to always use the light theme."
+  },
+  "options_theme_dark": {
+    "message": "Mörkt",
+    "description": "Option to always use the dark theme."
+  },
+  "alt_calendar_event": {
+    "message": "Kalenderhändelse",
+    "description": "The alt text for the calendar event icon in an email row."
+  },
+  "filter_status_update": {
+    "message": "Filter inställt på $1",
+    "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
+  },
+  "extension_action_title": {
+    "message": "Kalenderfiltret är inbäddat på Gmail-sidor",
+    "description": "The title of the extension's action button in the browser toolbar."
+  },
+  "alt_starred": {
+    "message": "Stjärnmärkta",
+    "description": "Alt text for the starred icon/tooltip"
+  },
+  "optionShowButtonText": {
+    "message": "Visa text på filterknappar",
+    "description": "Label for the option to show or hide text on the filter buttons."
+  },
+  "experimental_legend": {
+    "message": "Experimentellt",
+    "description": "Legend for experimental features section in options page."
+  },
+  "experimental_description": {
+    "message": "Experimentella funktioner testas aktivt och kan ändras.",
+    "description": "Description text explaining experimental features may not be fully localized."
+  },
+  "btn_ai_notetakers": {
+    "message": "AI och anteckningar",
+    "description": "Button to show emails from AI services and transcription tools."
+  },
+  "options_show_ai_notetakers": {
+    "message": "Visa knappen AI och transkribering",
+    "description": "Checkbox label in options page to enable/disable AI & Transcription filter button."
+  },
+  "btn_dev_notifications": {
+    "message": "Dev",
+    "description": "Button to show emails from developer platforms like GitHub and GitLab."
+  },
+  "options_show_dev_notifications": {
+    "message": "Visa knappen för utvecklaraviseringar",
+    "description": "Checkbox label in options page to enable/disable Dev Notifications filter button."
+  }
+}

@@ -1,0 +1,166 @@
+{
+  "extension_name": {
+    "message": "Gmail Filter Toolbar",
+    "description": "Name of the extension."
+  },
+  "extension_description": {
+    "message": "Filtra Gmail por invitaciones de calendario, tipo de archivo adjunto, notas de IA o correo normal.",
+    "description": "Description of the extension."
+  },
+  "label_toolbar": {
+    "message": "Filtro de calendario",
+    "description": "ARIA label for the main toolbar."
+  },
+  "label_options": {
+    "message": "Filtro de correo electrónico: ",
+    "description": "Label preceding the filter buttons."
+  },
+  "btn_all": {
+    "message": "Todos los correos electrónicos",
+    "description": "Button to show all e-mails."
+  },
+  "btn_mail": {
+    "message": "Solo correo electrónico",
+    "description": "Button to hide calendar e-mails."
+  },
+  "btn_cal": {
+    "message": "Solo calendario",
+    "description": "Button to show only calendar e-mails."
+  },
+  "btn_attach": {
+    "message": "Sólo archivos adjuntos",
+    "description": "Button to show only e-mails with attachments."
+  },
+  "btn_fav": {
+    "message": "Solo favoritos",
+    "description": "Button to show only starred/favourite e-mails."
+  },
+  "button_filter_images": {
+    "message": "Imágenes",
+    "description": "Button to show only emails with image attachments."
+  },
+  "button_filter_pdfs": {
+    "message": "PDF",
+    "description": "Button to show only emails with PDF attachments."
+  },
+  "button_filter_documents": {
+    "message": "Documentos",
+    "description": "Button to show only emails with document attachments."
+  },
+  "button_filter_spreadsheets": {
+    "message": "Hojas de cálculo",
+    "description": "Button to show only emails with spreadsheet attachments."
+  },
+  "button_filter_presentations": {
+    "message": "Presentaciones",
+    "description": "Button to show only emails with presentation attachments."
+  },
+  "page_title": {
+    "message": "Opciones de calendario",
+    "description": "Title for the extension's options page."
+  },
+  "options_debug": {
+    "message": "Habilitar el modo de depuración (mostrar las filas filtradas en azul)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_page_description": {
+    "message": "Configuración para la extensión de opciones de calendario de Gmail.",
+    "description": "A short summary of the options page."
+  },
+  "options_debug_legend": {
+    "message": "Depuración",
+    "description": "Legend for the debug settings fieldset."
+  },
+  "options_debug_label": {
+    "message": "Habilitar el modo de depuración (resalta las filas filtradas en azul en lugar de ocultarlas)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_show_text_legend": {
+    "message": "Visualización",
+    "description": "Legend heading for button text options."
+  },
+  "options_alignment_legend": {
+    "message": "Diseño de la barra de herramientas",
+    "description": "Legend heading for toolbar layout options."
+  },
+  "options_alignment_label": {
+    "message": "Alineación de la barra de herramientas",
+    "description": "Label for the toolbar alignment control."
+  },
+  "options_alignment_start": {
+    "message": "Inicio",
+    "description": "Option to align the toolbar buttons to the start."
+  },
+  "options_alignment_center": {
+    "message": "Centro",
+    "description": "Option to align the toolbar buttons to the centre."
+  },
+  "options_show_favourites_label": {
+    "message": "Mostrar botón Favoritos",
+    "description": "Label for the option to display the Favourites filter button."
+  },
+  "options_theme_legend": {
+    "message": "Apariencia",
+    "description": "Legend heading for theme options."
+  },
+  "options_theme_label": {
+    "message": "Tema de la extensión",
+    "description": "Label for the theme selection control."
+  },
+  "options_theme_system": {
+    "message": "Usar tema del sistema",
+    "description": "Option to follow the operating system theme preference."
+  },
+  "options_theme_light": {
+    "message": "Claro",
+    "description": "Option to always use the light theme."
+  },
+  "options_theme_dark": {
+    "message": "Oscuro",
+    "description": "Option to always use the dark theme."
+  },
+  "alt_calendar_event": {
+    "message": "Evento del calendario",
+    "description": "The alt text for the calendar event icon in an email row."
+  },
+  "filter_status_update": {
+    "message": "Filtro establecido en $1",
+    "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
+  },
+  "extension_action_title": {
+    "message": "El filtro de calendario está incrustado en las páginas de Gmail",
+    "description": "The title of the extension's action button in the browser toolbar."
+  },
+  "alt_starred": {
+    "message": "Destacados",
+    "description": "Alt text for the starred icon/tooltip"
+  },
+  "optionShowButtonText": {
+    "message": "Mostrar texto en los botones de filtro",
+    "description": "Label for the option to show or hide text on the filter buttons."
+  },
+  "experimental_legend": {
+    "message": "Experimental",
+    "description": "Legend for experimental features section in options page."
+  },
+  "experimental_description": {
+    "message": "Las funciones experimentales están en pruebas activas y pueden cambiar.",
+    "description": "Description text explaining experimental features may not be fully localized."
+  },
+  "btn_ai_notetakers": {
+    "message": "IA y notas",
+    "description": "Button to show emails from AI services and transcription tools."
+  },
+  "options_show_ai_notetakers": {
+    "message": "Mostrar el botón de IA y transcripción",
+    "description": "Checkbox label in options page to enable/disable AI & Transcription filter button."
+  },
+  "btn_dev_notifications": {
+    "message": "Dev",
+    "description": "Button to show emails from developer platforms like GitHub and GitLab."
+  },
+  "options_show_dev_notifications": {
+    "message": "Mostrar el botón de notificaciones para desarrolladores",
+    "description": "Checkbox label in options page to enable/disable Dev Notifications filter button."
+  }
+}

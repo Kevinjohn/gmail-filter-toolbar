@@ -7,7 +7,10 @@ const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
 describe('contentScript main lifecycle', () => {
   let loadStateMock;
   let saveStateMock;
+  let persistModeMock;
   let setCurrentModeMock;
+  let isModeAvailableMock;
+  let isValidModeMock;
   let setToolbarAlignmentMock;
   let setShowFavouritesButtonMock;
   let setShowAiNotetakersButtonMock;
@@ -18,9 +21,7 @@ describe('contentScript main lifecycle', () => {
   let refreshUIMock;
   let updateAlignmentViewMock;
   let updateButtonTextViewMock;
-  let updateFavouritesVisibilityMock;
-  let updateAiNotetakersVisibilityMock;
-  let updateDevNotificationsVisibilityMock;
+  let updateButtonVisibilityMock;
   let waitForGmailToolbarMock;
   let waitForMessageTableMock;
   let observeMessageListMock;
@@ -49,7 +50,14 @@ describe('contentScript main lifecycle', () => {
 
     loadStateMock = jest.fn(() => Promise.resolve());
     saveStateMock = jest.fn(() => Promise.resolve());
+    persistModeMock = jest.fn(() => Promise.resolve());
     setCurrentModeMock = jest.fn();
+    isModeAvailableMock = jest.fn((mode) =>
+      ['ALL', 'CALENDAR', 'FAVOURITES', 'AI_NOTETAKERS', 'DEV_NOTIFICATIONS'].includes(mode),
+    );
+    isValidModeMock = jest.fn((mode) =>
+      ['ALL', 'CALENDAR', 'FAVOURITES', 'AI_NOTETAKERS', 'DEV_NOTIFICATIONS'].includes(mode),
+    );
     setToolbarAlignmentMock = jest.fn();
     setShowFavouritesButtonMock = jest.fn();
     setShowAiNotetakersButtonMock = jest.fn();
@@ -60,9 +68,7 @@ describe('contentScript main lifecycle', () => {
     refreshUIMock = jest.fn();
     updateAlignmentViewMock = jest.fn();
     updateButtonTextViewMock = jest.fn();
-    updateFavouritesVisibilityMock = jest.fn();
-    updateAiNotetakersVisibilityMock = jest.fn();
-    updateDevNotificationsVisibilityMock = jest.fn();
+    updateButtonVisibilityMock = jest.fn();
     waitForGmailToolbarMock = jest.fn(() => Promise.resolve(header));
     waitForMessageTableMock = jest.fn(() => Promise.resolve());
     observeMessageListMock = jest.fn();
@@ -72,8 +78,12 @@ describe('contentScript main lifecycle', () => {
     jest.unstable_mockModule('../src/modules/state.js', () => ({
       loadState: loadStateMock,
       saveState: saveStateMock,
+      persistMode: persistModeMock,
       setCurrentMode: setCurrentModeMock,
+      isModeAvailable: isModeAvailableMock,
+      isValidMode: isValidModeMock,
       setDebugOn: jest.fn(),
+      setShowButtonText: jest.fn(),
       showButtonText: true,
       KEY_DEBUG: 'gmailCalDebug',
       currentMode: 'ALL',
@@ -85,7 +95,12 @@ describe('contentScript main lifecycle', () => {
       setShowAiNotetakersButton: setShowAiNotetakersButtonMock,
       showDevNotificationsButton: false,
       setShowDevNotificationsButton: setShowDevNotificationsButtonMock,
-      MODES: { ALL: 'ALL', FAVOURITES: 'FAVOURITES', AI_NOTETAKERS: 'AI_NOTETAKERS', DEV_NOTIFICATIONS: 'DEV_NOTIFICATIONS' },
+      MODES: {
+        ALL: 'ALL',
+        FAVOURITES: 'FAVOURITES',
+        AI_NOTETAKERS: 'AI_NOTETAKERS',
+        DEV_NOTIFICATIONS: 'DEV_NOTIFICATIONS',
+      },
       themePreference: 'system',
       setThemePreference: setThemePreferenceMock,
     }));
@@ -99,9 +114,7 @@ describe('contentScript main lifecycle', () => {
       refreshUI: refreshUIMock,
       updateAlignmentView: updateAlignmentViewMock,
       updateButtonTextView: updateButtonTextViewMock,
-      updateFavouritesVisibility: updateFavouritesVisibilityMock,
-      updateAiNotetakersVisibility: updateAiNotetakersVisibilityMock,
-      updateDevNotificationsVisibility: updateDevNotificationsVisibilityMock,
+      updateButtonVisibility: updateButtonVisibilityMock,
     }));
 
     jest.unstable_mockModule('../src/modules/observers.js', () => ({
@@ -131,9 +144,6 @@ describe('contentScript main lifecycle', () => {
     expect(applyThemeMock).toHaveBeenCalledWith(document, 'system');
     expect(waitForGmailToolbarMock).toHaveBeenCalled();
     expect(injectToolbarMock).toHaveBeenCalledWith(document, header);
-    expect(updateButtonTextViewMock).toHaveBeenCalledWith(true);
-    expect(updateAlignmentViewMock).toHaveBeenCalledWith('start');
-    expect(updateFavouritesVisibilityMock).toHaveBeenCalledWith(false);
     expect(waitForMessageTableMock).toHaveBeenCalled();
     await flushPromises();
     expect(applyFilterMock).toHaveBeenCalled();
@@ -153,9 +163,42 @@ describe('contentScript main lifecycle', () => {
     await flushPromises();
 
     expect(setCurrentModeMock).toHaveBeenCalledWith('CALENDAR');
-    expect(saveStateMock).toHaveBeenCalled();
+    expect(persistModeMock).toHaveBeenCalledWith('CALENDAR');
     expect(applyFilterMock).toHaveBeenCalled();
     expect(refreshUIMock).toHaveBeenCalledWith(document);
+  });
+
+  test('serializes rapid mode writes in click order', async () => {
+    let resolveFirstWrite;
+    persistModeMock
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            resolveFirstWrite = resolve;
+          }),
+      )
+      .mockImplementationOnce(() => Promise.resolve());
+
+    const bar = document.createElement('div');
+    bar.className = 'gcal-filter-bar';
+    const calendarButton = document.createElement('button');
+    calendarButton.dataset.mode = 'CALENDAR';
+    const allButton = document.createElement('button');
+    allButton.dataset.mode = 'ALL';
+    bar.append(calendarButton, allButton);
+    document.body.appendChild(bar);
+
+    calendarButton.click();
+    allButton.click();
+    await flushPromises();
+
+    expect(persistModeMock).toHaveBeenCalledTimes(1);
+    expect(persistModeMock).toHaveBeenLastCalledWith('CALENDAR');
+
+    resolveFirstWrite();
+    await flushPromises();
+
+    expect(persistModeMock).toHaveBeenNthCalledWith(2, 'ALL');
   });
 
   test('reacts to storage changes', async () => {
@@ -173,9 +216,15 @@ describe('contentScript main lifecycle', () => {
     expect(setToolbarAlignmentMock).toHaveBeenCalledWith('center');
     expect(updateAlignmentViewMock).toHaveBeenCalledWith('start');
     expect(setShowFavouritesButtonMock).toHaveBeenCalledWith(true);
-    expect(updateFavouritesVisibilityMock).toHaveBeenCalledWith(true);
+    expect(updateButtonVisibilityMock).toHaveBeenCalledWith('FAVOURITES', true);
     expect(setThemePreferenceMock).toHaveBeenCalledWith('dark');
     expect(applyThemeMock).toHaveBeenCalledWith(document, 'system');
+  });
+
+  test('restores visible button text when the storage key is removed', () => {
+    storageChangeListener({ showButtonText: { newValue: undefined } });
+
+    expect(updateButtonTextViewMock).toHaveBeenCalledWith(true);
   });
 
   test('runtime handler ignores non-object messages', () => {
@@ -187,7 +236,35 @@ describe('contentScript main lifecycle', () => {
     const sendResponse = jest.fn();
     const result = messageListener({ type: 'gmailCal:setMode', payload: {} }, {}, sendResponse);
     expect(result).toBe(false);
-    expect(sendResponse).toHaveBeenCalledWith({ ok: false, error: 'Missing mode payload' });
+    expect(sendResponse).toHaveBeenCalledWith({ ok: false, error: 'Invalid mode payload' });
+  });
+
+  test('runtime handler rejects unknown modes', () => {
+    const sendResponse = jest.fn();
+    const result = messageListener(
+      { type: 'gmailCal:setMode', payload: { mode: 'UNKNOWN' } },
+      {},
+      sendResponse,
+    );
+    expect(result).toBe(false);
+    expect(persistModeMock).not.toHaveBeenCalledWith('UNKNOWN');
+    expect(sendResponse).toHaveBeenCalledWith({ ok: false, error: 'Invalid mode payload' });
+  });
+
+  test('runtime handler accepts valid optional modes when their buttons are disabled', async () => {
+    isModeAvailableMock.mockImplementation((mode) => mode !== 'FAVOURITES');
+    const sendResponse = jest.fn();
+
+    const result = messageListener(
+      { type: 'gmailCal:setMode', payload: { mode: 'FAVOURITES' } },
+      {},
+      sendResponse,
+    );
+
+    expect(result).toBe(true);
+    await flushPromises();
+    expect(persistModeMock).toHaveBeenCalledWith('FAVOURITES');
+    expect(sendResponse).toHaveBeenCalledWith({ ok: true, mode: 'ALL' });
   });
 
   test('runtime handler persists mode and responds with success', async () => {
@@ -200,14 +277,14 @@ describe('contentScript main lifecycle', () => {
     expect(result).toBe(true);
     await flushPromises();
     expect(setCurrentModeMock).toHaveBeenCalledWith('FAVOURITES');
-    expect(saveStateMock).toHaveBeenCalled();
+    expect(persistModeMock).toHaveBeenCalledWith('FAVOURITES');
     expect(applyFilterMock).toHaveBeenCalled();
     expect(refreshUIMock).toHaveBeenCalledWith(document);
     expect(sendResponse).toHaveBeenCalledWith({ ok: true, mode: 'ALL' });
   });
 
   test('runtime handler surfaces save errors', async () => {
-    saveStateMock.mockImplementationOnce(() => Promise.reject(new Error('write failure')));
+    persistModeMock.mockImplementationOnce(() => Promise.reject(new Error('write failure')));
     const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     const sendResponse = jest.fn();
     const result = messageListener(

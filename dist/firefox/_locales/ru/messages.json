@@ -1,0 +1,166 @@
+{
+  "extension_name": {
+    "message": "Gmail Filter Toolbar",
+    "description": "Name of the extension."
+  },
+  "extension_description": {
+    "message": "Фильтруйте Gmail по приглашениям календаря, типу вложения, заметкам ИИ или обычной почте.",
+    "description": "Description of the extension."
+  },
+  "label_toolbar": {
+    "message": "Фильтр календаря",
+    "description": "ARIA label for the main toolbar."
+  },
+  "label_options": {
+    "message": "Фильтр электронной почты: ",
+    "description": "Label preceding the filter buttons."
+  },
+  "btn_all": {
+    "message": "Все письма",
+    "description": "Button to show all e-mails."
+  },
+  "btn_mail": {
+    "message": "Только электронная почта",
+    "description": "Button to hide calendar e-mails."
+  },
+  "btn_cal": {
+    "message": "Только календарь",
+    "description": "Button to show only calendar e-mails."
+  },
+  "btn_attach": {
+    "message": "Только вложения",
+    "description": "Button to show only e-mails with attachments."
+  },
+  "btn_fav": {
+    "message": "Только избранное",
+    "description": "Button to show only starred/favourite e-mails."
+  },
+  "button_filter_images": {
+    "message": "Изображения",
+    "description": "Button to show only emails with image attachments."
+  },
+  "button_filter_pdfs": {
+    "message": "PDF-файлы",
+    "description": "Button to show only emails with PDF attachments."
+  },
+  "button_filter_documents": {
+    "message": "Документы",
+    "description": "Button to show only emails with document attachments."
+  },
+  "button_filter_spreadsheets": {
+    "message": "Таблицы",
+    "description": "Button to show only emails with spreadsheet attachments."
+  },
+  "button_filter_presentations": {
+    "message": "Презентации",
+    "description": "Button to show only emails with presentation attachments."
+  },
+  "page_title": {
+    "message": "Параметры календаря",
+    "description": "Title for the extension's options page."
+  },
+  "options_debug": {
+    "message": "Включить режим отладки (отображать отфильтрованные строки синим цветом)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_page_description": {
+    "message": "Настройки для расширения параметров календаря Gmail.",
+    "description": "A short summary of the options page."
+  },
+  "options_debug_legend": {
+    "message": "Отладка",
+    "description": "Legend for the debug settings fieldset."
+  },
+  "options_debug_label": {
+    "message": "Включить режим отладки (выделяет отфильтрованные строки синим цветом, а не скрывает их)",
+    "description": "Label for the debug mode checkbox."
+  },
+  "options_show_text_legend": {
+    "message": "Отображение",
+    "description": "Legend heading for button text options."
+  },
+  "options_alignment_legend": {
+    "message": "Макет панели инструментов",
+    "description": "Legend heading for toolbar layout options."
+  },
+  "options_alignment_label": {
+    "message": "Выравнивание панели инструментов",
+    "description": "Label for the toolbar alignment control."
+  },
+  "options_alignment_start": {
+    "message": "Начало",
+    "description": "Option to align the toolbar buttons to the start."
+  },
+  "options_alignment_center": {
+    "message": "По центру",
+    "description": "Option to align the toolbar buttons to the centre."
+  },
+  "options_show_favourites_label": {
+    "message": "Показывать кнопку «Избранное»",
+    "description": "Label for the option to display the Favourites filter button."
+  },
+  "options_theme_legend": {
+    "message": "Внешний вид",
+    "description": "Legend heading for theme options."
+  },
+  "options_theme_label": {
+    "message": "Тема расширения",
+    "description": "Label for the theme selection control."
+  },
+  "options_theme_system": {
+    "message": "Использовать тему системы",
+    "description": "Option to follow the operating system theme preference."
+  },
+  "options_theme_light": {
+    "message": "Светлая",
+    "description": "Option to always use the light theme."
+  },
+  "options_theme_dark": {
+    "message": "Тёмная",
+    "description": "Option to always use the dark theme."
+  },
+  "alt_calendar_event": {
+    "message": "Событие календаря",
+    "description": "The alt text for the calendar event icon in an email row."
+  },
+  "filter_status_update": {
+    "message": "Фильтр установлен на $1",
+    "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
+  },
+  "extension_action_title": {
+    "message": "Фильтр календаря встроен в страницы Gmail",
+    "description": "The title of the extension's action button in the browser toolbar."
+  },
+  "alt_starred": {
+    "message": "Помеченные звездочкой",
+    "description": "Alt text for the starred icon/tooltip"
+  },
+  "optionShowButtonText": {
+    "message": "Показывать текст на кнопках фильтра",
+    "description": "Label for the option to show or hide text on the filter buttons."
+  },
+  "experimental_legend": {
+    "message": "Экспериментальные функции",
+    "description": "Legend for experimental features section in options page."
+  },
+  "experimental_description": {
+    "message": "Экспериментальные функции активно тестируются и могут измениться.",
+    "description": "Description text explaining experimental features may not be fully localized."
+  },
+  "btn_ai_notetakers": {
+    "message": "ИИ и заметки",
+    "description": "Button to show emails from AI services and transcription tools."
+  },
+  "options_show_ai_notetakers": {
+    "message": "Показывать кнопку ИИ и расшифровки",
+    "description": "Checkbox label in options page to enable/disable AI & Transcription filter button."
+  },
+  "btn_dev_notifications": {
+    "message": "Dev",
+    "description": "Button to show emails from developer platforms like GitHub and GitLab."
+  },
+  "options_show_dev_notifications": {
+    "message": "Показывать кнопку уведомлений разработчика",
+    "description": "Checkbox label in options page to enable/disable Dev Notifications filter button."
+  }
+}

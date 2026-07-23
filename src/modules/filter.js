@@ -10,11 +10,16 @@ import {
  * Checks if an email row is a calendar invitation.
  * @stable
  */
-export function isCalendarRow(row, chromeApi = chrome) {
+export function isCalendarRow(row, chromeApi = globalThis.chrome) {
   const hasIcs = !!row.querySelector(SELECTORS.icsImage);
-  const calendarEventAltText = chromeApi.i18n.getMessage('alt_calendar_event');
-  const hasCalendarEventIcon = !!row.querySelector(`img[alt="${calendarEventAltText}"]`);
-  return hasIcs || hasCalendarEventIcon;
+  const hasCalendarEventIcon = !!row.querySelector(SELECTORS.calendarIcon);
+  const calendarEventAltText = chromeApi?.i18n?.getMessage?.('alt_calendar_event');
+  const hasLocalizedCalendarAlt =
+    !!calendarEventAltText &&
+    Array.from(row.querySelectorAll('img[alt]')).some(
+      (image) => image.getAttribute('alt') === calendarEventAltText,
+    );
+  return hasIcs || hasCalendarEventIcon || hasLocalizedCalendarAlt;
 }
 
 /**
@@ -25,7 +30,7 @@ export function isGoogleDocAttachment(row) {
   const attachmentChips = row.querySelectorAll(SELECTORS.attachmentChip);
   for (const chip of attachmentChips) {
     const gdriveLink = chip.getAttribute('data-docurl');
-    if (gdriveLink && gdriveLink.includes('google.com')) {
+    if (gdriveLink && isGoogleUrl(gdriveLink)) {
       return true;
     }
   }
@@ -47,9 +52,30 @@ export function hasAttachmentRow(row) {
  * Checks if an email row is starred/favourited.
  * @stable
  */
-export function isFavouriteRow(row, chromeApi = chrome) {
-  const starredAltText = chromeApi.i18n.getMessage('alt_starred');
-  return !!row.querySelector(`span[data-tooltip="${starredAltText}"]`);
+export function isFavouriteRow(row, chromeApi = globalThis.chrome) {
+  if (row.querySelector(SELECTORS.starredIcon)) return true;
+
+  const starredText = chromeApi?.i18n?.getMessage?.('alt_starred');
+  if (!starredText) return false;
+
+  const escapedText = starredText.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  return !!row.querySelector(`span[data-tooltip="${escapedText}"]`);
+}
+
+function isGoogleUrl(value) {
+  if (!/^(?:https?:)?\/\//i.test(value)) {
+    return false;
+  }
+
+  try {
+    const url = new URL(value, 'https://mail.google.com');
+    return (
+      (url.protocol === 'http:' || url.protocol === 'https:') &&
+      (url.hostname === 'google.com' || url.hostname.endsWith('.google.com'))
+    );
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -86,11 +112,9 @@ export function isAiNotetakerRow(row) {
     senderElement.textContent ||
     '';
 
-  if (debugOn) {
-    console.log('[AI Filter Debug] Sender name:', senderName, 'Element:', senderElement);
-  }
-
-  return AI_NOTETAKER_PATTERNS.some((pattern) => pattern.test(senderName));
+  const matches = AI_NOTETAKER_PATTERNS.some((pattern) => pattern.test(senderName));
+  if (debugOn) console.log('[AI Filter Debug] Match:', matches);
+  return matches;
 }
 
 /**
@@ -118,11 +142,9 @@ export function isDevNotificationRow(row) {
   // WHY: Extract domain portion to match against patterns. The @ split handles full email addresses.
   const domain = email.split('@').pop() || '';
 
-  if (debugOn) {
-    console.log('[Dev Notifications Debug] Sender email:', email, 'Domain:', domain);
-  }
-
-  return DEV_NOTIFICATION_PATTERNS.some((pattern) => pattern.test(domain));
+  const matches = DEV_NOTIFICATION_PATTERNS.some((pattern) => pattern.test(domain));
+  if (debugOn) console.log('[Dev Notifications Debug] Match:', matches);
+  return matches;
 }
 
 /**
@@ -151,7 +173,7 @@ export function hasSpecificAttachmentType(row, attachmentType) {
 
     // Check for Google Drive attachments by image src
     const gdriveLink = chip.getAttribute('data-docurl');
-    if (gdriveLink && gdriveLink.includes('google.com')) {
+    if (gdriveLink && isGoogleUrl(gdriveLink)) {
       const img = chip.querySelector('img');
       if (img && img.src.includes(config.gdriveIdentifier)) {
         return true;

@@ -1,6 +1,6 @@
 {
   "extension_name": {
-    "message": "Opções do Calendário do Gmail",
+    "message": "Gmail Filter Toolbar",
     "description": "Name of the extension."
   },
   "extension_description": {
@@ -144,15 +144,15 @@
     "description": "Legend for experimental features section in options page."
   },
   "experimental_description": {
-    "message": "Experimental features are in active testing and may only be available in English.",
+    "message": "As funcionalidades experimentais estão em testes ativos e podem mudar.",
     "description": "Description text explaining experimental features may not be fully localized."
   },
   "btn_ai_notetakers": {
-    "message": "AI & Transcription",
+    "message": "IA e notas",
     "description": "Button to show emails from AI services and transcription tools."
   },
   "options_show_ai_notetakers": {
-    "message": "Show AI & Transcription button",
+    "message": "Mostrar botão de IA e transcrição",
     "description": "Checkbox label in options page to enable/disable AI & Transcription filter button."
   },
   "btn_dev_notifications": {
@@ -160,7 +160,7 @@
     "description": "Button to show emails from developer platforms like GitHub and GitLab."
   },
   "options_show_dev_notifications": {
-    "message": "Show Dev Notifications button",
+    "message": "Mostrar botão de notificações de programador",
     "description": "Checkbox label in options page to enable/disable Dev Notifications filter button."
   }
 }

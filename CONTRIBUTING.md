@@ -15,8 +15,8 @@ We welcome contributions to this project! To ensure a smooth and collaborative p
     git checkout -b your-branch-name
     ```
 4.  **Make Your Changes**: Implement your changes, ensuring you adhere to the existing code style and conventions.
-    *   **Code Style**: We use ESLint and Prettier. Please run `npm run lint` and `npm run format` before committing.
-    *   **Testing**: Write unit tests for new features or bug fixes. Ensure all existing tests pass by running `npm test`.
+    - **Code Style**: We use ESLint and Prettier. Please run `pnpm run lint` and `pnpm run format` before committing.
+    - **Testing**: Write unit tests for new features or bug fixes. Ensure all existing tests pass by running `pnpm test`.
 5.  **Commit Your Changes**: Write clear and concise commit messages. Follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification if possible (e.g., `feat: add new filter option`, `fix: resolve toolbar injection issue`).
     ```bash
     git commit -m "feat: your concise commit message"
@@ -29,9 +29,9 @@ We welcome contributions to this project! To ensure a smooth and collaborative p
 
 ## Code Style and Quality
 
-*   **ESLint**: We use ESLint for static code analysis. Please ensure your code passes linting checks.
-*   **Prettier**: Code formatting is enforced with Prettier. Run `npm run format` to automatically format your code.
-*   **Tests**: All new features and bug fixes should be accompanied by appropriate tests. Existing tests must pass.
+- **ESLint**: We use ESLint for static code analysis. Please ensure your code passes linting checks.
+- **Prettier**: Code formatting is enforced with Prettier. Run `pnpm run format` to automatically format your code.
+- **Tests**: All new features and bug fixes should be accompanied by appropriate tests. Existing tests must pass.
 
 ## Reporting Bugs
 

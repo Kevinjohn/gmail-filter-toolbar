@@ -1,35 +1,82 @@
 #!/usr/bin/env node
-import { readFileSync } from 'fs';
-import { execSync } from 'child_process';
-import { join } from 'path';
+import { execFileSync } from 'node:child_process';
+import { mkdirSync, readFileSync, rmSync } from 'node:fs';
+import path from 'node:path';
 
-const VERSION = JSON.parse(readFileSync('./package.json', 'utf8')).version;
-console.log(`🚀 Building release v${VERSION}`);
+const version = JSON.parse(readFileSync('package.json', 'utf8')).version;
+const artifactsDir = path.resolve('artifacts');
 
-// Clean previous builds
-console.log('🧹 Cleaning previous builds...');
-execSync('rm -rf dist/ artifacts/', { stdio: 'inherit' });
+function run(command, args, options = {}) {
+  execFileSync(command, args, { stdio: 'inherit', ...options });
+}
 
-// Build Chrome version
-console.log('🏗️  Building Chrome version...');
-execSync('npm run build:chrome', { stdio: 'inherit' });
-execSync('mkdir -p artifacts/chrome', { stdio: 'inherit' });
-execSync('cp -r dist/chrome artifacts/chrome/dist', { stdio: 'inherit' });
-execSync(`cd artifacts/chrome/dist && tar -czf ../gmail-calendar-options-chrome-v${VERSION}.tar.gz . && cd ../../..`, { stdio: 'inherit' });
-console.log(`✅ Chrome package: artifacts/chrome/gmail-calendar-options-chrome-v${VERSION}.tar.gz`);
+function verifyArchive(browser, archive) {
+  const entries = execFileSync('unzip', ['-Z1', archive], { encoding: 'utf8' }).split('\n');
+  if (!entries.includes('manifest.json')) {
+    throw new Error(`${browser} archive does not contain manifest.json at its root`);
+  }
+}
 
-// Build Firefox version
-console.log('🦊 Building Firefox version...');
-execSync('npm run build:firefox', { stdio: 'inherit' });
-execSync('mkdir -p artifacts/firefox', { stdio: 'inherit' });
-execSync('cp -r dist/firefox artifacts/firefox/dist', { stdio: 'inherit' });
-execSync(`cd artifacts/firefox/dist && tar -czf ../gmail-calendar-options-firefox-v${VERSION}.tar.gz . && cd ../../..`, { stdio: 'inherit' });
-console.log(`✅ Firefox package: artifacts/firefox/gmail-calendar-options-firefox-v${VERSION}.tar.gz`);
+function verifySafariManifest() {
+  const manifest = JSON.parse(readFileSync('dist/safari/manifest.json', 'utf8'));
+  if (
+    manifest.background?.type !== undefined ||
+    !manifest.background?.scripts?.includes('background.js')
+  ) {
+    throw new Error('Safari manifest must declare background.js as a classic script');
+  }
+  if (manifest.options_page !== 'options.html') {
+    throw new Error('Safari manifest must declare options.html with options_page');
+  }
+}
 
-// Validate Firefox package
-console.log('🔍 Validating Firefox package...');
-execSync('npx web-ext lint --source-dir artifacts/firefox/dist', { stdio: 'inherit' });
+function zipDirectory(browser) {
+  const sourceDir = path.resolve('dist', browser);
+  const targetDir = path.join(artifactsDir, browser);
+  const archive = path.join(targetDir, `gmail-filter-toolbar-${browser}-v${version}.zip`);
+  mkdirSync(targetDir, { recursive: true });
+  run('zip', ['-q', '-r', archive, '.'], { cwd: sourceDir });
+  verifyArchive(browser, archive);
+  return archive;
+}
 
-console.log('✨ Release build complete!');
-console.log(`Chrome:  artifacts/chrome/gmail-calendar-options-chrome-v${VERSION}.tar.gz`);
-console.log(`Firefox: artifacts/firefox/gmail-calendar-options-firefox-v${VERSION}.tar.gz`);
+function packageFirefox() {
+  const targetDir = path.join(artifactsDir, 'firefox');
+  const filename = `gmail-filter-toolbar-firefox-v${version}.zip`;
+  const archive = path.join(targetDir, filename);
+  mkdirSync(targetDir, { recursive: true });
+  run('pnpm', [
+    'exec',
+    'web-ext',
+    'build',
+    '--source-dir',
+    'dist/firefox',
+    '--artifacts-dir',
+    targetDir,
+    '--filename',
+    filename,
+    '--overwrite-dest',
+  ]);
+  verifyArchive('firefox', archive);
+  return archive;
+}
+
+console.log(`Building release v${version}`);
+rmSync('dist', { recursive: true, force: true });
+rmSync(artifactsDir, { recursive: true, force: true });
+
+run('pnpm', ['run', 'build:chrome']);
+const chromeArchive = zipDirectory('chrome');
+
+run('pnpm', ['run', 'build:firefox']);
+run('pnpm', ['exec', 'web-ext', 'lint', '--source-dir', 'dist/firefox']);
+const firefoxArchive = packageFirefox();
+
+run('pnpm', ['run', 'build:safari']);
+verifySafariManifest();
+const safariArchive = zipDirectory('safari');
+
+console.log('Release packages:');
+console.log(chromeArchive);
+console.log(firefoxArchive);
+console.log(safariArchive);

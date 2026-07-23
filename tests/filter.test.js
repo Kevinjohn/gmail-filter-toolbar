@@ -59,6 +59,42 @@ describe('isCalendarRow', () => {
     expect(isCalendarRow(row)).toBe(true);
   });
 
+  test('detects a language-independent Gmail calendar icon URL', () => {
+    const { row } = prepareDocument();
+    const icon = row.ownerDocument.createElement('img');
+    icon.src = 'https://ssl.gstatic.com/ui/v1/icons/mail/images/calendar_2x.png';
+    icon.alt = 'Kalendertermin';
+    row.appendChild(icon);
+    expect(isCalendarRow(row)).toBe(true);
+  });
+
+  test('falls back to the localized calendar alt text', () => {
+    const { row } = prepareDocument();
+    const icon = row.ownerDocument.createElement('img');
+    icon.src = 'https://example.test/unknown-icon.png';
+    icon.alt = 'Calendar event';
+    row.appendChild(icon);
+    expect(isCalendarRow(row)).toBe(true);
+  });
+
+  test('does not match unrelated calendar-like image names', () => {
+    const { row } = prepareDocument();
+    const icon = row.ownerDocument.createElement('img');
+    icon.src = 'https://example.test/avatars/user-calendar_profile.png';
+    icon.alt = 'Profile';
+    row.appendChild(icon);
+    expect(isCalendarRow(row)).toBe(false);
+  });
+
+  test('does not match unrelated images with calendar-prefixed filenames', () => {
+    const { row } = prepareDocument();
+    const icon = row.ownerDocument.createElement('img');
+    icon.src = 'https://example.test/avatars/calendar_profile.png';
+    icon.alt = 'Profile';
+    row.appendChild(icon);
+    expect(isCalendarRow(row)).toBe(false);
+  });
+
   test('returns false when no invite markers present', () => {
     const { row } = prepareDocument();
     expect(isCalendarRow(row)).toBe(false);
@@ -66,7 +102,7 @@ describe('isCalendarRow', () => {
 });
 
 describe('isFavouriteRow', () => {
-  test('returns true when tooltip matches Starred', () => {
+  test('returns true when Gmail marks the star as selected', () => {
     const { row } = prepareDocument({ isFavourite: true });
     expect(isFavouriteRow(row)).toBe(true);
   });
@@ -74,6 +110,26 @@ describe('isFavouriteRow', () => {
   test('returns false when tooltip missing', () => {
     const { row } = prepareDocument();
     expect(isFavouriteRow(row)).toBe(false);
+  });
+
+  test('falls back to the localized starred tooltip', () => {
+    const { row } = prepareDocument();
+    const star = row.ownerDocument.createElement('span');
+    star.dataset.tooltip = 'Starred';
+    row.appendChild(star);
+    expect(isFavouriteRow(row)).toBe(true);
+  });
+
+  test('escapes localized tooltip text before querying', () => {
+    const { row } = prepareDocument();
+    const star = row.ownerDocument.createElement('span');
+    star.dataset.tooltip = 'Starred "today"';
+    row.appendChild(star);
+    expect(
+      isFavouriteRow(row, {
+        i18n: { getMessage: () => 'Starred "today"' },
+      }),
+    ).toBe(true);
   });
 });
 
@@ -113,6 +169,13 @@ describe('isGoogleDocAttachment', () => {
     expect(isGoogleDocAttachment(row)).toBe(true);
   });
 
+  test('accepts protocol-relative Google attachment URLs', () => {
+    const { row } = prepareDocument({
+      attachmentChips: [{ dataDocurl: '//drive.google.com/file/d/abc' }],
+    });
+    expect(isGoogleDocAttachment(row)).toBe(true);
+  });
+
   test('returns false when chips are regular attachments', () => {
     const { row } = prepareDocument({
       attachmentChips: [
@@ -120,6 +183,21 @@ describe('isGoogleDocAttachment', () => {
           title: 'notes.txt',
         },
       ],
+    });
+    expect(isGoogleDocAttachment(row)).toBe(false);
+  });
+
+  test.each(['example.com/file', '/file/d/abc'])(
+    'does not treat relative attachment URL %s as Google-hosted',
+    (dataDocurl) => {
+      const { row } = prepareDocument({ attachmentChips: [{ dataDocurl }] });
+      expect(isGoogleDocAttachment(row)).toBe(false);
+    },
+  );
+
+  test('rejects non-HTTP Google URLs', () => {
+    const { row } = prepareDocument({
+      attachmentChips: [{ dataDocurl: 'ftp://drive.google.com/file/d/abc' }],
     });
     expect(isGoogleDocAttachment(row)).toBe(false);
   });
@@ -234,10 +312,7 @@ describe('applyFilter mode behaviour', () => {
   });
 
   test('EMAIL mode hides calendar invites', () => {
-    const { doc, rows } = buildRows([
-      { id: 'calendar', isCalendar: true },
-      { id: 'normal' },
-    ]);
+    const { doc, rows } = buildRows([{ id: 'calendar', isCalendar: true }, { id: 'normal' }]);
     setCurrentMode(MODES.EMAIL);
     applyFilter(doc);
     expect(rows[0].style.display).toBe('none');
@@ -258,10 +333,7 @@ describe('applyFilter mode behaviour', () => {
   });
 
   test('FAVOURITES mode only shows starred rows', () => {
-    const { doc, rows } = buildRows([
-      { id: 'plain' },
-      { id: 'starred', isFavourite: true },
-    ]);
+    const { doc, rows } = buildRows([{ id: 'plain' }, { id: 'starred', isFavourite: true }]);
     setCurrentMode(MODES.FAVOURITES);
     applyFilter(doc);
     expect(rows[0].style.display).toBe('none');
@@ -271,10 +343,13 @@ describe('applyFilter mode behaviour', () => {
   test.each([
     [MODES.IMAGE, { title: 'photo.png' }],
     [MODES.PDF, { title: 'contract.pdf' }],
-    [MODES.DOCUMENT, {
-      dataDocurl: 'https://docs.google.com/document/d/abc',
-      imgSrc: '//ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_document_x16.png',
-    }],
+    [
+      MODES.DOCUMENT,
+      {
+        dataDocurl: 'https://docs.google.com/document/d/abc',
+        imgSrc: '//ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_document_x16.png',
+      },
+    ],
     [MODES.SPREADSHEET, { title: 'report.xlsx' }],
     [MODES.PRESENTATION, { title: 'slides.pptx' }],
   ])('attachment mode %s filters rows by chip metadata', (mode, chipConfig) => {
@@ -347,7 +422,7 @@ describe('isAiNotetakerRow', () => {
     const row = doc.createElement('tr');
     const senderSpan = doc.createElement('span');
     senderSpan.className = 'zF';
-    senderSpan.setAttribute('name', 'GEMINI');  // Uppercase
+    senderSpan.setAttribute('name', 'GEMINI'); // Uppercase
     senderSpan.setAttribute('email', 'gemini@google.com');
 
     const container = doc.createElement('div');

@@ -3,22 +3,20 @@ module.exports = {
   env: {
     browser: true,
     es2022: true,
-    webextensions: true     // <-- add this
+    webextensions: true,
   },
   extends: 'eslint:recommended',
   parserOptions: {
     ecmaVersion: 2022,
-    sourceType: 'module'
+    sourceType: 'module',
   },
-  rules: {
-    // add project-specific rules here
-  },
+  rules: {},
   overrides: [
     {
       files: ['tests/**/*.js'],
       env: {
-        node: true,    // Enable Node.js globals (process, global)
-        jest: true,    // Enable Jest globals
+        node: true,
+        jest: true,
       },
       rules: {
         'no-console': 'off', // Allow console.log in tests

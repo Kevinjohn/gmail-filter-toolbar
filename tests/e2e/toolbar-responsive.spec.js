@@ -15,14 +15,18 @@ test.describe('Responsive toolbar behavior', () => {
   test.use({ locale: 'en-US', colorScheme: 'light' });
 
   viewports.forEach(({ name, width, height }) => {
-    test(`toolbar wraps correctly at ${name} viewport (${width}x${height})`, async ({ page, extensionId, gmailHtml }) => {
+    test(`toolbar wraps correctly at ${name} viewport (${width}x${height})`, async ({
+      page,
+      extensionId,
+      gmailHtml,
+    }) => {
       const optionsPage = new OptionsPage(page, extensionId);
       const gmailPage = new GmailPage(page);
 
       // Enable favourites to maximize button count
       await optionsPage.navigate();
       await optionsPage.enableFavourites();
-      await optionsPage.waitForStorageSync();
+      await optionsPage.waitForStorageValue('showFavourites', true);
 
       await stubGmailRoute(page, gmailHtml);
       await page.setViewportSize({ width, height });
@@ -49,14 +53,18 @@ test.describe('Responsive toolbar behavior', () => {
     });
   });
 
-  test('toolbar alignment changes are visible at different viewports', async ({ page, extensionId, gmailHtml }) => {
+  test('toolbar alignment changes are visible at different viewports', async ({
+    page,
+    extensionId,
+    gmailHtml,
+  }) => {
     const optionsPage = new OptionsPage(page, extensionId);
     const gmailPage = new GmailPage(page);
 
     // Test center alignment at desktop width
     await optionsPage.navigate();
     await optionsPage.setAlignment('center');
-    await optionsPage.waitForStorageSync();
+    await optionsPage.waitForStorageValue('toolbarAlignment', 'center');
 
     await stubGmailRoute(page, gmailHtml);
     await page.setViewportSize({ width: 1024, height: 768 });
@@ -68,7 +76,7 @@ test.describe('Responsive toolbar behavior', () => {
     // Switch to start alignment
     await optionsPage.navigate();
     await optionsPage.setAlignment('start');
-    await optionsPage.waitForStorageSync();
+    await optionsPage.waitForStorageValue('toolbarAlignment', 'start');
 
     await gmailPage.navigate();
     await toolbarComponent.assertAlignment('start');

@@ -4,7 +4,7 @@ import {
   injectToolbar,
   updateButtonTextView,
   updateAlignmentView,
-  updateFavouritesVisibility,
+  updateButtonVisibility,
   refreshUI,
   handleArrowNavigation,
 } from '../src/modules/toolbar.js';
@@ -12,6 +12,7 @@ import {
   MODES,
   setCurrentMode,
   setShowFavouritesButton,
+  setShowButtonText,
   setToolbarAlignment,
   showFavouritesButton,
   toolbarAlignment,
@@ -51,11 +52,12 @@ const createDocument = () => {
   return dom.window.document;
 };
 
-const renderToolbar = ({ alignment = 'start', favourites = true } = {}) => {
+const renderToolbar = ({ alignment = 'start', favourites = true, showText = true } = {}) => {
   const doc = createDocument();
   const header = doc.querySelector('.aeH');
   setToolbarAlignment(alignment);
   setShowFavouritesButton(favourites);
+  setShowButtonText(showText);
   injectToolbar(doc, header);
   const wrapper = header.nextElementSibling;
   return { doc, header, wrapper };
@@ -88,6 +90,13 @@ describe('injectToolbar', () => {
     expect(group.classList.contains('gcal-align-center')).toBe(true);
   });
 
+  test('reapplies icon-only mode during injection', () => {
+    const { wrapper } = renderToolbar({ showText: false });
+    expect(wrapper.querySelector(SELECTORS.filterBar).classList.contains('show-icon-only')).toBe(
+      true,
+    );
+  });
+
   test('reuses existing wrapper and clears previous toolbar', () => {
     const { doc, header, wrapper } = renderToolbar();
     const stale = doc.createElement('div');
@@ -96,6 +105,28 @@ describe('injectToolbar', () => {
     const newWrapper = header.nextElementSibling;
     expect(newWrapper).toBe(wrapper);
     expect(newWrapper.contains(stale)).toBe(false);
+  });
+
+  test('moves an existing wrapper back beside the Gmail header', () => {
+    const { doc, header, wrapper } = renderToolbar();
+    const spacer = doc.createElement('div');
+    header.insertAdjacentElement('afterend', spacer);
+
+    injectToolbar(doc, header);
+
+    expect(header.nextElementSibling).toBe(wrapper);
+    expect(doc.querySelectorAll(SELECTORS.filterWrapper)).toHaveLength(1);
+  });
+
+  test('removes duplicate wrappers during reinjection', () => {
+    const { doc, header } = renderToolbar();
+    const duplicate = doc.createElement('div');
+    duplicate.className = 'gcal-filter-wrapper';
+    doc.body.appendChild(duplicate);
+
+    injectToolbar(doc, header);
+
+    expect(doc.querySelectorAll(SELECTORS.filterWrapper)).toHaveLength(1);
   });
 });
 
@@ -118,14 +149,14 @@ describe('update helpers', () => {
     expect(group.classList.contains('gcal-align-center')).toBe(true);
   });
 
-  test('updateFavouritesVisibility toggles attributes', () => {
+  test('updateButtonVisibility toggles attributes', () => {
     const { doc, wrapper } = renderToolbar({ favourites: true });
     const favourites = wrapper.querySelector('#filter-FAVOURITES');
     expect(favourites.hidden).toBe(false);
-    updateFavouritesVisibility(false, doc);
+    updateButtonVisibility(MODES.FAVOURITES, false, doc);
     expect(favourites.hidden).toBe(true);
     expect(favourites.getAttribute('aria-hidden')).toBe('true');
-    updateFavouritesVisibility(true, doc);
+    updateButtonVisibility(MODES.FAVOURITES, true, doc);
     expect(favourites.hidden).toBe(false);
     expect(favourites.hasAttribute('aria-hidden')).toBe(false);
   });
@@ -134,7 +165,7 @@ describe('update helpers', () => {
     const emptyDoc = document.implementation.createHTMLDocument('empty');
     expect(() => updateButtonTextView(false, emptyDoc)).not.toThrow();
     expect(() => updateAlignmentView('center', emptyDoc)).not.toThrow();
-    expect(() => updateFavouritesVisibility(true, emptyDoc)).not.toThrow();
+    expect(() => updateButtonVisibility(MODES.FAVOURITES, true, emptyDoc)).not.toThrow();
     expect(() => refreshUI(emptyDoc)).not.toThrow();
   });
 });
@@ -176,8 +207,9 @@ describe('keyboard accessibility', () => {
       querySelectorAll: () => [firstButton, secondButton],
     };
     const preventDefault = jest.fn();
-    const originalDescriptor = Object.getOwnPropertyDescriptor(global.document.__proto__, 'activeElement')
-      || Object.getOwnPropertyDescriptor(Object.getPrototypeOf(global.document), 'activeElement');
+    const originalDescriptor =
+      Object.getOwnPropertyDescriptor(global.document.__proto__, 'activeElement') ||
+      Object.getOwnPropertyDescriptor(Object.getPrototypeOf(global.document), 'activeElement');
     Object.defineProperty(global.document, 'activeElement', {
       configurable: true,
       get: () => firstButton,
@@ -203,8 +235,9 @@ describe('keyboard accessibility', () => {
       querySelectorAll: () => [firstButton, lastButton],
     };
     const preventDefault = jest.fn();
-    const originalDescriptor = Object.getOwnPropertyDescriptor(global.document.__proto__, 'activeElement')
-      || Object.getOwnPropertyDescriptor(Object.getPrototypeOf(global.document), 'activeElement');
+    const originalDescriptor =
+      Object.getOwnPropertyDescriptor(global.document.__proto__, 'activeElement') ||
+      Object.getOwnPropertyDescriptor(Object.getPrototypeOf(global.document), 'activeElement');
     Object.defineProperty(global.document, 'activeElement', {
       configurable: true,
       get: () => firstButton,
@@ -231,8 +264,9 @@ describe('keyboard accessibility', () => {
       querySelectorAll: () => [firstButton, hiddenButton, lastButton],
     };
     const preventDefault = jest.fn();
-    const originalDescriptor = Object.getOwnPropertyDescriptor(global.document.__proto__, 'activeElement')
-      || Object.getOwnPropertyDescriptor(Object.getPrototypeOf(global.document), 'activeElement');
+    const originalDescriptor =
+      Object.getOwnPropertyDescriptor(global.document.__proto__, 'activeElement') ||
+      Object.getOwnPropertyDescriptor(Object.getPrototypeOf(global.document), 'activeElement');
     Object.defineProperty(global.document, 'activeElement', {
       configurable: true,
       get: () => firstButton,
@@ -269,8 +303,9 @@ describe('keyboard accessibility', () => {
       querySelectorAll: () => [firstButton, secondButton],
     };
     const preventDefault = jest.fn();
-    const originalDescriptor = Object.getOwnPropertyDescriptor(global.document.__proto__, 'activeElement')
-      || Object.getOwnPropertyDescriptor(Object.getPrototypeOf(global.document), 'activeElement');
+    const originalDescriptor =
+      Object.getOwnPropertyDescriptor(global.document.__proto__, 'activeElement') ||
+      Object.getOwnPropertyDescriptor(Object.getPrototypeOf(global.document), 'activeElement');
     Object.defineProperty(global.document, 'activeElement', {
       configurable: true,
       get: () => null,
@@ -299,12 +334,13 @@ describe('refreshUI', () => {
     expect(liveRegion.textContent).toBe('Filter set to Calendar');
   });
 
-  test('announces fallback label for unknown mode', () => {
+  test('rejects an unknown mode and preserves the current announcement', () => {
     const { doc, wrapper } = renderToolbar();
+    setCurrentMode(MODES.CALENDAR);
     setCurrentMode('UNKNOWN_MODE');
     refreshUI(doc);
     const liveRegion = wrapper.querySelector(SELECTORS.liveRegion);
-    expect(liveRegion.textContent).toBe('Filter set to Everything');
+    expect(liveRegion.textContent).toBe('Filter set to Calendar');
   });
 
   test('uses attachment labels when current mode is attachment specific', () => {

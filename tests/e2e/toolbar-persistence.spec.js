@@ -6,7 +6,11 @@ import { OptionsPage } from './page-objects/OptionsPage.js';
 test.describe('Toolbar persistence', () => {
   test.use({ locale: 'en-US', colorScheme: 'light' });
 
-  test('filter state persists during Gmail pagination', async ({ page, extensionId, gmailHtml }) => {
+  test('filter state persists during Gmail pagination', async ({
+    page,
+    extensionId,
+    gmailHtml,
+  }) => {
     const optionsPage = new OptionsPage(page, extensionId);
     const gmailPage = new GmailPage(page);
 
@@ -25,32 +29,20 @@ test.describe('Toolbar persistence', () => {
     const visibilityBefore = await gmailPage.getRowVisibility('row-attachment');
     expect(visibilityBefore.display).toBe('table-row');
 
-    // Simulate Gmail pagination by injecting new rows dynamically
+    // Simulate Gmail pagination by injecting a non-attachment row dynamically.
     await page.evaluate(() => {
       const tbody = document.querySelector('.UI table tbody');
       const newRow = document.createElement('tr');
-      newRow.className = 'zA byw';
-      newRow.setAttribute('data-testid', 'row-new-attachment');
+      newRow.className = 'zA';
+      newRow.setAttribute('data-testid', 'row-new-mail');
       newRow.innerHTML = `
-        <td class="bog">New email with attachment</td>
-        <td>
-          <div class="brd">
-            <div class="brc" title="document.pdf">
-              <img src="icon_1_pdf.png" alt="pdf" />
-              <span>document.pdf</span>
-            </div>
-          </div>
-        </td>
+        <td class="bog">New email without an attachment</td>
       `;
       tbody.appendChild(newRow);
     });
 
-    // Wait for observer to process the mutation (debounced, so give it time)
-    await page.waitForTimeout(350);
-
-    // Verify new row respects active filter
-    const newRowVisibility = await gmailPage.getRowVisibility('row-new-attachment');
-    expect(newRowVisibility.display).toBe('table-row');
+    // The locator assertion waits for the debounced observer to apply the active filter.
+    await expect(page.locator('tr[data-testid="row-new-mail"]')).toHaveCSS('display', 'none');
 
     // Verify existing non-attachment rows are still hidden
     const mailRowVisibility = await gmailPage.getRowVisibility('row-mail');
@@ -59,7 +51,11 @@ test.describe('Toolbar persistence', () => {
     await unstubGmailRoute(page);
   });
 
-  test('toolbar reinjects after Gmail toolbar is removed and recreated', async ({ page, extensionId, gmailHtml }) => {
+  test('toolbar reinjects after Gmail toolbar is removed and recreated', async ({
+    page,
+    extensionId,
+    gmailHtml,
+  }) => {
     const gmailPage = new GmailPage(page);
 
     await stubGmailRoute(page, gmailHtml);
@@ -91,12 +87,10 @@ test.describe('Toolbar persistence', () => {
     // Wait for Gmail toolbar to be recreated
     await page.waitForSelector('.G-atb .G6[role="toolbar"]', { timeout: 2000 });
 
-    // Wait for extension observer to detect change and reinject
-    await page.waitForTimeout(500);
-
-    // Verify our toolbar reinjected
-    await expect(gmailPage.toolbar).toBeVisible();
-    await expect(gmailPage.allButton).toBeVisible();
+    // Verify the toolbar is reinjected beside the replacement Gmail header.
+    const replacementToolbar = page.locator('.G-atb + .gcal-filter-wrapper .gcal-filter-bar');
+    await expect(replacementToolbar).toBeVisible();
+    await expect(replacementToolbar.locator('#filter-ALL')).toBeVisible();
 
     await unstubGmailRoute(page);
   });

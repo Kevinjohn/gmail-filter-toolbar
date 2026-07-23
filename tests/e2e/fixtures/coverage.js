@@ -1,6 +1,4 @@
-import path from 'node:path';
 import { promises as fsp } from 'node:fs';
-import { COVERAGE_DIR } from './config.js';
 
 /**
  * Initializes V8 coverage collection for a page.
@@ -43,16 +41,14 @@ export async function collectCoverage(client, extensionId, testInfo) {
     await client.detach?.();
 
     const extensionOrigin = `chrome-extension://${extensionId}`;
-    const contentScriptCoverage = (result ?? []).filter((entry) =>
-      entry.url.startsWith(`${extensionOrigin}/`) && entry.url.endsWith('/contentScript.js')
+    const contentScriptCoverage = (result ?? []).filter(
+      (entry) =>
+        entry.url.startsWith(`${extensionOrigin}/`) && entry.url.endsWith('/contentScript.js'),
     );
 
     if (contentScriptCoverage.length > 0) {
-      await fsp.mkdir(COVERAGE_DIR, { recursive: true });
-      const fileSafeTitle =
-        testInfo.title.replace(/[^a-z0-9]+/gi, '_').replace(/^_+|_+$/g, '').toLowerCase() ||
-        'coverage';
-      const coveragePath = path.join(COVERAGE_DIR, `${fileSafeTitle}.json`);
+      const coveragePath = testInfo.outputPath('content-script-coverage.json');
+      await fsp.mkdir(testInfo.outputDir, { recursive: true });
       await fsp.writeFile(coveragePath, JSON.stringify(contentScriptCoverage, null, 2));
       await testInfo.attach('content-script-coverage', {
         path: coveragePath,

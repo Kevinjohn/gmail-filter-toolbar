@@ -42,6 +42,7 @@ export const MODES = {
 };
 
 const THEME_VALUES = new Set(Object.values(THEMES));
+const MODE_VALUES = new Set(Object.values(MODES));
 
 /**
  * Current active filter mode.
@@ -94,11 +95,32 @@ export let showDevNotificationsButton = false;
 export let toolbarAlignment = ALIGNMENTS.START;
 
 export function setCurrentMode(mode) {
+  if (!isValidMode(mode)) {
+    return false;
+  }
   currentMode = mode;
+  return true;
+}
+
+export function isValidMode(mode) {
+  return MODE_VALUES.has(mode);
+}
+
+export function isModeAvailable(mode) {
+  return (
+    isValidMode(mode) &&
+    (mode !== MODES.FAVOURITES || showFavouritesButton) &&
+    (mode !== MODES.AI_NOTETAKERS || showAiNotetakersButton) &&
+    (mode !== MODES.DEV_NOTIFICATIONS || showDevNotificationsButton)
+  );
 }
 
 export function setDebugOn(value) {
   debugOn = value;
+}
+
+export function setShowButtonText(value) {
+  showButtonText = value !== false;
 }
 
 export function setThemePreference(value) {
@@ -145,15 +167,15 @@ export function loadState() {
     THEME_KEY,
   ])
     .then((storageData) => {
-      currentMode = storageData[KEY_MODE] || MODES.ALL;
       debugOn = !!storageData[KEY_DEBUG];
-      showButtonText =
-        storageData[SHOW_BUTTON_TEXT_KEY] !== undefined ? storageData[SHOW_BUTTON_TEXT_KEY] : true; // Default to true if not set
+      setShowButtonText(storageData[SHOW_BUTTON_TEXT_KEY]);
       setThemePreference(storageData[THEME_KEY]);
       setShowFavouritesButton(storageData[SHOW_FAVOURITES_KEY]);
       setShowAiNotetakersButton(storageData[SHOW_AI_NOTETAKERS_KEY]);
       setShowDevNotificationsButton(storageData[SHOW_DEV_NOTIFICATIONS_KEY]);
       setToolbarAlignment(storageData[ALIGNMENT_KEY]);
+      const storedMode = storageData[KEY_MODE];
+      currentMode = isModeAvailable(storedMode) ? storedMode : MODES.ALL;
     })
     .catch((error) => {
       console.error('Error retrieving storage data:', error);
@@ -165,7 +187,6 @@ export function loadState() {
       showAiNotetakersButton = false;
       showDevNotificationsButton = false;
       toolbarAlignment = ALIGNMENTS.START;
-      throw error; // Re-throw to propagate the error
     });
 }
 
@@ -174,4 +195,11 @@ export function saveState() {
     console.error('Error saving mode:', error);
     throw error; // Re-throw to propagate the error
   });
+}
+
+export function persistMode(mode) {
+  if (!isValidMode(mode)) {
+    return Promise.reject(new TypeError(`Invalid filter mode: ${String(mode)}`));
+  }
+  return storageSet({ [KEY_MODE]: mode });
 }

@@ -2,13 +2,36 @@
   "name": "gmail-filter-toolbar",
   "version": "2.5.3",
   "description": "Filter Gmail by calendar invites, attachments, starred messages, or regular mail.",
+  "license": "MIT",
+  "author": "Kevinjohn Gallagher",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kevinjohn/chome-extension-gmail-calendar-options.git"
+  },
+  "homepage": "https://github.com/Kevinjohn/chome-extension-gmail-calendar-options#readme",
+  "bugs": {
+    "url": "https://github.com/Kevinjohn/chome-extension-gmail-calendar-options/issues"
+  },
+  "keywords": [
+    "gmail",
+    "browser-extension",
+    "chrome-extension",
+    "firefox-addon",
+    "calendar",
+    "email-filter",
+    "manifest-v3"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "private": true,
   "type": "module",
   "scripts": {
     "build": "npm run build:chrome && npm run build:firefox",
     "build:chrome": "vite build",
     "build:firefox": "cross-env BROWSER=firefox vite build",
     "build:safari": "cross-env BROWSER=safari vite build",
-    "safari:convert": "npm run build:safari && xcrun safari-web-extension-converter dist/safari --project-location safari-xcode --app-name 'Gmail Filter Toolbar' --bundle-identifier com.example.gmail-filter-toolbar --macos-only --no-open",
+    "safari:convert": "npm run build:safari && xcrun safari-web-extension-converter dist/safari --project-location safari-xcode --app-name 'Gmail Filter Toolbar' --bundle-identifier com.kevinjohngallagher.gmail-filter-toolbar --macos-only --no-open",
     "safari:open": "open safari-xcode/Gmail\\ Filter\\ Toolbar/Gmail\\ Filter\\ Toolbar.xcodeproj",
     "firefox:run": "npm run build:firefox && cross-env web-ext run --source-dir dist/firefox --firefox-preview",
     "firefox:lint": "web-ext lint --source-dir dist/firefox",

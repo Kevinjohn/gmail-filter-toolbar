@@ -49,7 +49,10 @@ document.getElementById('pageDescription').textContent = getMessage(
   'options_page_description',
   'Settings for the Gmail Filter Toolbar extension.',
 );
-document.getElementById('debugLegend').textContent = getMessage('options_debug_legend', 'Debugging');
+document.getElementById('debugLegend').textContent = getMessage(
+  'options_debug_legend',
+  'Debugging',
+);
 document.getElementById('debugLabel').textContent = getMessage(
   'options_debug_label',
   'Enable debug mode (highlights filtered rows in blue instead of hiding them)',
@@ -74,7 +77,10 @@ if (alignmentOptionCenter) {
   alignmentOptionCenter.textContent = getMessage('options_alignment_center', 'Center');
 }
 if (showFavouritesLabel) {
-  showFavouritesLabel.textContent = getMessage('options_show_favourites_label', 'Show Favourites button');
+  showFavouritesLabel.textContent = getMessage(
+    'options_show_favourites_label',
+    'Show Favourites button',
+  );
 }
 if (themeLegend) {
   themeLegend.textContent = getMessage('options_theme_legend', 'Appearance');
@@ -100,17 +106,28 @@ if (experimentalLegend) {
   experimentalLegend.textContent = getMessage('experimental_legend', 'Experimental');
 }
 if (experimentalDescription) {
-  experimentalDescription.textContent = getMessage('experimental_description', 'Experimental features are in active testing and may only be available in English.');
+  experimentalDescription.textContent = getMessage(
+    'experimental_description',
+    'Experimental features are in active testing and may only be available in English.',
+  );
 }
 
 const showAiNotetakersLabel = document.querySelector('[data-i18n="options_show_ai_notetakers"]');
 if (showAiNotetakersLabel) {
-  showAiNotetakersLabel.textContent = getMessage('options_show_ai_notetakers', 'Show AI & Transcription button');
+  showAiNotetakersLabel.textContent = getMessage(
+    'options_show_ai_notetakers',
+    'Show AI & Transcription button',
+  );
 }
 
-const showDevNotificationsLabel = document.querySelector('[data-i18n="options_show_dev_notifications"]');
+const showDevNotificationsLabel = document.querySelector(
+  '[data-i18n="options_show_dev_notifications"]',
+);
 if (showDevNotificationsLabel) {
-  showDevNotificationsLabel.textContent = getMessage('options_show_dev_notifications', 'Show Dev Notifications button');
+  showDevNotificationsLabel.textContent = getMessage(
+    'options_show_dev_notifications',
+    'Show Dev Notifications button',
+  );
 }
 
 // Save options to storage (sync on Chrome/Firefox, local on Safari)
@@ -119,7 +136,9 @@ function save_options() {
   const alignmentValue = alignmentSelect ? alignmentSelect.value : ALIGNMENTS.START;
   const favouritesValue = showFavouritesCheckbox ? showFavouritesCheckbox.checked : false;
   const aiNotetakersValue = showAiNotetakersCheckbox ? showAiNotetakersCheckbox.checked : false;
-  const devNotificationsValue = showDevNotificationsCheckbox ? showDevNotificationsCheckbox.checked : false;
+  const devNotificationsValue = showDevNotificationsCheckbox
+    ? showDevNotificationsCheckbox.checked
+    : false;
   storageSet({
     gmailCalDebug: debugCheckbox.checked,
     [SHOW_BUTTON_TEXT_KEY]: showButtonTextCheckbox.checked,
@@ -136,7 +155,15 @@ function save_options() {
 
 // Restore options from storage (sync on Chrome/Firefox, local on Safari)
 function restore_options() {
-  storageGet(['gmailCalDebug', SHOW_BUTTON_TEXT_KEY, SHOW_FAVOURITES_KEY, SHOW_AI_NOTETAKERS_KEY, SHOW_DEV_NOTIFICATIONS_KEY, ALIGNMENT_KEY, THEME_KEY])
+  storageGet([
+    'gmailCalDebug',
+    SHOW_BUTTON_TEXT_KEY,
+    SHOW_FAVOURITES_KEY,
+    SHOW_AI_NOTETAKERS_KEY,
+    SHOW_DEV_NOTIFICATIONS_KEY,
+    ALIGNMENT_KEY,
+    THEME_KEY,
+  ])
     .then((storageData) => {
       debugCheckbox.checked = !!storageData.gmailCalDebug;
       showButtonTextCheckbox.checked = !!storageData[SHOW_BUTTON_TEXT_KEY];

@@ -230,7 +230,7 @@ describe('options module', () => {
   });
 
   test('logs retrieval errors from storage', async () => {
-    const chrome = await loadModule({ getError: 'boom' });
+    await loadModule({ getError: 'boom' });
     const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     document.dispatchEvent(new Event('DOMContentLoaded'));
@@ -243,7 +243,7 @@ describe('options module', () => {
   });
 
   test('logs saving errors to storage', async () => {
-    const chrome = await loadModule({ setError: 'save failure' });
+    await loadModule({ setError: 'save failure' });
     const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     const debugBox = document.getElementById('debug');
     debugBox.checked = true;

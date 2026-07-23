@@ -144,8 +144,13 @@ safari-xcode/
 .pnp.*
 
 # KJ added
-.DS_store
+.DS_Store
 GIT-COMMIT.md
+
+# Internal working notes (not part of the public repo)
+_todo/
+_scratchpad/
+code-reviews/
 
 # Claude Code local settings
 .claude/settings.local.json

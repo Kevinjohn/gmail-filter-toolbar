@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Security & Privacy
+- **Icon font is now bundled locally**: The toolbar's Material Symbols Outlined font (subsetted to only the 12 glyphs used) ships inside the extension instead of being loaded from the Google Fonts CDN on every Gmail page load. The extension now makes zero external network requests.
+- **Tightened Content Security Policy**: Removed unneeded `fonts.googleapis.com`/`fonts.gstatic.com` allowances and the `sandbox` CSP block from the Chrome and Firefox manifests.
+- Removed the unused, never-referenced `Material Icons` font files that previously shipped in all builds.
+
+### Performance
+- **Debounced the document-wide toolbar observer**: Gmail's constant DOM mutations no longer trigger selector queries, observer re-attachment, and filter re-application on every mutation (now batched at 200 ms).
+- **`waitForMessageTable()` now times out after 15 s** instead of polling via `requestAnimationFrame` forever when no email rows exist (empty inbox or changed Gmail markup); the body observer still picks up rows that appear later.
+- `waitForGmailToolbar()` now stops its polling loop after the 10 s timeout fires instead of continuing to poll.
+
+### Fixed
+- **Keyboard navigation skips hidden filter buttons**: Arrow keys can no longer focus and activate an invisible filter button (Favourites/AI/Dev when disabled in options).
+- `npm run audit:options` now targets `dist/chrome/options.html` (was broken since the per-browser build split).
+- Changelog GitHub workflow: `printf` instead of `echo "\n..."` (which wrote a literal `\n`), and it now checks out and pushes `main` instead of failing on a detached tag HEAD.
+- Pre-commit hook now runs on all platforms with npm available (previously it silently skipped everywhere except WSL, letting lint failures reach the repo).
+- Fixed 3 ESLint errors in test files (unused variables) that the skipped hook had let through.
+
+### Open-source readiness
+- Added CI workflow (lint, locale validation, unit tests, both browser builds, Firefox add-on lint) for pushes and pull requests.
+- Added `license`, `author`, `repository`, `keywords`, and `engines` metadata to `package.json`.
+- Untracked internal working notes (`_todo/`, `_scratchpad/`), local Claude settings, and `.DS_Store` files; fixed `.gitignore` casing.
+- Fixed placeholder `YOUR_USERNAME` links in `.github/config.yml`, the reversed/broken licence link in the README, stale module paths and function names across README and docs, and the duplicate "How It Works" heading.
+
 ### Changed
 - **Button Labels**: Shortened English toolbar button labels for better UI density
   - "Everything" → "All", "Documents" → "Docs", "Spreadsheets" → "Sheets", "Presentations" → "Slides", "AI & Transcription" → "AI & Notes"

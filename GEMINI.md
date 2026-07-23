@@ -1,10 +1,10 @@
-# Gemini Project Memory: Gmail Calendar Options Extension
+# Gemini Project Memory: Gmail Filter Toolbar Extension
 
 This file serves as a persistent memory for the Gemini agent regarding the `chome-extension-gmail-calendar-options` project.
 
 ## Core Project Overview
 
-*   **Project Type:** Google Chrome Extension (Manifest V3)
+*   **Project Type:** Cross-browser extension (Manifest V3, Chrome/Edge/Firefox/Safari)
 *   **Primary Goal:** To enhance the Gmail web interface by allowing users to filter their inbox view. The filters can toggle the visibility of calendar-related emails and emails with attachments.
 *   **User Interface:** The extension injects a toolbar directly below Gmail's main action bar.
 

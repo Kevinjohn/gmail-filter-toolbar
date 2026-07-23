@@ -1,4 +1,4 @@
-import { describe, test, expect, jest, beforeEach, afterEach } from '@jest/globals';
+import { describe, test, expect, jest, afterEach } from '@jest/globals';
 import { isSafari, storageGet, storageSet, onStorageChanged } from '../src/modules/storage.js';
 
 const { useChromeMock, resetChromeMock } = global;

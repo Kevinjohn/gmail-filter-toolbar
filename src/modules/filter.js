@@ -1,5 +1,10 @@
 import { MODES, currentMode, debugOn } from './state.js';
-import { SELECTORS, ATTACHMENT_TYPE_CONFIG, AI_NOTETAKER_PATTERNS, DEV_NOTIFICATION_PATTERNS } from './constants.js';
+import {
+  SELECTORS,
+  ATTACHMENT_TYPE_CONFIG,
+  AI_NOTETAKER_PATTERNS,
+  DEV_NOTIFICATION_PATTERNS,
+} from './constants.js';
 
 /**
  * Checks if an email row is a calendar invitation.
@@ -69,21 +74,23 @@ export function isAiNotetakerRow(row) {
     const senderContainer = row.querySelector('.yW');
     if (senderContainer) {
       const textContent = senderContainer.textContent || '';
-      return AI_NOTETAKER_PATTERNS.some(pattern => pattern.test(textContent));
+      return AI_NOTETAKER_PATTERNS.some((pattern) => pattern.test(textContent));
     }
     return false;
   }
 
   // Get sender name from name attribute, email attribute, or text content
-  const senderName = senderElement.getAttribute('name') ||
-                     senderElement.getAttribute('email') ||
-                     senderElement.textContent || '';
+  const senderName =
+    senderElement.getAttribute('name') ||
+    senderElement.getAttribute('email') ||
+    senderElement.textContent ||
+    '';
 
   if (debugOn) {
     console.log('[AI Filter Debug] Sender name:', senderName, 'Element:', senderElement);
   }
 
-  return AI_NOTETAKER_PATTERNS.some(pattern => pattern.test(senderName));
+  return AI_NOTETAKER_PATTERNS.some((pattern) => pattern.test(senderName));
 }
 
 /**
@@ -115,7 +122,7 @@ export function isDevNotificationRow(row) {
     console.log('[Dev Notifications Debug] Sender email:', email, 'Domain:', domain);
   }
 
-  return DEV_NOTIFICATION_PATTERNS.some(pattern => pattern.test(domain));
+  return DEV_NOTIFICATION_PATTERNS.some((pattern) => pattern.test(domain));
 }
 
 /**

@@ -109,7 +109,7 @@ When selectors break due to Gmail DOM changes:
 - **toolbar.js**: `injectToolbar()` creates and inserts the custom filter toolbar. Uses `insertAdjacentElement('afterend')` to place toolbar as a **sibling** after Gmail's native toolbar (critical for stability during Gmail DOM updates).
 - **filter.js**: `applyFilter()` iterates email rows (`.UI tr.zA`) and shows/hides them based on `currentMode`. Contains detection functions like `isCalendarRow()`, `hasAttachmentRow()`, `hasSpecificAttachment()`.
 - **observers.js**:
-  - `waitForGmailChrome()`: Polls for Gmail toolbar using `requestAnimationFrame`.
+  - `waitForGmailToolbar()`: Polls for Gmail toolbar using `requestAnimationFrame`.
   - `waitForMessageTable()`: Waits for email list container.
   - `observeMessageList()`: Attaches `MutationObserver` to email list to reapply filters when content changes (pagination, new mail).
   - `setupGmailToolbarObserver()`: Monitors `document.body` to ensure toolbar stays injected if Gmail destroys/recreates elements.
@@ -141,7 +141,7 @@ These files are valuable for understanding **why** the code works the way it doe
 #### State Flow
 1. User clicks filter button → `setCurrentMode()` → `saveState()` → `applyFilter()` → `refreshUI()`
 2. Options page changes → `chrome.storage.onChanged` listener in contentScript → state setter → update view
-3. Page load → `loadState()` → `waitForGmailChrome()` → `injectToolbar()` → `waitForMessageTable()` → `applyFilter()` → `observeMessageList()`
+3. Page load → `loadState()` → `waitForGmailToolbar()` → `injectToolbar()` → `waitForMessageTable()` → `applyFilter()` → `observeMessageList()`
 
 #### Runtime Messaging API
 The extension supports programmatic control via `chrome.runtime.sendMessage()`:

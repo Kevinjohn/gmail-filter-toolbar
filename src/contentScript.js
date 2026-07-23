@@ -45,16 +45,7 @@ import {
 } from './modules/observers.js';
 import { applyTheme } from './modules/theme.js';
 
-function injectFont() {
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href =
-    'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@24,400,0';
-  document.head.appendChild(link);
-}
-
 function main() {
-  injectFont();
   loadState().then(() => {
     applyTheme(document, themePreference);
     waitForGmailToolbar()
@@ -67,10 +58,16 @@ function main() {
         updateDevNotificationsVisibility(showDevNotificationsButton);
         refreshUI(document);
 
-        waitForMessageTable().then(() => {
-          applyFilter(document);
-          observeMessageList(document);
-        });
+        waitForMessageTable()
+          .then(() => {
+            applyFilter(document);
+            observeMessageList(document);
+          })
+          .catch((error) => {
+            // WHY: warn (not error) — an empty inbox legitimately has no message rows. If rows appear
+            // later, setupGmailToolbarObserver re-attaches the list observer and re-applies the filter.
+            console.warn('Gmail message table not found:', error.message);
+          });
       })
       .catch((error) => {
         console.error('Failed to find Gmail toolbar:', error);

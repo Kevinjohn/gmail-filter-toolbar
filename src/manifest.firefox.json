@@ -28,13 +28,20 @@
     {
       "matches": ["https://mail.google.com/*"],
       "js": ["contentScript.js"],
-      "css": ["styles.css", "colours.css"],
+      "css": ["fonts/material-symbols.css", "styles.css", "colours.css"],
       "run_at": "document_idle"
     }
   ],
 
   "permissions": ["storage"],
   "host_permissions": ["https://mail.google.com/*"],
+
+  "web_accessible_resources": [
+    {
+      "resources": ["fonts/*.woff2"],
+      "matches": ["https://mail.google.com/*"]
+    }
+  ],
 
   "options_ui": {
     "page": "options.html",
@@ -49,6 +56,6 @@
   },
 
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com;"
+    "extension_pages": "script-src 'self'; object-src 'self';"
   }
 }

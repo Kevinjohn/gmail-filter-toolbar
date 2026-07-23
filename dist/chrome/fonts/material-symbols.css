@@ -1,0 +1,18 @@
+/*
+ * Material Symbols Outlined — subsetted to only the glyphs this extension uses:
+ * article, assessment, attachment, calendar_today, code, image, inbox, mail,
+ * picture_as_pdf, slideshow, smart_toy, star.
+ *
+ * Bundled locally (rather than loaded from fonts.googleapis.com) so the
+ * extension makes no network requests and works under Gmail's page CSP.
+ * The .woff2 must be listed in web_accessible_resources for content-script
+ * CSS to load it. To add a new icon, regenerate the subset via:
+ * https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=<comma-separated-names>&display=block
+ */
+@font-face {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('./MaterialSymbolsOutlined-subset.woff2') format('woff2');
+}

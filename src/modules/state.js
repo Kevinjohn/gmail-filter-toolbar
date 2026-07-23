@@ -134,7 +134,16 @@ export function setToolbarAlignment(value) {
 }
 
 export function loadState() {
-  return storageGet([KEY_MODE, KEY_DEBUG, SHOW_BUTTON_TEXT_KEY, SHOW_FAVOURITES_KEY, SHOW_AI_NOTETAKERS_KEY, SHOW_DEV_NOTIFICATIONS_KEY, ALIGNMENT_KEY, THEME_KEY])
+  return storageGet([
+    KEY_MODE,
+    KEY_DEBUG,
+    SHOW_BUTTON_TEXT_KEY,
+    SHOW_FAVOURITES_KEY,
+    SHOW_AI_NOTETAKERS_KEY,
+    SHOW_DEV_NOTIFICATIONS_KEY,
+    ALIGNMENT_KEY,
+    THEME_KEY,
+  ])
     .then((storageData) => {
       currentMode = storageData[KEY_MODE] || MODES.ALL;
       debugOn = !!storageData[KEY_DEBUG];

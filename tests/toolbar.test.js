@@ -220,6 +220,35 @@ describe('keyboard accessibility', () => {
     }
   });
 
+  test('skips hidden buttons when navigating', () => {
+    const dom = new JSDOM('<div class="aeH"></div>');
+    const doc = dom.window.document;
+    global.document = doc;
+    const firstButton = { focus: jest.fn(), click: jest.fn(), hidden: false };
+    const hiddenButton = { focus: jest.fn(), click: jest.fn(), hidden: true };
+    const lastButton = { focus: jest.fn(), click: jest.fn(), hidden: false };
+    const fakeGroup = {
+      querySelectorAll: () => [firstButton, hiddenButton, lastButton],
+    };
+    const preventDefault = jest.fn();
+    const originalDescriptor = Object.getOwnPropertyDescriptor(global.document.__proto__, 'activeElement')
+      || Object.getOwnPropertyDescriptor(Object.getPrototypeOf(global.document), 'activeElement');
+    Object.defineProperty(global.document, 'activeElement', {
+      configurable: true,
+      get: () => firstButton,
+    });
+    handleArrowNavigation({ key: 'ArrowRight', currentTarget: fakeGroup, preventDefault });
+    expect(hiddenButton.focus).not.toHaveBeenCalled();
+    expect(hiddenButton.click).not.toHaveBeenCalled();
+    expect(lastButton.focus).toHaveBeenCalled();
+    expect(lastButton.click).toHaveBeenCalled();
+    if (originalDescriptor) {
+      Object.defineProperty(global.document, 'activeElement', originalDescriptor);
+    } else {
+      delete global.document.activeElement;
+    }
+  });
+
   test('ignores non-arrow keys', () => {
     const fakeGroup = {
       querySelectorAll: jest.fn(),

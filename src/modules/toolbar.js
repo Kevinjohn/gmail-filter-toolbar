@@ -1,5 +1,12 @@
 import { ALIGNMENTS, ATTACHMENT_TYPE_CONFIG, SELECTORS } from './constants.js';
-import { MODES, currentMode, showFavouritesButton, showAiNotetakersButton, showDevNotificationsButton, toolbarAlignment } from './state.js';
+import {
+  MODES,
+  currentMode,
+  showFavouritesButton,
+  showAiNotetakersButton,
+  showDevNotificationsButton,
+  toolbarAlignment,
+} from './state.js';
 
 // Define the base filter configurations for non-attachment modes
 const BASE_FILTER_CONFIG = {
@@ -33,13 +40,7 @@ const BASE_FILTER_CONFIG = {
   },
 };
 
-const BASE_FILTER_ORDER = [
-  MODES.ALL,
-  MODES.EMAIL,
-  MODES.CALENDAR,
-  MODES.FAVOURITES,
-  MODES.ATTACH,
-];
+const BASE_FILTER_ORDER = [MODES.ALL, MODES.EMAIL, MODES.CALENDAR, MODES.FAVOURITES, MODES.ATTACH];
 
 function ensureListElement(doc = document) {
   const list = doc.querySelector(SELECTORS.emailList);
@@ -119,7 +120,12 @@ export function injectToolbar(doc = document, headerElement) {
 
   // Add Dev Notifications button
   const devConfig = BASE_FILTER_CONFIG[MODES.DEV_NOTIFICATIONS];
-  const devButton = createFilterButton(doc, MODES.DEV_NOTIFICATIONS, devConfig.icon, devConfig.labelKey);
+  const devButton = createFilterButton(
+    doc,
+    MODES.DEV_NOTIFICATIONS,
+    devConfig.icon,
+    devConfig.labelKey,
+  );
   if (!showDevNotificationsButton) {
     devButton.hidden = true;
     devButton.setAttribute('aria-hidden', 'true');
@@ -183,7 +189,11 @@ export function handleArrowNavigation(e) {
   const { key } = e;
   if (key !== 'ArrowLeft' && key !== 'ArrowRight') return;
 
-  const buttons = Array.from(e.currentTarget.querySelectorAll('button[role="radio"]'));
+  // WHY: Exclude hidden buttons (Favourites/AI/Dev filters when disabled in options) — otherwise arrow keys
+  // could focus and activate an invisible button, silently switching the user into a filter they can't see.
+  const buttons = Array.from(e.currentTarget.querySelectorAll('button[role="radio"]')).filter(
+    (btn) => !btn.hidden,
+  );
   const focusedIndex = buttons.findIndex((btn) => btn === document.activeElement);
 
   if (focusedIndex === -1) return;

@@ -104,13 +104,13 @@ export const ATTACHMENT_TYPE_CONFIG = {
  * @since 2.3.0
  */
 export const AI_NOTETAKER_PATTERNS = [
-  /gemini/i,         // Google Gemini AI
-  /chatgpt/i,        // OpenAI ChatGPT
-  /claude/i,         // Anthropic Claude
-  /copilot/i,        // Microsoft Copilot
-  /otter\.ai/i,      // Otter.ai transcription service
-  /fathom/i,         // Fathom video transcription
-  /fireflies\.ai/i,  // Fireflies.ai transcription service
+  /gemini/i, // Google Gemini AI
+  /chatgpt/i, // OpenAI ChatGPT
+  /claude/i, // Anthropic Claude
+  /copilot/i, // Microsoft Copilot
+  /otter\.ai/i, // Otter.ai transcription service
+  /fathom/i, // Fathom video transcription
+  /fireflies\.ai/i, // Fireflies.ai transcription service
 ];
 
 /**
@@ -120,8 +120,8 @@ export const AI_NOTETAKER_PATTERNS = [
  * @since 2.4.0
  */
 export const DEV_NOTIFICATION_PATTERNS = [
-  /github\.com$/i,   // matches notifications@github.com, noreply@github.com
-  /gitlab\.com$/i,   // matches gitlab@mg.gitlab.com, noreply@gitlab.com
+  /github\.com$/i, // matches notifications@github.com, noreply@github.com
+  /gitlab\.com$/i, // matches gitlab@mg.gitlab.com, noreply@gitlab.com
 ];
 
 /**

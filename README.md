@@ -6,21 +6,20 @@
 
 ## Table of Contents
 
-1. [Features](#features)  
-2. [Screenshots](#screenshots)  
-3. [Requirements](#requirements)  
-4. [Quick Start](#quick-start)  
-5. [Building for Production](#building-for-production)  
-6. [Debug Mode](#debug-mode)  
-7. [Keyboard & Accessibility Notes](#keyboard--accessibility-notes)  
-8. [Localisation](#localisation)  
-9. [Project Structure](#project-structure)  
-10. [Scripts](#scripts)  
-11. [Testing](#testing)  
-12. [Contributing](#contributing)  
-13. [Road-map](#road-map)
-14. [To-Do](#to-do)
-15. [Licence](#licence)
+1. [What It Does](#what-it-does)  
+2. [Requirements](#requirements)  
+3. [Quick Start](#quick-start)  
+4. [Building for Production](#building-for-production)  
+5. [Debug Mode](#debug-mode)  
+6. [Keyboard & Accessibility Notes](#keyboard--accessibility-notes)  
+7. [Localisation](#localisation)  
+8. [Project Structure](#project-structure)  
+9. [Scripts](#scripts)  
+10. [Testing](#testing)  
+11. [Contributing](#contributing)  
+12. [Road-map](#road-map)
+13. [To-Do](#to-do)
+14. [Licence](#licence)
 
 ---
 
@@ -53,20 +52,12 @@ Transform your Gmail inbox with instant, client-side filtering. A custom toolbar
 
 ---
 
-## Screenshots
-
-| Toolbar (default) | Toolbar (debug mode) |
-|-------------------|----------------------|
-| ![](docs/screenshot_default.png) | ![](docs/screenshot_debug.png) |
-
----
-
 ## Requirements
 
 * **Google Chrome / Microsoft Edge ≥ 114** (desktop)
 * **Mozilla Firefox ≥ 121** (desktop)
 * **Safari ≥ 15.4** (macOS only, requires Xcode)
-* **Node ≥ 18** (for build & test tooling)
+* **Node ≥ 20** (for build & test tooling)
 * macOS, Windows, or Linux
 
 ---
@@ -229,7 +220,7 @@ Access the extension options page via:
 All user-facing strings live in:
 
 ```
-_locales/
+src/_locales/
   en/
     messages.json
   en_GB/
@@ -251,20 +242,32 @@ CSS relies on logical properties (`padding-inline-start`) so RTL languages mirro
 
 ```
 src/
-├─ background.js          # MV3 service worker
-├─ contentScript.js       # injects toolbar & filters rows
+├─ contentScript.js       # entry point: injects toolbar & coordinates filtering
+├─ modules/
+│  ├─ background.js       # MV3 service worker (sets install defaults)
+│  ├─ constants.js        # Gmail selectors, config, storage keys, enums
+│  ├─ state.js            # global state + load/save via chrome.storage
+│  ├─ toolbar.js          # toolbar creation & injection
+│  ├─ filter.js           # row detection & show/hide logic
+│  ├─ observers.js        # MutationObservers & DOM polling
+│  ├─ theme.js            # light/dark/system theme handling
+│  ├─ storage.js          # cross-browser storage abstraction
+│  ├─ options.js          # options page logic
+│  └─ utils/debounce.js   # debounce helper
+├─ _locales/              # message bundles for i18n
+├─ assets/fonts/          # bundled Material Symbols icon font (subsetted)
+├─ icons/                 # 16 / 32 / 48 / 128 px PNGs (for extension icon)
 ├─ styles.css             # toolbar styling
 ├─ colours.css            # light/dark/high-contrast theme variables
-├─ options.html           # debug-mode checkbox
-├─ icons/                 # 16 / 32 / 48 / 128 px PNGs (for extension icon)
-└─ manifest.json          # extension manifest (MV3)
+├─ options.html           # extension options page
+├─ manifest.json          # Chrome/Edge manifest (MV3)
+├─ manifest.firefox.json  # Firefox manifest (MV3)
+└─ manifest.safari.json   # Safari manifest (MV3)
 
-_locales/                 # message bundles for i18n
-tests/                    # Jest unit tests
-dist/                     # build output (browser-specific)
-  ├─ chrome/              # Chrome/Edge build
-  └─ firefox/             # Firefox build
-docs/                     # screenshots & diagrams
+tests/                    # Jest unit tests + Playwright e2e suites
+scripts/                  # build, release & validation scripts
+dist/                     # build output (dist/chrome/, dist/firefox/, dist/safari/)
+docs/                     # additional documentation
 ```
 
 ## Update Strategy
@@ -283,11 +286,6 @@ To update the selectors:
 
 ## How It Works
 
-
----
-
-## How It Works
-
 This extension is built on a few core principles: listening for the right moment to act, efficiently filtering the DOM, and persisting user choices.
 
 **Important Note:** If you encounter issues with the filter not persisting after navigating between email pages, please consult `_remember_filter_on_pagination.md` for a detailed explanation of how dynamic content loading in Single-Page Applications (SPAs) like Gmail affects extension behaviour, and the architectural patterns used to address it.
@@ -296,9 +294,9 @@ This extension is built on a few core principles: listening for the right moment
 
 1.  **Entry & Injection (`contentScript.js`)**:
     *   The `manifest.json` file defines `contentScript.js` as the entry point, which runs after the Gmail page is idle (`"run_at": "document_idle"`).
-    *   The script first polls the DOM using `requestAnimationFrame` inside the `waitForGmailChrome` function until it finds a stable Gmail toolbar element (e.g., `.G-atb .G6`). This ensures the extension doesn't try to inject its UI before Gmail is ready.
+    *   The script first polls the DOM using `requestAnimationFrame` inside the `waitForGmailToolbar` function until it finds a stable Gmail toolbar element (e.g., `.G-atb .G6`). This ensures the extension doesn't try to inject its UI before Gmail is ready.
     *   Once the anchor element is found, the script injects the filter toolbar HTML. The CSS (`styles.css`) is designed to force Gmail's native toolbar to wrap, making space for the new UI elements.
-*   Additionally, `contentScript.js` dynamically injects the Material Symbols stylesheet from the Google Fonts CDN into the page's `<head>` to enable icon display.
+*   Toolbar icons use a locally bundled, subsetted Material Symbols Outlined font (`src/assets/fonts/`), injected via the manifest's `content_scripts` CSS — no external network requests are made.
 
 2.  **State Management (`background.js`, `options.js`)**:
     *   User preferences (the selected filter mode and the debug flag) are stored using the `chrome.storage.sync` API. This makes them persist across browser sessions and sync between devices.
@@ -328,9 +326,9 @@ This extension is built on a few core principles: listening for the right moment
 | `npm run validate:env` | Sanity-check required Playwright/Chrome binaries |
 | `npm run test:unit` | Jest unit+integration suites (serial for CI stability) |
 | `npm test` | Jest runner (watch mode locally) |
-| `npm run e2e` | Playwright specs (**temporarily disabled under WSL**; see WSL Playwright workaround) |
-| `npm run test:e2e:ci` | Playwright in CI mode (`list,junit` reporters, currently disabled under WSL) |
-| `npm run audit:options` | Lighthouse check against the built options page |
+| `npm run e2e` | Playwright specs (auto-skip under WSL2; run on native Linux/macOS/Windows) |
+| `npm run test:e2e:ci` | Playwright in CI mode (`list,junit` reporters) |
+| `npm run audit:options` | Lighthouse check against the built options page (`dist/chrome/options.html`) |
 | `npm run lint` | ESLint with autofix for source modules |
 | `npm run lint:locales` | Lints i18n message files for key/placeholder parity |
 | `npm run format` | Prettier auto-format (JS/CSS/HTML/JSON under `src/`) |
@@ -343,17 +341,14 @@ See `docs/testing-playbook.md` for the full test pyramid, fixtures, and debuggin
 
 * `npm run validate:env` ensures Playwright browsers and Chrome binaries are available before e2e runs.
 * `npm run test:unit` executes the Jest unit and integration suites in-band; use `npm test` for watch mode while iterating locally.
-* `npm run e2e` would drive Playwright UI flows, but all Chromium-launching suites are commented out under WSL until Chrome access stabilises (see below).
+* `npm run e2e` drives the Playwright UI flows against an offline Gmail fixture (auto-skips under WSL2 — see note below).
 * `npm run lint:locales` validates that every locale matches the English key set and placeholder structure.
 * `npm run lint` and `npm run format` keep source files consistent before committing.
-* `npm run audit:options` performs a Lighthouse pass against `dist/options.html` and stores reports under `artifacts/lighthouse/`.
-* Playwright e2e runs emit V8 coverage for `contentScript.js` in `artifacts/coverage/playwright/` (once WSL support is restored).
+* `npm run audit:options` performs a Lighthouse pass against `dist/chrome/options.html` and stores reports under `artifacts/lighthouse/`.
+* Playwright e2e runs emit V8 coverage for `contentScript.js` in `artifacts/coverage/playwright/`.
 
-### WSL Playwright Workaround
-- Chrome/Chromium cannot currently launch from inside WSL, so the Playwright fixtures and specs in `tests/e2e/` are commented out with inline notes.
-- Leave those comments in place until you can supply a Windows-hosted Chrome binary to Playwright (for example by exporting `CHROME_PATH` or running the suite from Windows proper).
-- After verifying `npm run validate:env` passes with a reachable Chrome executable, remove the block comments in `tests/e2e/fixtures/extension.js` and the accompanying spec files to reinstate the e2e suite.
-- Re-run `npx playwright install` and `npm run e2e -- --reporter=line` from a Chrome-capable shell to confirm everything passes before submitting changes that re-enable the suite.
+### WSL2 Note
+Chrome MV3 extensions with service workers cannot run in Playwright under WSL2, so the e2e suite automatically skips when it detects a WSL kernel (see `playwright.config.js`). Run e2e tests on native Linux, macOS, or Windows; in WSL2, rely on the unit suite and manual browser testing.
 
 ### Manual Smoke
 1. Load the unpacked extension and confirm the toolbar injects beneath Gmail’s action bar.
@@ -416,4 +411,4 @@ Thoughts for future development...
 
 ## Licence
 
-MIT © [https://KevinjohnGallagher.com](KevinJohn Gallagher) – see [LICENCE](LICENCE) for full text.
+MIT © [Kevinjohn Gallagher](https://kevinjohngallagher.com) – see [LICENSE](LICENSE) for full text.

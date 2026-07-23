@@ -1,4 +1,4 @@
-# Contributing to Gmail Calendar Options
+# Contributing to Gmail Filter Toolbar
 
 We welcome contributions to this project! To ensure a smooth and collaborative process, please follow these guidelines.
 

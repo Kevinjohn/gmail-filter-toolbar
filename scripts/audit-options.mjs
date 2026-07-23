@@ -6,7 +6,7 @@ import process from 'node:process';
 import { launch } from 'chrome-launcher';
 import lighthouse from 'lighthouse';
 
-const DIST_DIR = path.join(process.cwd(), 'dist');
+const DIST_DIR = path.join(process.cwd(), 'dist', process.env.BROWSER ?? 'chrome');
 const REPORT_DIR = path.join(process.cwd(), 'artifacts', 'lighthouse');
 const PORT = Number.parseInt(process.env.LIGHTHOUSE_PORT ?? '3333', 10);
 const DEFAULT_ENTRY = 'options.html';
@@ -23,7 +23,9 @@ const MIME_TYPES = {
 async function ensureDistPresent() {
   const optionsPath = path.join(DIST_DIR, DEFAULT_ENTRY);
   if (!fs.existsSync(optionsPath)) {
-    console.error('dist/options.html missing. Run `npm run build` before auditing.');
+    console.error(
+      `${path.relative(process.cwd(), optionsPath)} missing. Run \`npm run build\` before auditing.`,
+    );
     process.exitCode = 1;
     process.exit();
   }

@@ -1,14 +1,6 @@
 #!/bin/sh
 
-# Only run pre-commit hooks in WSL (not Windows Git GUI)
-if ! uname -r | grep -qi "microsoft\|wsl"; then
-  echo "⚠️  Not running in WSL - skipping pre-commit checks"
-  echo "   Pre-commit hooks only run in WSL environment"
-  echo "   Run 'npm run lint && npm run test:unit' manually if needed"
-  exit 0
-fi
-
-# Ensure npm is in PATH and executable
+# Ensure npm is in PATH and executable (e.g. Windows Git GUI may lack it)
 if ! npm --version >/dev/null 2>&1; then
   echo "⚠️  npm not executable - skipping pre-commit checks"
   echo "   Run 'npm run lint && npm run test:unit' manually before pushing"
@@ -19,9 +11,8 @@ fi
 echo "🔍  Pre-commit: Running ESLint..."
 npm run lint || exit 1
 
-# Run unit tests (E2E tests will skip automatically in WSL)
+# Run unit tests (E2E tests skip automatically in WSL2; run manually when needed: npm run e2e)
 echo "🧪  Pre-commit: Running unit tests..."
 npm run test:unit || exit 1
 
-# Note: E2E tests skipped in WSL (run manually when needed: npm run e2e)
 echo "✅  Pre-commit checks passed!"

@@ -1,6 +1,6 @@
 # End-to-End Tests
 
-This directory contains Playwright-based e2e tests for the Gmail Calendar Options extension.
+This directory contains Playwright-based e2e tests for the Gmail Filter Toolbar extension.
 
 ## Architecture
 
@@ -113,7 +113,7 @@ Coverage reports are saved to `artifacts/coverage/playwright/` and attached to t
 
 ### Extension Not Loading
 - Ensure `npm run build` completed successfully
-- Check `dist/manifest.json` exists
+- Check `dist/chrome/manifest.json` exists
 - Verify `ensureExtensionBuild()` error messages
 
 ### Toolbar Not Found

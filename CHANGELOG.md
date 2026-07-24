@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.6.1] - 2026-07-24
+
+### Fixed
+
+- Pinned pnpm to 11.7.0 so GitHub Actions can install dependencies instead of failing during
+  package-manager setup.
+
 ## [2.6.0] - 2026-07-23
 
 ### Launch hardening

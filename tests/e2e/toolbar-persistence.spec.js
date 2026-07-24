@@ -87,8 +87,10 @@ test.describe('Toolbar persistence', () => {
     // Wait for Gmail toolbar to be recreated
     await page.waitForSelector('.G-atb .G6[role="toolbar"]', { timeout: 2000 });
 
-    // Verify the toolbar is reinjected beside the replacement Gmail header.
-    const replacementToolbar = page.locator('.G-atb + .gcal-filter-wrapper .gcal-filter-bar');
+    // Verify the toolbar survives beside its anchor. The extension inserts the wrapper after
+    // .aeH (the header container), which persists while Gmail destroys/recreates .G-atb inside
+    // it — so the wrapper must still sit directly after .aeH with an intact filter bar.
+    const replacementToolbar = page.locator('.aeH + .gcal-filter-wrapper .gcal-filter-bar');
     await expect(replacementToolbar).toBeVisible();
     await expect(replacementToolbar.locator('#filter-ALL')).toBeVisible();
 

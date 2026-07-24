@@ -7,12 +7,18 @@ export class ToolbarComponent {
   }
 
   /**
-   * Asserts the toolbar has a specific alignment class.
+   * Asserts the toolbar has a specific alignment.
+   * WHY: The extension only toggles the gcal-align-center class — "start" alignment is the
+   * default state expressed by that class's ABSENCE (there is no gcal-align-start class).
    * @param {string} alignment - 'start' or 'center'
    */
   async assertAlignment(alignment) {
     const { expect } = await import('@playwright/test');
-    await expect(this.toolbar).toHaveClass(new RegExp(`gcal-align-${alignment}`));
+    if (alignment === 'center') {
+      await expect(this.toolbar).toHaveClass(/gcal-align-center/);
+    } else {
+      await expect(this.toolbar).not.toHaveClass(/gcal-align-center/);
+    }
   }
 
   /**

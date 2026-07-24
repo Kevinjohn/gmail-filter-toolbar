@@ -70,16 +70,17 @@ export class GmailPage {
     }, direction);
   }
 
-  async setLocaleSpecificTooltips() {
-    await this.page.evaluate(() => {
-      const favouriteTooltip = chrome.i18n.getMessage('alt_starred');
+  // WHY: The tooltip text must be resolved by the caller (from src/_locales) — this runs in the
+  // page's MAIN world, where chrome.i18n does not exist (only content scripts get it).
+  async setLocaleSpecificTooltips(favouriteTooltip) {
+    await this.page.evaluate((tooltip) => {
       const favourite = document.querySelector(
         'tr[data-testid="row-favourite"] span[data-tooltip]',
       );
-      if (favourite && favouriteTooltip) {
-        favourite.setAttribute('data-tooltip', favouriteTooltip);
+      if (favourite && tooltip) {
+        favourite.setAttribute('data-tooltip', tooltip);
       }
-    });
+    }, favouriteTooltip);
   }
 
   /**
@@ -114,7 +115,11 @@ export class GmailPage {
    */
   async toolbarWraps() {
     return this.page.evaluate(() => {
-      const buttons = Array.from(document.querySelectorAll('.gcal-btn-group button[role="radio"]'));
+      // WHY: Exclude hidden buttons (AI/Dev filters disabled by default) — display:none elements
+      // report a zeroed bounding rect, which made every visible row look like a second line.
+      const buttons = Array.from(
+        document.querySelectorAll('.gcal-btn-group button[role="radio"]'),
+      ).filter((btn) => !btn.hidden);
       const topOffsets = buttons.map((btn) => btn.getBoundingClientRect().top);
       return new Set(topOffsets.map((value) => Math.round(value))).size > 1;
     });

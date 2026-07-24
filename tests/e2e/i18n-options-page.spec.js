@@ -22,6 +22,13 @@ localeMatrix.forEach(({ label, locale, localeDirectory }) => {
   test.describe(`Internationalisation: ${label}`, () => {
     test.use({ locale });
 
+    // WHY: Chromium ignores --lang on macOS (it follows the system locale), so these
+    // locale-specific assertions can only pass on Linux/Windows — CI covers them.
+    test.skip(
+      process.platform === 'darwin',
+      'Chromium ignores --lang on macOS; locale assertions run in CI',
+    );
+
     test('renders options UI labels with locale-specific messages', async ({
       page,
       extensionId,

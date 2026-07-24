@@ -1,13 +1,30 @@
+import path from 'node:path';
+import { readFileSync } from 'node:fs';
+import process from 'node:process';
 import { test, expect } from './fixtures/extension.js';
 
 const localeMatrix = [
-  { label: 'English', locale: 'en-US', direction: 'ltr' },
-  { label: 'Arabic', locale: 'ar', direction: 'rtl' },
+  { label: 'English', locale: 'en-US', localeDirectory: 'en', direction: 'ltr' },
+  { label: 'Arabic', locale: 'ar', localeDirectory: 'ar', direction: 'rtl' },
 ];
 const themes = ['light', 'dark'];
 
+// WHY: Resolve extension i18n strings on the Node side from the shipped locale files.
+// page.evaluate runs in the page's MAIN world where chrome.i18n does not exist (only content
+// scripts get it), so asking the page for chrome.i18n.getMessage always throws.
+function getLocaleMessage(localeDirectory, key) {
+  const messagesPath = path.join(
+    process.cwd(),
+    'src',
+    '_locales',
+    localeDirectory,
+    'messages.json',
+  );
+  return JSON.parse(readFileSync(messagesPath, 'utf8'))[key]?.message;
+}
+
 async function stubGmailRoute(page, html) {
-  await page.route('https://mail.google.com/*', async (route) => {
+  await page.route('https://mail.google.com/**', async (route) => {
     if (route.request().resourceType() === 'document') {
       await route.fulfill({
         status: 200,
@@ -20,14 +37,13 @@ async function stubGmailRoute(page, html) {
   });
 }
 
-async function setLocaleSpecificTooltips(page) {
-  await page.evaluate(() => {
-    const favouriteTooltip = chrome.i18n.getMessage('alt_starred');
+async function setLocaleSpecificTooltips(page, favouriteTooltip) {
+  await page.evaluate((tooltip) => {
     const favourite = document.querySelector('tr[data-testid="row-favourite"] span[data-tooltip]');
-    if (favourite && favouriteTooltip) {
-      favourite.setAttribute('data-tooltip', favouriteTooltip);
+    if (favourite && tooltip) {
+      favourite.setAttribute('data-tooltip', tooltip);
     }
-  });
+  }, favouriteTooltip);
 }
 
 async function waitForStorageOptions(page, expectedOptions) {
@@ -41,10 +57,17 @@ function getBaseButtonOrder(buttons) {
   return buttons.slice(0, 5);
 }
 
-localeMatrix.forEach(({ label, locale, direction }) => {
+localeMatrix.forEach(({ label, locale, localeDirectory, direction }) => {
   themes.forEach((theme) => {
     test.describe(`${label} locale · ${theme} theme`, () => {
       test.use({ locale, colorScheme: theme });
+
+      // WHY: Chromium ignores --lang on macOS (it follows the system locale), so non-English
+      // extension i18n assertions can only pass on Linux/Windows — CI covers them.
+      test.skip(
+        process.platform === 'darwin' && localeDirectory !== 'en',
+        'Chromium ignores --lang on macOS; non-English locale assertions run in CI',
+      );
 
       test('applies options customisations to the Gmail toolbar', async ({
         page,
@@ -73,7 +96,7 @@ localeMatrix.forEach(({ label, locale, direction }) => {
         await page.evaluate((dir) => {
           document.body.setAttribute('dir', dir);
         }, direction);
-        await setLocaleSpecificTooltips(page);
+        await setLocaleSpecificTooltips(page, getLocaleMessage(localeDirectory, 'alt_starred'));
 
         const toolbar = page.locator('.gcal-filter-bar');
         await expect(toolbar).toBeVisible();
@@ -100,8 +123,7 @@ localeMatrix.forEach(({ label, locale, direction }) => {
         ]);
 
         const attachLabel = await page.locator('#filter-ATTACH').getAttribute('aria-label');
-        const expectedAttachLabel = await page.evaluate(() => chrome.i18n.getMessage('btn_attach'));
-        expect(attachLabel).toBe(expectedAttachLabel);
+        expect(attachLabel).toBe(getLocaleMessage(localeDirectory, 'btn_attach'));
       });
     });
   });
@@ -125,7 +147,7 @@ test.describe('Toolbar interactions', () => {
     await page.goto('https://mail.google.com/mail/u/0/#inbox');
 
     await page.waitForSelector('.gcal-filter-bar');
-    await setLocaleSpecificTooltips(page);
+    await setLocaleSpecificTooltips(page, getLocaleMessage('en', 'alt_starred'));
 
     const getVisibility = (testId) =>
       page.locator(`tr[data-testid="${testId}"]`).evaluate((row) => {

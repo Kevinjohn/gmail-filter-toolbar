@@ -67,7 +67,12 @@ export function isExtensionContextInvalidated() {
   // with a dead wrapper whose property access can itself throw — a throw means "orphaned" too.
   try {
     const runtime = globalThis.chrome?.runtime;
-    return !!runtime && !runtime.id;
+    // WHY: Fail closed on a missing runtime. Firefox can strip an orphaned content script's chrome
+    // global outright, and `!!runtime && ...` reported that as "valid" — injectToolbar then passed
+    // this guard and emptied the live wrapper before throwing on its first chrome.* call. A live
+    // content script always has chrome.runtime, so absence only ever means orphaned.
+    if (!runtime) return true;
+    return !runtime.id;
   } catch {
     return true;
   }

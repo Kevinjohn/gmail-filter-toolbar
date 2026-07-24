@@ -2,6 +2,7 @@ import { describe, beforeEach, test, expect, jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import {
   injectToolbar,
+  isExtensionContextInvalidated,
   updateButtonTextView,
   updateAlignmentView,
   updateButtonVisibility,
@@ -387,6 +388,29 @@ describe('orphaned extension context', () => {
 
     expect(header.nextElementSibling).toBeNull();
     expect(doc.querySelector(SELECTORS.filterBar)).toBeNull();
+  });
+
+  // WHY: Firefox can strip the orphaned script's chrome global outright rather than clearing
+  // runtime.id. Reporting that as "valid" let injectToolbar past the guard, where it emptied the
+  // live wrapper before throwing on its first chrome.* call — leaving no toolbar until reload.
+  test('treats a missing chrome global as invalidated and leaves an existing toolbar intact', () => {
+    const doc = createDocument();
+    const header = doc.querySelector('.aeH');
+    injectToolbar(doc, header);
+    const wrapper = header.nextElementSibling;
+    expect(wrapper.querySelector(SELECTORS.filterBar)).not.toBeNull();
+
+    const originalChrome = global.chrome;
+    delete global.chrome;
+    try {
+      expect(isExtensionContextInvalidated()).toBe(true);
+      injectToolbar(doc, header);
+    } finally {
+      global.chrome = originalChrome;
+    }
+
+    expect(wrapper.querySelector(SELECTORS.filterBar)).not.toBeNull();
+    expect(wrapper.querySelectorAll('button[data-mode]').length).toBeGreaterThan(0);
   });
 });
 

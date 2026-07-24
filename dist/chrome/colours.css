@@ -45,9 +45,17 @@
   }
 }
 
-/* High Contrast Mode */
+/*
+ * High Contrast Mode
+ * WHY: [data-gcal-theme] is in the selector because applyTheme always stamps that attribute on
+ * :root. A bare `:root` here (specificity 0,1,0) lost to the themed blocks above
+ * (`:root[data-gcal-theme='dark']`, 0,2,0) regardless of source order, so Windows High Contrast
+ * never took effect — the toolbar kept its hardcoded greys instead of the user's system colours.
+ * Matching their specificity lets source order do its job.
+ */
 @media (forced-colors: active) {
-  :root {
+  :root,
+  :root[data-gcal-theme] {
     --gcal-bg-color: Canvas;
     --gcal-border-color: ButtonBorder;
     --gcal-text-color: ButtonText;

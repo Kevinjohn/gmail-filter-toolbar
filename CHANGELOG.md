@@ -4,6 +4,32 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.7.2] - 2026-07-25
+
+### Fixed
+
+- Windows High Contrast mode now applies to the filter toolbar and the options page. The
+  high-contrast colour block was written for a bare `:root`, but the theme blocks it needed to
+  override are attribute-qualified and therefore more specific — and the theme attribute is always
+  present, so those blocks always won. High-contrast users got the extension's hardcoded greys
+  (`#f1f3f4` background, `#202124` text) instead of their chosen system colours, in both light and
+  dark high-contrast themes.
+- The orphaned-content-script guard no longer reports a dead context as live when the browser has
+  removed the extension API object outright, rather than merely clearing its id. Firefox can do
+  this after an update; the guard's `!!runtime && !runtime.id` test read the missing object as
+  "valid", which would have let toolbar injection proceed far enough to empty the toolbar wrapper
+  before failing on its first extension API call, leaving an open Gmail tab with no filter bar
+  until it was reloaded.
+
+### Internal
+
+- Both changes came out of a full-source review pass. The rest of that pass's findings were
+  deliberately not acted on: they described plausible failures derived from reading code rather
+  than observed ones, and several could not be verified without a browser. Changing working code
+  on that basis was judged the larger risk. See the review notes for the unactioned candidates —
+  the page-wide `.G-atb` padding and the inline `display` handling in `applyFilter` are the two
+  most likely to be worth revisiting, and both can be settled by inspection in DevTools.
+
 ## [2.7.1] - 2026-07-24
 
 ### Internal

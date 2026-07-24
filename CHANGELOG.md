@@ -4,6 +4,55 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.7.0] - 2026-07-24
+
+### Fixed
+
+- Options page no longer risks wiping saved preferences: controls stay disabled until stored
+  settings finish loading, saves are blocked before restore completes, and failed loads retry
+  automatically with backoff instead of leaving the page unusable.
+- Extension updates no longer leave a blank toolbar in open Gmail tabs: orphaned content scripts
+  detect the invalidated context before touching the DOM, and the new script repairs a gutted
+  toolbar wrapper.
+- "Match system theme" now follows Gmail's actual rendered theme (very common: light OS with dark
+  Gmail) and keeps tracking OS and Gmail theme changes live, instead of sampling once at load.
+- Multiple Inboxes: new mail arriving in the second and later inbox sections is now filtered —
+  previously only the first message list was observed.
+- Filter mode changes now sync across open Gmail tabs, and the one-time preference migration
+  cleans up its legacy keys without echoing "reset to defaults" events into open pages.
+- Gmail tabs opened in the background no longer log a spurious "toolbar not found" timeout.
+- AI & Transcription filter no longer misclassifies people whose names contain a product word
+  (e.g. a colleague named Claude), while still matching real senders like "Microsoft 365 Copilot"
+  and "Fathom AI Notetaker".
+- Attachment detection gained a locale-aware tooltip fallback, and the toolbar gained a
+  locale-independent structural fallback selector for non-English Gmail.
+
+### Accessibility
+
+- Keyboard focus survives Gmail-triggered toolbar rebuilds instead of dropping to the page.
+- Screen readers only hear filter announcements when the filter actually changes.
+- Arrow-key navigation is now RTL-aware and supports Home/End/Up/Down per the ARIA radiogroup
+  pattern; icon-only buttons show native hover tooltips.
+- Debug-mode row highlighting follows the active theme (and forced-colors mode).
+
+### Security & privacy
+
+- Removed the unused `web_accessible_resources` font entry and the orphaned `.woff2` file from
+  shipped packages, eliminating an extension-fingerprinting probe surface.
+- Added the explicit extension-pages CSP to the Safari manifest for parity with Chrome/Firefox.
+- Scoped `color-scheme` to extension surfaces so the extension no longer alters scrollbar and
+  form-control rendering across the whole Gmail page.
+
+### Internal
+
+- Migrated to ESLint 9 flat config; Prettier formatting now enforced in CI and pre-commit.
+- Unit suite grew from 162 to 200 tests with a dedicated coverage floor for the core filter
+  module; Playwright runs are capped locally (5-minute global timeout, fail-fast) so a broken
+  local environment cannot hang for half an hour.
+- Removed the unused `options_debug` locale key and added options status + attachment tooltip
+  strings across all 25 locales; the locale linter now tolerates stray files like `.DS_Store`.
+- Moved internal working notes out of the repository root and untracked husky's generated files.
+
 ## [2.6.1] - 2026-07-24
 
 ### Fixed

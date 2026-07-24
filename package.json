@@ -1,6 +1,6 @@
 {
   "name": "gmail-filter-toolbar",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "packageManager": "pnpm@11.7.0",
   "description": "Filter Gmail by calendar invites, attachments, starred messages, or regular mail.",
   "license": "MIT",

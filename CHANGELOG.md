@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.7.1] - 2026-07-24
+
+### Internal
+
+- Repaired the end-to-end test suite, which had been silently failing everywhere: the Gmail route
+  stub's URL glob never matched multi-segment paths (Playwright's `*` does not match `/`), so every
+  spec escaped to the real Gmail sign-in page — locally hanging for ~30 minutes and failing in CI.
+- Fixed four long-broken spec assertions exposed once the stub engaged: `chrome.i18n` lookups from
+  the page's main world, hidden buttons skewing the toolbar wrap measurement, a wrapper-position
+  selector anchored to the wrong element, and an alignment class that never existed.
+- Non-English locale assertions now skip on macOS, where Chromium ignores `--lang`; CI covers them.
+- Local suite result: 20 passed, 5 skipped in ~13 seconds. No extension code changed.
+
 ## [2.7.0] - 2026-07-24
 
 ### Fixed

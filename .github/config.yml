@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Ask a question
-    url: https://github.com/Kevinjohn/chome-extension-gmail-calendar-options/discussions/new
+    url: https://github.com/Kevinjohn/gmail-filter-toolbar/discussions/new
     about: Ask a question about the project or how to use it.
   - name: Report a security vulnerability
-    url: https://github.com/Kevinjohn/chome-extension-gmail-calendar-options/security/policy
+    url: https://github.com/Kevinjohn/gmail-filter-toolbar/security/policy
     about: Learn how to notify us of a security issue.

@@ -7,11 +7,11 @@
   "author": "Kevinjohn Gallagher",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Kevinjohn/chome-extension-gmail-calendar-options.git"
+    "url": "git+https://github.com/Kevinjohn/gmail-filter-toolbar.git"
   },
-  "homepage": "https://github.com/Kevinjohn/chome-extension-gmail-calendar-options#readme",
+  "homepage": "https://github.com/Kevinjohn/gmail-filter-toolbar#readme",
   "bugs": {
-    "url": "https://github.com/Kevinjohn/chome-extension-gmail-calendar-options/issues"
+    "url": "https://github.com/Kevinjohn/gmail-filter-toolbar/issues"
   },
   "keywords": [
     "gmail",

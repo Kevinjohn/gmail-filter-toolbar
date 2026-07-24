@@ -66,8 +66,8 @@ Transform your Gmail inbox with instant, client-side filtering. A custom toolbar
 ### For Chrome/Edge
 
 ```bash
-git clone https://github.com/Kevinjohn/chome-extension-gmail-calendar-options.git
-cd chome-extension-gmail-calendar-options
+git clone https://github.com/Kevinjohn/gmail-filter-toolbar.git
+cd gmail-filter-toolbar
 
 # install dev dependencies
 pnpm install --frozen-lockfile
@@ -84,8 +84,8 @@ pnpm run build:chrome
 ### For Firefox
 
 ```bash
-git clone https://github.com/Kevinjohn/chome-extension-gmail-calendar-options.git
-cd chome-extension-gmail-calendar-options
+git clone https://github.com/Kevinjohn/gmail-filter-toolbar.git
+cd gmail-filter-toolbar
 
 # install dev dependencies
 pnpm install --frozen-lockfile
@@ -109,8 +109,8 @@ Firefox will open automatically with the extension loaded.
 ### For Safari (macOS only)
 
 ```bash
-git clone https://github.com/Kevinjohn/chome-extension-gmail-calendar-options.git
-cd chome-extension-gmail-calendar-options
+git clone https://github.com/Kevinjohn/gmail-filter-toolbar.git
+cd gmail-filter-toolbar
 
 # install dev dependencies
 pnpm install --frozen-lockfile

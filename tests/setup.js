@@ -42,6 +42,9 @@ const createBaseChromeMock = () => ({
     getUILanguage: jest.fn(() => 'en'),
   },
   runtime: {
+    // WHY: A real extension context always has runtime.id; its absence is the signature of an
+    // orphaned content script, which injectToolbar/observers treat as "do not touch the DOM".
+    id: 'test-extension-id',
     lastError: null,
     onInstalled: createListenerMock(),
     onMessage: createListenerMock(),
@@ -81,9 +84,10 @@ global.resetChromeMock = () => {
 };
 
 beforeEach(() => {
-  const overrides = typeof global.__chromeOverrides === 'function'
-    ? global.__chromeOverrides()
-    : global.__chromeOverrides;
+  const overrides =
+    typeof global.__chromeOverrides === 'function'
+      ? global.__chromeOverrides()
+      : global.__chromeOverrides;
   global.chrome = createChromeMock(overrides);
 });
 

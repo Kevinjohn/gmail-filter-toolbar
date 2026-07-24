@@ -9,7 +9,7 @@ import {
   THEMES,
 } from './constants.js';
 import { applyTheme, normalizeTheme } from './theme.js';
-import { storageGet, storageSet } from './storage.js';
+import { storageGet, storageSet, onStorageChanged, getActiveAreaName } from './storage.js';
 
 const debugCheckbox = document.getElementById('debug');
 const showButtonTextCheckbox = document.getElementById('show-button-text-checkbox');
@@ -29,28 +29,123 @@ const themeOptionLight = document.getElementById('themeOptionLight');
 const themeOptionDark = document.getElementById('themeOptionDark');
 const showAiNotetakersCheckbox = document.getElementById('show-ai-notetakers-checkbox');
 const showDevNotificationsCheckbox = document.getElementById('show-dev-notifications-checkbox');
+const statusMessage = document.getElementById('status-message');
+
+const ALL_CONTROLS = [
+  debugCheckbox,
+  showButtonTextCheckbox,
+  showFavouritesCheckbox,
+  alignmentSelect,
+  themeSelect,
+  showAiNotetakersCheckbox,
+  showDevNotificationsCheckbox,
+].filter(Boolean);
+
+// WHY: Controls stay disabled until the stored options have been restored. The change listeners
+// persist a full snapshot of every control, so a click that lands before restore_options() resolves
+// would otherwise save the HTML defaults and silently wipe the user's real preferences.
+function setControlsDisabled(disabled) {
+  ALL_CONTROLS.forEach((control) => {
+    control.disabled = disabled;
+  });
+}
+setControlsDisabled(true);
+
+let statusTimeoutId = null;
+
+function showStatus(text, { transient = false } = {}) {
+  if (!statusMessage) return;
+  if (statusTimeoutId) {
+    clearTimeout(statusTimeoutId);
+    statusTimeoutId = null;
+  }
+  statusMessage.textContent = text;
+  if (transient && text) {
+    statusTimeoutId = setTimeout(() => {
+      statusMessage.textContent = '';
+      statusTimeoutId = null;
+    }, 2000);
+  }
+}
 
 function getMessage(key, fallback) {
   const value = globalThis.chrome?.i18n?.getMessage?.(key);
   return value || fallback;
 }
 
-// Set document language dynamically based on browser locale
-const uiLanguage = globalThis.chrome?.i18n?.getUILanguage?.() || 'en';
+// Set document language dynamically based on browser locale.
+// WHY: Only advertise a lang the extension actually ships — for an unshipped browser locale the page
+// falls back to English text, and stamping e.g. lang="ja" on English copy makes screen readers use
+// the wrong pronunciation language.
+const SHIPPED_LOCALES = new Set([
+  'ar',
+  'cs',
+  'da',
+  'de',
+  'el',
+  'en',
+  'en-GB',
+  'es',
+  'es-419',
+  'fi',
+  'fr',
+  'hi',
+  'hu',
+  'it',
+  'nl',
+  'no',
+  'pl',
+  'pt-BR',
+  'pt-PT',
+  'ro',
+  'ru',
+  'sv',
+  'tr',
+  'uk',
+  'zh-CN',
+]);
+const uiLanguage = (globalThis.chrome?.i18n?.getUILanguage?.() || 'en').replace('_', '-');
+const baseLanguage = uiLanguage.split('-')[0];
+const documentLanguage = SHIPPED_LOCALES.has(uiLanguage)
+  ? uiLanguage
+  : SHIPPED_LOCALES.has(baseLanguage)
+    ? baseLanguage
+    : 'en';
 const rtlLanguages = new Set(['ar', 'fa', 'he', 'ur']);
-document.documentElement.lang = uiLanguage;
-document.documentElement.dir = rtlLanguages.has(uiLanguage.split(/[-_]/)[0]) ? 'rtl' : 'ltr';
+document.documentElement.lang = documentLanguage;
+document.documentElement.dir = rtlLanguages.has(documentLanguage.split('-')[0]) ? 'rtl' : 'ltr';
 
 function normalizeAlignment(value) {
   return Object.values(ALIGNMENTS).includes(value) ? value : ALIGNMENTS.START;
 }
 
+/**
+ * Coerces a raw storage snapshot into a complete, valid options object.
+ * Single source of truth for option defaults — used by the no-storage fallback, restore, and the
+ * onChanged mirror so their semantics can't drift apart.
+ */
+function normalizeOptions(raw = {}) {
+  return {
+    gmailCalDebug: !!raw.gmailCalDebug,
+    [SHOW_BUTTON_TEXT_KEY]:
+      raw[SHOW_BUTTON_TEXT_KEY] === undefined ? true : !!raw[SHOW_BUTTON_TEXT_KEY],
+    [SHOW_FAVOURITES_KEY]: !!raw[SHOW_FAVOURITES_KEY],
+    [SHOW_AI_NOTETAKERS_KEY]: !!raw[SHOW_AI_NOTETAKERS_KEY],
+    [SHOW_DEV_NOTIFICATIONS_KEY]: !!raw[SHOW_DEV_NOTIFICATIONS_KEY],
+    [ALIGNMENT_KEY]: normalizeAlignment(raw[ALIGNMENT_KEY]),
+    [THEME_KEY]: normalizeTheme(raw[THEME_KEY] ?? THEMES.SYSTEM),
+  };
+}
+
 // Localize text content
-document.title = getMessage('page_title', 'Calendar Options');
-document.getElementById('pageTitle').textContent = getMessage('page_title', 'Calendar Options');
+document.title = getMessage('page_title', 'Filter Toolbar Options');
+document.getElementById('pageTitle').textContent = getMessage(
+  'page_title',
+  'Filter Toolbar Options',
+);
 document.getElementById('pageDescription').textContent = getMessage(
   'options_page_description',
-  'Settings for the Gmail Filter Toolbar extension.',
+  'Configure filtering options and toolbar preferences for Gmail.',
 );
 document.getElementById('debugLegend').textContent = getMessage(
   'options_debug_legend',
@@ -164,31 +259,37 @@ function applyOptionsToControls(options) {
 
 // Save options through the browser-compatible storage abstraction.
 function save_options() {
+  // WHY: Never save before the stored options have been restored — the controls would still hold
+  // the HTML defaults and a full-snapshot write would wipe the user's real preferences.
+  if (!persistedOptions) return;
+
   const nextOptions = readOptionsFromControls();
   applyTheme(document, nextOptions[THEME_KEY]);
   storageSet(nextOptions)
     .then(() => {
       persistedOptions = nextOptions;
+      showStatus(getMessage('options_status_saved', 'Settings saved'), { transient: true });
     })
     .catch((error) => {
       console.error('Error saving options:', error);
-      if (persistedOptions) applyOptionsToControls(persistedOptions);
+      applyOptionsToControls(persistedOptions);
+      showStatus(
+        getMessage('options_status_save_error', 'Couldn’t save settings. Please try again.'),
+      );
     });
 }
+
+// WHY: Transient storage errors (temporary add-on IDs, sync backend hiccups) shouldn't leave the
+// page dead — retry the restore a few times with backoff before surfacing the failure message.
+const RESTORE_RETRY_DELAYS_MS = [500, 1000, 2000];
+let restoreAttempts = 0;
 
 // Restore options through the browser-compatible storage abstraction.
 function restore_options() {
   if (!globalThis.chrome?.storage) {
-    persistedOptions = {
-      gmailCalDebug: false,
-      [SHOW_BUTTON_TEXT_KEY]: true,
-      [SHOW_FAVOURITES_KEY]: false,
-      [SHOW_AI_NOTETAKERS_KEY]: false,
-      [SHOW_DEV_NOTIFICATIONS_KEY]: false,
-      [ALIGNMENT_KEY]: ALIGNMENTS.START,
-      [THEME_KEY]: THEMES.SYSTEM,
-    };
+    persistedOptions = normalizeOptions();
     applyOptionsToControls(persistedOptions);
+    setControlsDisabled(false);
     return;
   }
 
@@ -202,23 +303,53 @@ function restore_options() {
     THEME_KEY,
   ])
     .then((storageData) => {
-      persistedOptions = {
-        gmailCalDebug: !!storageData.gmailCalDebug,
-        [SHOW_BUTTON_TEXT_KEY]:
-          storageData[SHOW_BUTTON_TEXT_KEY] === undefined
-            ? true
-            : !!storageData[SHOW_BUTTON_TEXT_KEY],
-        [SHOW_FAVOURITES_KEY]: !!storageData[SHOW_FAVOURITES_KEY],
-        [SHOW_AI_NOTETAKERS_KEY]: !!storageData[SHOW_AI_NOTETAKERS_KEY],
-        [SHOW_DEV_NOTIFICATIONS_KEY]: !!storageData[SHOW_DEV_NOTIFICATIONS_KEY],
-        [ALIGNMENT_KEY]: normalizeAlignment(storageData[ALIGNMENT_KEY]),
-        [THEME_KEY]: normalizeTheme(storageData[THEME_KEY] ?? THEMES.SYSTEM),
-      };
+      restoreAttempts = 0;
+      persistedOptions = normalizeOptions(storageData);
       applyOptionsToControls(persistedOptions);
+      setControlsDisabled(false);
+      showStatus('');
     })
     .catch((error) => {
+      // WHY: Keep the controls disabled — they still show unsaved HTML defaults, and enabling them
+      // would let a change persist that wrong snapshot over the user's stored preferences.
       console.error('Error retrieving options:', error);
+      const retryDelay = RESTORE_RETRY_DELAYS_MS[restoreAttempts];
+      restoreAttempts += 1;
+      if (retryDelay !== undefined) {
+        setTimeout(restore_options, retryDelay);
+        return;
+      }
+      showStatus(
+        getMessage(
+          'options_status_load_error',
+          'Couldn’t load settings. Close and reopen this page to try again.',
+        ),
+      );
     });
+}
+
+// Keep the page in sync when settings change elsewhere (another window, another synced profile).
+if (globalThis.chrome?.storage?.onChanged) {
+  onStorageChanged((changes, areaName) => {
+    // WHY: Only react to the active backend's area — the legacy migration removes keys from
+    // *local* after copying them to sync, and treating those removals (newValue: undefined) as
+    // changes would reset every control to defaults and clobber the just-migrated preferences.
+    if (areaName !== getActiveAreaName()) return;
+    if (!persistedOptions) return;
+
+    const nextRaw = { ...persistedOptions };
+    let changed = false;
+    for (const key of Object.keys(nextRaw)) {
+      if (key in changes && changes[key].newValue !== nextRaw[key]) {
+        nextRaw[key] = changes[key].newValue;
+        changed = true;
+      }
+    }
+    if (!changed) return;
+
+    persistedOptions = normalizeOptions(nextRaw);
+    applyOptionsToControls(persistedOptions);
+  });
 }
 
 // Event Listeners

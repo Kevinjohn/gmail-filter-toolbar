@@ -63,10 +63,6 @@
     "message": "Filter Toolbar Options",
     "description": "Title for the extension's options page."
   },
-  "options_debug": {
-    "message": "Enable debug mode (show filtered rows in blue)",
-    "description": "Label for the debug mode checkbox."
-  },
   "options_page_description": {
     "message": "Configure filtering options and toolbar preferences for Gmail.",
     "description": "A short summary of the options page."
@@ -162,5 +158,21 @@
   "options_show_dev_notifications": {
     "message": "Show Dev Notifications button",
     "description": "Checkbox label in options page to enable/disable Dev Notifications filter button."
+  },
+  "options_status_saved": {
+    "message": "Settings saved",
+    "description": "Status message shown on the options page after settings are saved."
+  },
+  "options_status_save_error": {
+    "message": "Couldn’t save settings. Please try again.",
+    "description": "Status message shown on the options page when saving settings fails."
+  },
+  "options_status_load_error": {
+    "message": "Couldn’t load settings. Close and reopen this page to try again.",
+    "description": "Status message shown on the options page when loading settings fails."
+  },
+  "alt_has_attachment": {
+    "message": "Has attachment",
+    "description": "Tooltip text Gmail uses for the attachment indicator. Should mirror Gmail's own localized 'Has attachment' tooltip so attachment detection works in this language."
   }
 }

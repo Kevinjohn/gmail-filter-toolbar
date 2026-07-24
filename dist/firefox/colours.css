@@ -7,7 +7,6 @@
   --gcal-text-color: #202124;
   --gcal-active-button-text: #d93025; /* Gmail Red */
   --gcal-debug-overlay: rgba(0, 123, 255, 0.15); /* Light blue for debug */
-  color-scheme: light;
 }
 
 :root[data-gcal-theme='light'] {
@@ -16,7 +15,6 @@
   --gcal-text-color: #202124;
   --gcal-active-button-text: #d93025; /* Gmail Red */
   --gcal-debug-overlay: rgba(0, 123, 255, 0.15); /* Light blue for debug */
-  color-scheme: light;
 }
 
 :root[data-gcal-theme='dark'] {
@@ -25,7 +23,6 @@
   --gcal-text-color: #e8eaed;
   --gcal-active-button-text: #f28b82; /* Lighter Gmail Red */
   --gcal-debug-overlay: rgba(138, 180, 248, 0.25); /* Lighter blue for debug */
-  color-scheme: dark;
 }
 
 :root[data-gcal-theme='system'] {
@@ -34,7 +31,6 @@
   --gcal-text-color: #202124;
   --gcal-active-button-text: #d93025; /* Gmail Red */
   --gcal-debug-overlay: rgba(0, 123, 255, 0.15); /* Light blue for debug */
-  color-scheme: light;
 }
 
 /* Dark Mode */
@@ -46,7 +42,6 @@
     --gcal-text-color: #e8eaed;
     --gcal-active-button-text: #f28b82; /* Lighter Gmail Red */
     --gcal-debug-overlay: rgba(138, 180, 248, 0.25); /* Lighter blue for debug */
-    color-scheme: dark;
   }
 }
 
@@ -58,5 +53,30 @@
     --gcal-text-color: ButtonText;
     --gcal-active-button-text: Highlight;
     --gcal-debug-overlay: Highlight; /* Use system highlight color */
+  }
+}
+
+/*
+ * WHY: color-scheme is scoped to extension-owned surfaces (the injected toolbar wrapper and the
+ * options page body) instead of :root. This stylesheet is injected into Gmail as content-script
+ * CSS, and setting color-scheme on Gmail's :root would override Gmail's own scheme — changing
+ * scrollbar and form-control rendering across the whole page, not just the toolbar.
+ */
+.gcal-filter-wrapper,
+body.gcal-options-page {
+  color-scheme: light;
+}
+
+:root[data-gcal-theme='dark'] .gcal-filter-wrapper,
+:root[data-gcal-theme='dark'] body.gcal-options-page {
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-gcal-theme]) .gcal-filter-wrapper,
+  :root[data-gcal-theme='system'] .gcal-filter-wrapper,
+  :root:not([data-gcal-theme]) body.gcal-options-page,
+  :root[data-gcal-theme='system'] body.gcal-options-page {
+    color-scheme: dark;
   }
 }

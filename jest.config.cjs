@@ -20,5 +20,13 @@ module.exports = {
       functions: 55,
       lines: 80,
     },
+    // WHY: filter.js is the extension's core classification logic — pin its own floor so it can't
+    // silently regress while the global aggregate stays green.
+    './src/modules/filter.js': {
+      statements: 90,
+      branches: 80,
+      functions: 90,
+      lines: 90,
+    },
   },
 };

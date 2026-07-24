@@ -73,7 +73,9 @@ export class GmailPage {
   async setLocaleSpecificTooltips() {
     await this.page.evaluate(() => {
       const favouriteTooltip = chrome.i18n.getMessage('alt_starred');
-      const favourite = document.querySelector('tr[data-testid="row-favourite"] span[data-tooltip]');
+      const favourite = document.querySelector(
+        'tr[data-testid="row-favourite"] span[data-tooltip]',
+      );
       if (favourite && favouriteTooltip) {
         favourite.setAttribute('data-tooltip', favouriteTooltip);
       }
@@ -101,8 +103,8 @@ export class GmailPage {
   async getButtonOrder() {
     return this.page.evaluate(() =>
       Array.from(document.querySelectorAll('.gcal-btn-group button[data-mode]')).map(
-        (btn) => btn.dataset.mode
-      )
+        (btn) => btn.dataset.mode,
+      ),
     );
   }
 
@@ -112,9 +114,7 @@ export class GmailPage {
    */
   async toolbarWraps() {
     return this.page.evaluate(() => {
-      const buttons = Array.from(
-        document.querySelectorAll('.gcal-btn-group button[role="radio"]')
-      );
+      const buttons = Array.from(document.querySelectorAll('.gcal-btn-group button[role="radio"]'));
       const topOffsets = buttons.map((btn) => btn.getBoundingClientRect().top);
       return new Set(topOffsets.map((value) => Math.round(value))).size > 1;
     });

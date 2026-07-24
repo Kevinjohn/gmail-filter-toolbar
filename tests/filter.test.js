@@ -282,7 +282,8 @@ describe('applyFilter edge cases', () => {
     setCurrentMode(MODES.CALENDAR);
     setDebugOn(true);
     applyFilter(doc);
-    expect(rows[1].style.opacity).toBe('0.5');
+    // Debug highlighting is class-based so the overlay colour follows the active theme.
+    expect(rows[1].classList.contains('gcal-debug-highlight')).toBe(true);
     expect(rows[1].style.display).toBe('');
   });
 
@@ -293,7 +294,7 @@ describe('applyFilter edge cases', () => {
     applyFilter(doc);
     setDebugOn(false);
     applyFilter(doc);
-    expect(rows[1].style.opacity).toBe('');
+    expect(rows[1].classList.contains('gcal-debug-highlight')).toBe(false);
     expect(rows[1].style.display).toBe('none');
   });
 });
@@ -511,5 +512,122 @@ describe('state mutations in tandem', () => {
     setShowFavouritesButton(true);
     setThemePreference('dark');
     expect(() => applyFilter(document)).not.toThrow();
+  });
+});
+
+describe('AI notetaker pattern precision', () => {
+  const buildRow = (name, email) => {
+    const doc = makeMailDocument();
+    const row = doc.createElement('tr');
+    const senderSpan = doc.createElement('span');
+    senderSpan.className = 'zF';
+    senderSpan.setAttribute('name', name);
+    senderSpan.setAttribute('email', email);
+    const container = doc.createElement('div');
+    container.className = 'yW';
+    container.appendChild(senderSpan);
+    row.appendChild(container);
+    doc.querySelector('.UI').appendChild(row);
+    return row;
+  };
+
+  test('matches the bare product name "Claude"', () => {
+    expect(isAiNotetakerRow(buildRow('Claude', 'noreply@anthropic.com'))).toBe(true);
+  });
+
+  test('matches vendor-prefixed product names', () => {
+    expect(isAiNotetakerRow(buildRow('Anthropic Claude', 'noreply@anthropic.com'))).toBe(true);
+    expect(isAiNotetakerRow(buildRow('Microsoft Copilot', 'copilot@microsoft.com'))).toBe(true);
+  });
+
+  test('matches real product sender names with extra tokens', () => {
+    expect(isAiNotetakerRow(buildRow('Microsoft 365 Copilot', 'copilot@microsoft.com'))).toBe(true);
+    expect(isAiNotetakerRow(buildRow('Fathom AI Notetaker', 'no-reply@fathom.video'))).toBe(true);
+    expect(isAiNotetakerRow(buildRow('Gemini for Google Workspace', 'gemini@google.com'))).toBe(
+      true,
+    );
+  });
+
+  test('does not match humans whose names contain a product word', () => {
+    expect(isAiNotetakerRow(buildRow('Claude Dupont', 'claude.dupont@example.com'))).toBe(false);
+    expect(isAiNotetakerRow(buildRow('Gemini Horoscope Daily', 'stars@example.com'))).toBe(false);
+    expect(isAiNotetakerRow(buildRow('Fathom Analytics', 'billing@usefathom.com'))).toBe(false);
+  });
+});
+
+describe('hasAttachmentRow localized tooltip', () => {
+  test('detects attachments via the extension-locale tooltip text', () => {
+    const { row, document: doc } = prepareDocument();
+    const tooltipSpan = doc.createElement('span');
+    tooltipSpan.setAttribute('data-tooltip', 'Mit Anhang');
+    row.appendChild(tooltipSpan);
+
+    const chromeApi = {
+      i18n: { getMessage: (key) => (key === 'alt_has_attachment' ? 'Mit Anhang' : '') },
+    };
+    expect(hasAttachmentRow(row, chromeApi)).toBe(true);
+    // Without the localized message the same row is not detected
+    expect(hasAttachmentRow(row, { i18n: { getMessage: () => '' } })).toBe(false);
+  });
+});
+
+describe('sender detection fallbacks', () => {
+  const buildRowWithSender = (buildSender) => {
+    const doc = makeMailDocument();
+    const row = doc.createElement('tr');
+    const container = doc.createElement('div');
+    container.className = 'yW';
+    buildSender(doc, container);
+    row.appendChild(container);
+    doc.querySelector('.UI').appendChild(row);
+    return row;
+  };
+
+  test('isAiNotetakerRow falls back to any span[email] in the sender area', () => {
+    const row = buildRowWithSender((doc, container) => {
+      const span = doc.createElement('span');
+      span.setAttribute('email', 'meetings@otter.ai');
+      span.textContent = 'Otter.ai';
+      container.appendChild(span);
+    });
+    expect(isAiNotetakerRow(row)).toBe(true);
+  });
+
+  test('isAiNotetakerRow falls back to sender-area text content', () => {
+    const row = buildRowWithSender((doc, container) => {
+      container.textContent = 'ChatGPT';
+    });
+    expect(isAiNotetakerRow(row)).toBe(true);
+  });
+
+  test('isAiNotetakerRow returns false without a sender area', () => {
+    const doc = makeMailDocument();
+    const row = doc.createElement('tr');
+    doc.querySelector('.UI').appendChild(row);
+    expect(isAiNotetakerRow(row)).toBe(false);
+  });
+
+  test('isDevNotificationRow falls back to any span[email] in the sender area', () => {
+    const row = buildRowWithSender((doc, container) => {
+      const span = doc.createElement('span');
+      span.setAttribute('email', 'notifications@github.com');
+      container.appendChild(span);
+    });
+    expect(isDevNotificationRow(row)).toBe(true);
+  });
+
+  test('isDevNotificationRow returns false without any sender element', () => {
+    const row = buildRowWithSender(() => {});
+    expect(isDevNotificationRow(row)).toBe(false);
+  });
+
+  test('isDevNotificationRow ignores lookalike domains', () => {
+    const row = buildRowWithSender((doc, container) => {
+      const span = doc.createElement('span');
+      span.className = 'yP';
+      span.setAttribute('email', 'phish@github.com.evil.example');
+      container.appendChild(span);
+    });
+    expect(isDevNotificationRow(row)).toBe(false);
   });
 });

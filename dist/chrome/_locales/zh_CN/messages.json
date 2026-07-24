@@ -59,10 +59,6 @@
     "message": "日历选项",
     "description": "Title for the extension's options page."
   },
-  "options_debug": {
-    "message": "启用调试模式（以蓝色显示筛选的行）",
-    "description": "Label for the debug mode checkbox."
-  },
   "options_page_description": {
     "message": "Gmail 日历选项扩展的设置。",
     "description": "A short summary of the options page."
@@ -162,5 +158,21 @@
   "options_show_dev_notifications": {
     "message": "显示开发者通知按钮",
     "description": "Checkbox label in options page to enable/disable Dev Notifications filter button."
+  },
+  "options_status_saved": {
+    "message": "设置已保存",
+    "description": "Status message shown on the options page after settings are saved."
+  },
+  "options_status_save_error": {
+    "message": "无法保存设置，请重试。",
+    "description": "Status message shown on the options page when saving settings fails."
+  },
+  "options_status_load_error": {
+    "message": "无法加载设置。请关闭并重新打开此页面重试。",
+    "description": "Status message shown on the options page when loading settings fails."
+  },
+  "alt_has_attachment": {
+    "message": "有附件",
+    "description": "Tooltip text Gmail uses for the attachment indicator. Should mirror Gmail's own localized 'Has attachment' tooltip so attachment detection works in this language."
   }
 }

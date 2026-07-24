@@ -16,6 +16,7 @@ import {
   setDebugOn,
   setShowButtonText,
   KEY_DEBUG,
+  KEY_MODE,
   currentMode,
   toolbarAlignment,
   setToolbarAlignment,
@@ -41,6 +42,7 @@ import {
   setupGmailToolbarObserver,
 } from './modules/observers.js';
 import { applyTheme } from './modules/theme.js';
+import { getActiveAreaName } from './modules/storage.js';
 
 let modePersistenceQueue = Promise.resolve();
 
@@ -103,6 +105,12 @@ function applyOptionalModeChange(key, change) {
 async function main() {
   await loadState();
   setupGmailToolbarObserver(document);
+
+  // WHY: Keep "system" theme live — re-resolve when the OS scheme flips. (Gmail's own theme flips
+  // re-resolve via the body observer, which re-applies the theme on DOM churn.)
+  const colorSchemeQuery = globalThis.matchMedia?.('(prefers-color-scheme: dark)');
+  colorSchemeQuery?.addEventListener?.('change', () => applyTheme(document, themePreference));
+
   try {
     applyTheme(document, themePreference);
     const gmailToolbarHeader = await waitForGmailToolbar(document);
@@ -134,7 +142,23 @@ document.addEventListener('click', (e) => {
 });
 
 // Listen for storage changes (e.g., debug mode or showButtonText toggled in options.html)
-chrome.storage.onChanged.addListener((changes) => {
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  // WHY: Only react to the active backend's area. The legacy migration removes keys from *local*
+  // after copying them to sync — accepting 'local' events alongside 'sync' would misread those
+  // removals (newValue: undefined) as "reset everything to defaults" and clobber live state.
+  if (areaName !== getActiveAreaName()) return;
+
+  // WHY: The filter mode is a global preference — mirror changes made in another Gmail tab so each
+  // tab's toolbar reflects the stored mode instead of drifting per-tab. Apply without re-persisting
+  // to avoid write loops; our own write is a no-op here because currentMode already matches.
+  if (KEY_MODE in changes) {
+    const nextMode = changes[KEY_MODE].newValue;
+    if (isValidMode(nextMode) && nextMode !== currentMode) {
+      setCurrentMode(nextMode);
+      applyFilter(document);
+      refreshUI(document);
+    }
+  }
   if (KEY_DEBUG in changes) {
     setDebugOn(changes[KEY_DEBUG].newValue);
     applyFilter(document);

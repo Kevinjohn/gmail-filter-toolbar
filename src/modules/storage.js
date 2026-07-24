@@ -17,6 +17,20 @@ function getStorageBackend() {
   return chrome.storage.sync ?? chrome.storage.local;
 }
 
+/**
+ * Name of the storage area the abstraction actually writes to ('sync' or 'local').
+ *
+ * WHY: onChanged listeners must only react to the active backend's area. The legacy migration
+ * removes keys from local after copying them to sync; if listeners also accepted 'local' events,
+ * those removals (newValue: undefined) would be misread as "preferences reset to defaults" and
+ * clobber the just-migrated values.
+ *
+ * @returns {'sync'|'local'}
+ */
+export function getActiveAreaName() {
+  return chrome.storage.sync ? 'sync' : 'local';
+}
+
 function getFromStorage(area, keys) {
   return new Promise((resolve, reject) => {
     area.get(keys, (result) => {
@@ -24,6 +38,18 @@ function getFromStorage(area, keys) {
         reject(chrome.runtime.lastError);
       } else {
         resolve(result);
+      }
+    });
+  });
+}
+
+function removeFromStorage(area, keys) {
+  return new Promise((resolve, reject) => {
+    area.remove(keys, () => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve();
       }
     });
   });
@@ -78,7 +104,19 @@ export async function storageGet(keys) {
       .map((key) => [key, legacyValues[key]]),
   );
   if (Object.keys(recovered).length) {
-    await setInStorage(backend, recovered);
+    // WHY: The migration write is best-effort — the values were already read successfully, so a
+    // failed sync write (quota, throttle, sync disabled) must not reject the whole storageGet and
+    // break the caller. The legacy values stay in local and migration retries next read.
+    try {
+      await setInStorage(backend, recovered);
+      // WHY: Delete the migrated keys from local so the migration is genuinely one-time. Leaving
+      // them behind meant every context re-read local forever, and a later divergence between the
+      // two areas could silently resurrect stale values. Best-effort: a failed cleanup only means
+      // the migration re-runs (idempotently) next time.
+      await removeFromStorage(local, Object.keys(recovered));
+    } catch (error) {
+      console.warn('Failed to migrate legacy storage values to sync:', error);
+    }
   }
   return { ...stored, ...recovered };
 }

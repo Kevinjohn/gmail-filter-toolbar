@@ -152,6 +152,10 @@ GIT-COMMIT.md
 _todo/
 _scratchpad/
 code-reviews/
+_remember_*.md
+
+# Husky-generated runtime files (recreated by `pnpm prepare`)
+.husky/_/
 
 # Claude Code local settings
 .claude/settings.local.json

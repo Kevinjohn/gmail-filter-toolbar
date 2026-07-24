@@ -29,6 +29,13 @@ if (isWSL && !isCI && !forceRun) {
 export default defineConfig({
   testDir: './tests/e2e',
   timeout: 30 * 1000,
+  // WHY: Hard wall-clock cap on the whole run. Without it, an environment where every spec hangs
+  // (e.g. the Gmail stub not engaging and Chrome sitting on a real Gmail login) burns 30+ minutes
+  // of serial per-test timeouts. Locally the run aborts after 5 minutes; CI gets more headroom.
+  globalTimeout: isCI ? 20 * 60 * 1000 : 5 * 60 * 1000,
+  // WHY: Locally, stop after a handful of failures — if the environment is broken, every spec
+  // fails the same way and there is no value in grinding through the rest. CI runs everything.
+  maxFailures: isCI ? 0 : 5,
   fullyParallel: !isCI, // Enable parallel execution locally for speed
   retries: isCI ? 2 : 0, // Increased retries for CI flakiness
   workers,

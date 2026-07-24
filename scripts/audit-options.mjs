@@ -56,7 +56,7 @@ async function serveStaticFile(res, filePath) {
     });
     fs.createReadStream(filePath).pipe(res);
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }

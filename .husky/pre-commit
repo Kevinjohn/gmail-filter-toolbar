@@ -11,6 +11,10 @@ fi
 echo "🔍  Pre-commit: Running ESLint..."
 pnpm run lint || exit 1
 
+# Verify formatting (fix with: pnpm run format)
+echo "🎨  Pre-commit: Checking Prettier formatting..."
+pnpm run format:check || exit 1
+
 # Run unit tests (E2E tests skip automatically in WSL2; run manually when needed: pnpm run e2e)
 echo "🧪  Pre-commit: Running unit tests..."
 pnpm run test:unit || exit 1

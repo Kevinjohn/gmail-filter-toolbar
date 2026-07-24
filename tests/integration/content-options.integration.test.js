@@ -404,7 +404,9 @@ describe('Integration: DOM + Message Passing', () => {
     expect(result).toBe(false);
     await flushPromises();
 
-    expect(liveRegion?.textContent).toBe('Filter set to Everything');
+    // WHY: The mode did not change, so the live region must stay silent — re-announcing the
+    // unchanged filter on every refresh/re-injection was screen-reader spam.
+    expect(liveRegion?.textContent).toBe('');
     expect(global.chrome.storage.sync.set).not.toHaveBeenCalled();
     expect(sendResponse).toHaveBeenCalledWith({ ok: true, mode: stateModule.MODES.ALL });
   });
@@ -414,6 +416,9 @@ describe('Integration: DOM + Message Passing', () => {
     await loadContentScript();
     await import('../../src/modules/options.js');
     document.dispatchEvent(createEvent('DOMContentLoaded'));
+    // WHY: Wait for restore_options to resolve — saves are (deliberately) ignored until the stored
+    // options are restored, so the quota-error path can only trigger after restoration completes.
+    await flushPromises();
 
     const filterBar = document.querySelector('.gcal-filter-bar');
     const showTextCheckbox = document.getElementById('show-button-text-checkbox');

@@ -86,6 +86,7 @@ describe('contentScript main lifecycle', () => {
       setShowButtonText: jest.fn(),
       showButtonText: true,
       KEY_DEBUG: 'gmailCalDebug',
+      KEY_MODE: 'gmailCalMode',
       currentMode: 'ALL',
       toolbarAlignment: 'start',
       setToolbarAlignment: setToolbarAlignmentMock,
@@ -201,15 +202,59 @@ describe('contentScript main lifecycle', () => {
     expect(persistModeMock).toHaveBeenNthCalledWith(2, 'ALL');
   });
 
+  test('mirrors mode changes from other tabs without re-persisting', async () => {
+    storageChangeListener({ gmailCalMode: { newValue: 'CALENDAR' } }, 'sync');
+    await flushPromises();
+
+    expect(setCurrentModeMock).toHaveBeenCalledWith('CALENDAR');
+    expect(applyFilterMock).toHaveBeenCalled();
+    expect(refreshUIMock).toHaveBeenCalled();
+    // Mirroring must not write back to storage — that would loop across tabs.
+    expect(persistModeMock).not.toHaveBeenCalled();
+  });
+
+  test('ignores storage changes from unrelated areas', async () => {
+    storageChangeListener(
+      { gmailCalMode: { newValue: 'CALENDAR' }, showButtonText: { newValue: false } },
+      'managed',
+    );
+    await flushPromises();
+
+    expect(setCurrentModeMock).not.toHaveBeenCalled();
+    expect(updateButtonTextViewMock).not.toHaveBeenCalled();
+  });
+
+  test('ignores local-area events when sync is the active backend (migration cleanup)', async () => {
+    // WHY: The legacy migration removes keys from local after copying them to sync; those removal
+    // events (newValue: undefined) must not be misread as "reset everything to defaults".
+    applyFilterMock.mockClear(); // ignore the applyFilter call from init
+    storageChangeListener(
+      {
+        gmailCalDebug: { oldValue: true },
+        showButtonText: { oldValue: false },
+        gmailCalTheme: { oldValue: 'dark' },
+      },
+      'local',
+    );
+    await flushPromises();
+
+    expect(updateButtonTextViewMock).not.toHaveBeenCalled();
+    expect(setThemePreferenceMock).not.toHaveBeenCalled();
+    expect(applyFilterMock).not.toHaveBeenCalled();
+  });
+
   test('reacts to storage changes', async () => {
     expect(typeof storageChangeListener).toBe('function');
-    storageChangeListener({
-      gmailCalDebug: { newValue: true },
-      showButtonText: { newValue: false },
-      toolbarAlignment: { newValue: 'center' },
-      showFavourites: { newValue: true },
-      gmailCalTheme: { newValue: 'dark' },
-    });
+    storageChangeListener(
+      {
+        gmailCalDebug: { newValue: true },
+        showButtonText: { newValue: false },
+        toolbarAlignment: { newValue: 'center' },
+        showFavourites: { newValue: true },
+        gmailCalTheme: { newValue: 'dark' },
+      },
+      'sync',
+    );
     await flushPromises();
 
     expect(updateButtonTextViewMock).toHaveBeenCalledWith(false);
@@ -222,7 +267,7 @@ describe('contentScript main lifecycle', () => {
   });
 
   test('restores visible button text when the storage key is removed', () => {
-    storageChangeListener({ showButtonText: { newValue: undefined } });
+    storageChangeListener({ showButtonText: { newValue: undefined } }, 'sync');
 
     expect(updateButtonTextViewMock).toHaveBeenCalledWith(true);
   });

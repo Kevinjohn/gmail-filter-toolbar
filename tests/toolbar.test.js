@@ -7,6 +7,7 @@ import {
   updateButtonVisibility,
   refreshUI,
   handleArrowNavigation,
+  resetAnnouncementTracking,
 } from '../src/modules/toolbar.js';
 import {
   MODES,
@@ -22,6 +23,10 @@ import { SELECTORS } from '../src/modules/constants.js';
 const { useChromeMock } = global;
 
 beforeEach(() => {
+  // WHY: Announcement tracking is module-level (it must survive re-injection in production);
+  // reset it and start from ALL so each test's live-region expectations are order-independent.
+  resetAnnouncementTracking();
+  setCurrentMode(MODES.ALL);
   useChromeMock({
     i18n: {
       getMessage: (key, substitutions) => {
@@ -369,5 +374,132 @@ describe('state wiring sanity', () => {
     renderToolbar({ alignment: 'center', favourites: false });
     expect(toolbarAlignment).toBe('center');
     expect(showFavouritesButton).toBe(false);
+  });
+});
+
+describe('orphaned extension context', () => {
+  test('injectToolbar refuses to touch the DOM when runtime.id is gone', () => {
+    const doc = createDocument();
+    const header = doc.querySelector('.aeH');
+    delete global.chrome.runtime.id;
+
+    injectToolbar(doc, header);
+
+    expect(header.nextElementSibling).toBeNull();
+    expect(doc.querySelector(SELECTORS.filterBar)).toBeNull();
+  });
+});
+
+describe('focus preservation across re-injection', () => {
+  test('restores focus to the previously focused button', () => {
+    const { doc, header } = renderToolbar();
+    const calendarButton = doc.querySelector('#filter-CALENDAR');
+    calendarButton.focus();
+    expect(doc.activeElement).toBe(calendarButton);
+
+    injectToolbar(doc, header);
+
+    expect(doc.activeElement?.id).toBe('filter-CALENDAR');
+  });
+});
+
+describe('live region announcement dedup', () => {
+  test('does not re-announce an unchanged filter after re-injection', () => {
+    const { doc, header, wrapper } = renderToolbar();
+    setCurrentMode(MODES.CALENDAR);
+    refreshUI(doc);
+    expect(wrapper.querySelector(SELECTORS.liveRegion).textContent).toBe('Filter set to Calendar');
+
+    // Gmail reflow → re-injection with the same mode: the fresh live region must stay silent.
+    injectToolbar(doc, header);
+    const liveRegion = doc.querySelector(SELECTORS.liveRegion);
+    expect(liveRegion.textContent).toBe('');
+
+    // A genuine mode change announces again.
+    setCurrentMode(MODES.ATTACH);
+    refreshUI(doc);
+    expect(liveRegion.textContent).toBe('Filter set to Attachments');
+  });
+});
+
+describe('extended keyboard navigation', () => {
+  const makeGroup = (buttons, direction = 'ltr') => ({
+    querySelectorAll: () => buttons,
+    ownerDocument: {
+      defaultView: {
+        getComputedStyle: () => ({ direction }),
+      },
+    },
+  });
+
+  const makeButtons = () => [
+    { focus: jest.fn(), click: jest.fn(), hidden: false },
+    { focus: jest.fn(), click: jest.fn(), hidden: false },
+    { focus: jest.fn(), click: jest.fn(), hidden: false },
+  ];
+
+  const withActiveElement = (button, run) => {
+    const descriptor = Object.getOwnPropertyDescriptor(
+      Object.getPrototypeOf(global.document),
+      'activeElement',
+    );
+    Object.defineProperty(global.document, 'activeElement', {
+      configurable: true,
+      get: () => button,
+    });
+    try {
+      run();
+    } finally {
+      if (descriptor) {
+        Object.defineProperty(global.document, 'activeElement', descriptor);
+      } else {
+        delete global.document.activeElement;
+      }
+    }
+  };
+
+  test('Home moves to the first button, End to the last', () => {
+    const buttons = makeButtons();
+    withActiveElement(buttons[1], () => {
+      handleArrowNavigation({
+        key: 'Home',
+        currentTarget: makeGroup(buttons),
+        preventDefault: jest.fn(),
+      });
+      expect(buttons[0].focus).toHaveBeenCalled();
+      handleArrowNavigation({
+        key: 'End',
+        currentTarget: makeGroup(buttons),
+        preventDefault: jest.fn(),
+      });
+      expect(buttons[2].focus).toHaveBeenCalled();
+    });
+  });
+
+  test('ArrowDown advances like ArrowRight', () => {
+    const buttons = makeButtons();
+    withActiveElement(buttons[0], () => {
+      handleArrowNavigation({
+        key: 'ArrowDown',
+        currentTarget: makeGroup(buttons),
+        preventDefault: jest.fn(),
+      });
+      expect(buttons[1].focus).toHaveBeenCalled();
+      expect(buttons[1].click).toHaveBeenCalled();
+    });
+  });
+
+  test('ArrowRight follows visual direction in RTL', () => {
+    const buttons = makeButtons();
+    withActiveElement(buttons[1], () => {
+      handleArrowNavigation({
+        key: 'ArrowRight',
+        currentTarget: makeGroup(buttons, 'rtl'),
+        preventDefault: jest.fn(),
+      });
+      // Visually-next in RTL is DOM-previous.
+      expect(buttons[0].focus).toHaveBeenCalled();
+      expect(buttons[0].click).toHaveBeenCalled();
+    });
   });
 });

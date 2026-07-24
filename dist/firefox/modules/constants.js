@@ -100,17 +100,23 @@ export const ATTACHMENT_TYPE_CONFIG = {
 /**
  * Regex patterns to match AI services and transcription tools.
  * Patterns are case-insensitive and match against sender display name.
+ *
+ * WHY: Product names that double as human names (Claude, Gemini, Fathom…) are anchored to the
+ * whole display name (optionally with the vendor prefix / an "AI" suffix) — an unanchored
+ * /claude/i would classify mail from a colleague named "Claude Dupont" as AI-notetaker mail.
+ * Distinctive product names (chatgpt, otter.ai, fireflies.ai) stay as substring matches.
  * @experimental
  * @since 2.3.0
  */
 export const AI_NOTETAKER_PATTERNS = [
-  /gemini/i, // Google Gemini AI
-  /chatgpt/i, // OpenAI ChatGPT
-  /claude/i, // Anthropic Claude
-  /copilot/i, // Microsoft Copilot
-  /otter\.ai/i, // Otter.ai transcription service
-  /fathom/i, // Fathom video transcription
-  /fireflies\.ai/i, // Fireflies.ai transcription service
+  // 'Gemini', 'Google Gemini', 'Gemini for Google Workspace' — not 'Gemini Horoscope Daily'
+  /^\s*(?:google\s+)?gemini(?:\s+(?:ai|advanced|for\s+google\s+workspace))?\s*$/i,
+  /chatgpt/i, // OpenAI ChatGPT — distinctive, substring is safe
+  /^\s*(?:anthropic\s+)?claude(?:\s+ai)?\s*$/i, // 'Claude', 'Anthropic Claude' — not 'Claude Dupont'
+  /\bcopilot\s*$/i, // 'Copilot', 'Microsoft Copilot', 'Microsoft 365 Copilot', 'GitHub Copilot'
+  /otter\.ai/i, // Otter.ai transcription service — distinctive, substring is safe
+  /^\s*fathom(?:\s+(?:ai|notetaker|video))*\s*$/i, // 'Fathom', 'Fathom AI Notetaker' — not 'Fathom Analytics'
+  /fireflies\.ai/i, // Fireflies.ai transcription service — distinctive, substring is safe
 ];
 
 /**
@@ -125,6 +131,13 @@ export const DEV_NOTIFICATION_PATTERNS = [
 ];
 
 export const FILTER_WRAPPER_CLASS = 'gcal-filter-wrapper';
+
+/**
+ * CSS class applied to filtered-out rows while debug mode is on.
+ * Styled in styles.css via the theme-aware --gcal-debug-overlay variable.
+ * @stable
+ */
+export const DEBUG_HIGHLIGHT_CLASS = 'gcal-debug-highlight';
 
 /**
  * DOM selectors for Gmail elements.
@@ -146,6 +159,12 @@ export const SELECTORS = {
    * Targets the main action bar where buttons like "Archive", "Report spam" are located.
    */
   gmailToolbarAria: 'div[aria-label="Main toolbar"]',
+  /**
+   * Structural fallback selector for the Gmail toolbar: any ARIA toolbar inside the header element.
+   * WHY: The aria-label fallback above only matches English-UI Gmail; this locale-independent
+   * fallback keeps the extension working in the other 24 shipped locales if Gmail's class names rotate.
+   */
+  gmailToolbarStructural: '.aeH [role="toolbar"]',
   /**
    * Selector for the header element containing the Gmail toolbar.
    * This is typically the parent container that wraps the toolbar.

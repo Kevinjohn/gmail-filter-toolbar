@@ -59,10 +59,6 @@
     "message": "कैलेंडर विकल्प",
     "description": "Title for the extension's options page."
   },
-  "options_debug": {
-    "message": "डीबग मोड सक्षम करें (फ़िल्टर की गई पंक्तियों को नीले रंग में दिखाएँ)",
-    "description": "Label for the debug mode checkbox."
-  },
   "options_page_description": {
     "message": "Gmail कैलेंडर विकल्प एक्सटेंशन की सेटिंग्स।",
     "description": "A short summary of the options page."
@@ -162,5 +158,21 @@
   "options_show_dev_notifications": {
     "message": "डेवलपर सूचनाएँ बटन दिखाएँ",
     "description": "Checkbox label in options page to enable/disable Dev Notifications filter button."
+  },
+  "options_status_saved": {
+    "message": "सेटिंग सहेजी गईं",
+    "description": "Status message shown on the options page after settings are saved."
+  },
+  "options_status_save_error": {
+    "message": "सेटिंग सहेजी नहीं जा सकीं. कृपया फिर से कोशिश करें.",
+    "description": "Status message shown on the options page when saving settings fails."
+  },
+  "options_status_load_error": {
+    "message": "सेटिंग लोड नहीं हो सकीं. फिर से कोशिश करने के लिए इस पेज को बंद करके दोबारा खोलें.",
+    "description": "Status message shown on the options page when loading settings fails."
+  },
+  "alt_has_attachment": {
+    "message": "अटैचमेंट मौजूद है",
+    "description": "Tooltip text Gmail uses for the attachment indicator. Should mirror Gmail's own localized 'Has attachment' tooltip so attachment detection works in this language."
   }
 }

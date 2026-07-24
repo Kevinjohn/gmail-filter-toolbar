@@ -20,3 +20,23 @@ describe('debounce', () => {
     jest.useRealTimers();
   });
 });
+
+describe('debounce cancel', () => {
+  test('cancel() discards a pending invocation', () => {
+    jest.useFakeTimers();
+    const fn = jest.fn();
+    const debounced = debounce(fn, 100);
+
+    debounced();
+    debounced.cancel();
+    jest.advanceTimersByTime(200);
+    expect(fn).not.toHaveBeenCalled();
+
+    // Still usable after cancel
+    debounced();
+    jest.advanceTimersByTime(100);
+    expect(fn).toHaveBeenCalledTimes(1);
+
+    jest.useRealTimers();
+  });
+});

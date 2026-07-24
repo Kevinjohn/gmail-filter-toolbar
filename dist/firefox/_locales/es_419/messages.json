@@ -59,10 +59,6 @@
     "message": "Opciones de calendario",
     "description": "Title for the extension's options page."
   },
-  "options_debug": {
-    "message": "Habilitar el modo de depuración (mostrar las filas filtradas en azul)",
-    "description": "Label for the debug mode checkbox."
-  },
   "options_page_description": {
     "message": "Configuración para la extensión de opciones de calendario de Gmail.",
     "description": "A short summary of the options page."
@@ -162,5 +158,21 @@
   "options_show_dev_notifications": {
     "message": "Mostrar el botón de notificaciones para desarrolladores",
     "description": "Checkbox label in options page to enable/disable Dev Notifications filter button."
+  },
+  "options_status_saved": {
+    "message": "Configuración guardada",
+    "description": "Status message shown on the options page after settings are saved."
+  },
+  "options_status_save_error": {
+    "message": "No se pudo guardar la configuración. Inténtalo de nuevo.",
+    "description": "Status message shown on the options page when saving settings fails."
+  },
+  "options_status_load_error": {
+    "message": "No se pudo cargar la configuración. Cierra y vuelve a abrir esta página para intentarlo de nuevo.",
+    "description": "Status message shown on the options page when loading settings fails."
+  },
+  "alt_has_attachment": {
+    "message": "Contiene archivos adjuntos",
+    "description": "Tooltip text Gmail uses for the attachment indicator. Should mirror Gmail's own localized 'Has attachment' tooltip so attachment detection works in this language."
   }
 }

@@ -59,10 +59,6 @@
     "message": "Kalenterin asetukset",
     "description": "Title for the extension's options page."
   },
-  "options_debug": {
-    "message": "Ota vianetsintätila käyttöön (näytä suodatetut rivit sinisenä)",
-    "description": "Label for the debug mode checkbox."
-  },
   "options_page_description": {
     "message": "Gmail-kalenterin asetusten laajennuksen asetukset.",
     "description": "A short summary of the options page."
@@ -162,5 +158,21 @@
   "options_show_dev_notifications": {
     "message": "Näytä kehittäjäilmoitusten painike",
     "description": "Checkbox label in options page to enable/disable Dev Notifications filter button."
+  },
+  "options_status_saved": {
+    "message": "Asetukset tallennettu",
+    "description": "Status message shown on the options page after settings are saved."
+  },
+  "options_status_save_error": {
+    "message": "Asetusten tallennus epäonnistui. Yritä uudelleen.",
+    "description": "Status message shown on the options page when saving settings fails."
+  },
+  "options_status_load_error": {
+    "message": "Asetusten lataus epäonnistui. Sulje sivu ja avaa se uudelleen.",
+    "description": "Status message shown on the options page when loading settings fails."
+  },
+  "alt_has_attachment": {
+    "message": "Sisältää liitteen",
+    "description": "Tooltip text Gmail uses for the attachment indicator. Should mirror Gmail's own localized 'Has attachment' tooltip so attachment detection works in this language."
   }
 }

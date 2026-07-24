@@ -6,14 +6,13 @@ import { chromium } from '@playwright/test';
 
 const errors = [];
 let chromiumPath;
+let chromiumError = null;
 
 try {
   chromiumPath = chromium.executablePath();
   accessSync(chromiumPath, constants.X_OK);
 } catch (error) {
-  errors.push(
-    `Playwright chromium browser is unavailable. Run \`pnpm exec playwright install\` to download it. (${error.message})`,
-  );
+  chromiumError = `Playwright chromium browser is unavailable. Run \`pnpm exec playwright install\` to download it. (${error.message})`;
 }
 
 const chromeCandidates = [
@@ -25,18 +24,23 @@ const chromeCandidates = [
 ].filter(Boolean);
 
 let chromeFound = false;
+const candidateErrors = [];
 for (const candidate of chromeCandidates) {
   try {
     accessSync(path.resolve(candidate), constants.X_OK);
     chromeFound = true;
     break;
   } catch {
-    errors.push(`Chrome binary at ${candidate} is not accessible.`);
+    candidateErrors.push(`Chrome binary at ${candidate} is not accessible.`);
   }
 }
 
+// WHY: Only report candidate failures when NO candidate worked — a stale CHROME_BIN must not fail
+// validation when a later candidate (e.g. Playwright Chromium) was found and is usable.
 if (!chromeFound) {
+  if (chromiumError) errors.push(chromiumError);
   errors.push(
+    ...candidateErrors,
     'No Chrome executable detected. Set CHROME_BIN to a valid binary or install Playwright Chromium.',
   );
 }

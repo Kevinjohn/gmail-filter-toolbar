@@ -1,34 +1,56 @@
 import { SELECTORS } from './constants.js';
 import { applyFilter } from './filter.js';
-import { injectToolbar } from './toolbar.js';
-import { currentMode, MODES } from './state.js';
+import { injectToolbar, isExtensionContextInvalidated } from './toolbar.js';
+import { currentMode, MODES, themePreference } from './state.js';
+import { applyTheme } from './theme.js';
 import { debounce } from './utils/debounce.js';
 
-let messageListObserver = null;
-let messageListTarget = null;
+let messageListObservers = [];
+let messageListTargets = [];
+let pendingMessageListFilter = null;
 let gmailToolbarObserver = null;
 
-export function observeMessageList(doc = document) {
-  const target = doc.querySelector(SELECTORS.emailList);
-  if (!target) return false;
-  if (messageListTarget === target && messageListObserver) return false;
+function disconnectMessageListObservers() {
+  messageListObservers.forEach((observer) => observer.disconnect());
+  messageListObservers = [];
+  messageListTargets = [];
+  // WHY: A pending debounced filter from the old observers' closure would still fire once against
+  // the detached subtree; cancel it so nothing outlives the disconnect.
+  pendingMessageListFilter?.cancel();
+  pendingMessageListFilter = null;
+}
 
-  // WHY: Disconnect existing observer before creating a new one to ensure idempotency.
-  // Gmail's SPA navigation can destroy/recreate elements, so this function may be called multiple times.
-  // Disconnecting prevents duplicate observers from accumulating. See _remember_filter_on_pagination.md
-  if (messageListObserver) {
-    messageListObserver.disconnect();
+export function observeMessageList(doc = document) {
+  // WHY: Observe every message list, not just the first — Gmail's Multiple Inboxes and split panes
+  // render several .UI sections, and mail arriving in the later sections must re-trigger filtering too.
+  const targets = Array.from(doc.querySelectorAll(SELECTORS.emailList));
+  if (!targets.length) return false;
+  if (
+    messageListObservers.length &&
+    targets.length === messageListTargets.length &&
+    targets.every((target, index) => target === messageListTargets[index])
+  ) {
+    return false;
   }
-  messageListTarget = target;
+
+  // WHY: Disconnect existing observers before creating new ones to ensure idempotency.
+  // Gmail's SPA navigation can destroy/recreate elements, so this function may be called multiple times.
+  // Disconnecting prevents duplicate observers from accumulating. See docs/notes/filter-on-pagination.md
+  disconnectMessageListObservers();
+  messageListTargets = targets;
 
   // WHY: Debounce filter application to avoid performance issues during rapid DOM mutations (scrolling, pagination).
   // Skip filtering when mode is ALL since nothing needs to be hidden anyway - optimization for common case.
   const debouncedApplyFilter = debounce(() => {
     if (currentMode !== MODES.ALL) applyFilter(doc);
   }, 200);
+  pendingMessageListFilter = debouncedApplyFilter;
 
-  messageListObserver = new MutationObserver(debouncedApplyFilter);
-  messageListObserver.observe(target, { childList: true, subtree: true });
+  messageListObservers = targets.map((target) => {
+    const observer = new MutationObserver(debouncedApplyFilter);
+    observer.observe(target, { childList: true, subtree: true });
+    return observer;
+  });
   return true;
 }
 
@@ -42,15 +64,28 @@ export function setupGmailToolbarObserver(doc = document) {
   // its DOM constantly. Without debouncing, every keystroke/hover/refresh would re-run selector queries,
   // re-attach the message-list observer, and re-apply the filter — a real CPU/jank cost on large inboxes.
   const handleChildListMutation = debounce(() => {
+    // WHY: After an extension update/reload this content script is orphaned but its observers keep
+    // firing. Stop observing entirely instead of mutating the DOM the new script now owns.
+    if (isExtensionContextInvalidated()) {
+      gmailToolbarObserver?.disconnect();
+      gmailToolbarObserver = null;
+      disconnectMessageListObservers();
+      return;
+    }
+
     const gmailToolbarHeader = doc.querySelector(SELECTORS.gmailToolbarHeader);
     const filterWrappers = doc.querySelectorAll(SELECTORS.filterWrapper);
     const filterWrapper = filterWrappers[0];
     let toolbarReinjected = false;
 
     // Reuse and reposition the existing wrapper, or clean up duplicates left by a Gmail reflow.
+    // WHY: Also rebuild when the wrapper exists but no longer contains the bar (e.g. it was gutted
+    // by an orphaned script that died mid-injection) — position alone can't detect that.
     if (
       gmailToolbarHeader &&
-      (gmailToolbarHeader.nextElementSibling !== filterWrapper || filterWrappers.length > 1)
+      (gmailToolbarHeader.nextElementSibling !== filterWrapper ||
+        filterWrappers.length > 1 ||
+        (filterWrapper && !filterWrapper.querySelector(SELECTORS.filterBar)))
     ) {
       injectToolbar(doc, gmailToolbarHeader);
       toolbarReinjected = true;
@@ -59,6 +94,11 @@ export function setupGmailToolbarObserver(doc = document) {
     if ((toolbarReinjected || observerAttached) && currentMode !== MODES.ALL) {
       applyFilter(doc);
     }
+
+    // WHY: Gmail can switch its own theme without a page reload; re-resolving on (debounced) DOM
+    // churn keeps a "system" preference tracking Gmail's rendered theme instead of pinning the
+    // one-shot sample taken at init. Cheap: one computed-style walk per settled mutation burst.
+    applyTheme(doc, themePreference);
   }, 200);
 
   // WHY: Observe document.body (not Gmail's toolbar) because it's a stable parent that survives Gmail's SPA navigation.
@@ -71,6 +111,12 @@ export function setupGmailToolbarObserver(doc = document) {
   });
   gmailToolbarObserver.observe(doc.body, { childList: true, subtree: true });
 }
+
+// WHY: Poll with setTimeout, not requestAnimationFrame — browsers suspend rAF in hidden tabs, so a
+// Gmail tab opened in the background would never poll and would always hit the timeout even though
+// the DOM is ready. setTimeout still runs (clamped to ~1s when hidden), which is ample within the
+// timeout budget.
+const POLL_INTERVAL_MS = 100;
 
 export function waitForGmailToolbar(doc = document) {
   return new Promise((resolve, reject) => {
@@ -85,7 +131,8 @@ export function waitForGmailToolbar(doc = document) {
       const toolbar =
         doc.querySelector(SELECTORS.gmailToolbar) ||
         doc.querySelector(SELECTORS.gmailToolbarLegacy) ||
-        doc.querySelector(SELECTORS.gmailToolbarAria);
+        doc.querySelector(SELECTORS.gmailToolbarAria) ||
+        doc.querySelector(SELECTORS.gmailToolbarStructural);
 
       if (toolbar) {
         const header = toolbar.closest(SELECTORS.gmailToolbarHeader);
@@ -93,10 +140,10 @@ export function waitForGmailToolbar(doc = document) {
           clearTimeout(timeoutId);
           resolve(header);
         } else {
-          requestAnimationFrame(poll);
+          setTimeout(poll, POLL_INTERVAL_MS);
         }
       } else {
-        requestAnimationFrame(poll);
+        setTimeout(poll, POLL_INTERVAL_MS);
       }
     })();
   });
@@ -120,7 +167,7 @@ export function waitForMessageTable(timeoutMs = 15000, doc = document) {
         clearTimeout(timeoutId);
         resolve();
       } else {
-        requestAnimationFrame(poll);
+        setTimeout(poll, POLL_INTERVAL_MS);
       }
     })();
   });

@@ -4,6 +4,7 @@ import {
   ATTACHMENT_TYPE_CONFIG,
   AI_NOTETAKER_PATTERNS,
   DEV_NOTIFICATION_PATTERNS,
+  DEBUG_HIGHLIGHT_CLASS,
 } from './constants.js';
 
 /**
@@ -41,11 +42,33 @@ export function isGoogleDocAttachment(row) {
  * Checks if an email row has any attachments.
  * @stable
  */
-export function hasAttachmentRow(row) {
+/**
+ * Checks whether the row contains an element whose data-tooltip equals the extension-locale
+ * translation of the given message key. Shared by the favourite/attachment detectors so the
+ * escape-and-query logic lives in one place.
+ */
+function matchesLocalizedTooltip(row, messageKey, chromeApi, selectorPrefix = '') {
+  const localizedText = chromeApi?.i18n?.getMessage?.(messageKey);
+  if (!localizedText) return false;
+  const escapedText = localizedText.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  return !!row.querySelector(`${selectorPrefix}[data-tooltip="${escapedText}"]`);
+}
+
+export function hasAttachmentRow(row, chromeApi = globalThis.chrome) {
   const hasBywClass = row.classList.contains(SELECTORS.attachmentRowClass);
   const hasAttachmentTooltip = !!row.querySelector(SELECTORS.attachmentTooltip);
   const hasPaperclipIcon = !!row.querySelector(SELECTORS.attachmentIcon);
-  return hasBywClass || hasAttachmentTooltip || hasPaperclipIcon || isGoogleDocAttachment(row);
+
+  // WHY: The static data-tooltip selector only matches English-UI Gmail. Mirror the localized-alt
+  // technique used for calendar/starred detection so attachment detection also works when Gmail's
+  // display language matches the browser locale.
+  return (
+    hasBywClass ||
+    hasAttachmentTooltip ||
+    matchesLocalizedTooltip(row, 'alt_has_attachment', chromeApi) ||
+    hasPaperclipIcon ||
+    isGoogleDocAttachment(row)
+  );
 }
 
 /**
@@ -54,12 +77,7 @@ export function hasAttachmentRow(row) {
  */
 export function isFavouriteRow(row, chromeApi = globalThis.chrome) {
   if (row.querySelector(SELECTORS.starredIcon)) return true;
-
-  const starredText = chromeApi?.i18n?.getMessage?.('alt_starred');
-  if (!starredText) return false;
-
-  const escapedText = starredText.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-  return !!row.querySelector(`span[data-tooltip="${escapedText}"]`);
+  return matchesLocalizedTooltip(row, 'alt_starred', chromeApi, 'span');
 }
 
 function isGoogleUrl(value) {
@@ -243,13 +261,13 @@ export function applyFilter(doc = document) {
   doc.querySelectorAll(SELECTORS.emailRow).forEach((row) => {
     const hide = currentFilter.filterFn(row);
 
+    // WHY: Debug highlighting uses a class backed by the --gcal-debug-overlay variable so the
+    // overlay follows the active theme (and forced-colors mode) instead of a hardcoded light blue.
     if (debugOn) {
       row.style.display = '';
-      row.style.background = hide ? 'rgba(0,123,255,.15)' : '';
-      row.style.opacity = hide ? '0.5' : '';
+      row.classList.toggle(DEBUG_HIGHLIGHT_CLASS, hide);
     } else {
-      row.style.background = '';
-      row.style.opacity = '';
+      row.classList.remove(DEBUG_HIGHLIGHT_CLASS);
       row.style.display = hide ? 'none' : '';
     }
   });

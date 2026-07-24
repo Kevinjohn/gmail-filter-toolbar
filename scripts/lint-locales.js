@@ -72,7 +72,11 @@ const baseSummary = new Map(
 
 const errors = [];
 
-const locales = readdirSync(localesDir);
+// WHY: Only treat directories as locales — a stray file in src/_locales (e.g. macOS .DS_Store)
+// would otherwise crash the linter with an unhandled readFileSync exception instead of a lint error.
+const locales = readdirSync(localesDir, { withFileTypes: true })
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name);
 
 for (const locale of supportedLocales) {
   if (!locales.includes(locale)) {
@@ -89,7 +93,7 @@ for (const locale of locales) {
   for (const [key, baseEntrySummary] of baseSummary.entries()) {
     const localeEntry = localeMessages[key];
     if (!localeEntry) {
-      errors.push(`${locale}: missing message key \"${key}\"`);
+      errors.push(`${locale}: missing message key "${key}"`);
       continue;
     }
 
@@ -133,7 +137,7 @@ for (const locale of locales) {
   }
   for (const key of Object.keys(localeMessages)) {
     if (!baseSummary.has(key)) {
-      errors.push(`${locale}: unexpected message key \"${key}\"`);
+      errors.push(`${locale}: unexpected message key "${key}"`);
     }
   }
   if (localeMessages.extension_name?.message !== 'Gmail Filter Toolbar') {

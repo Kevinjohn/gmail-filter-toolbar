@@ -59,10 +59,6 @@
     "message": "Kalenderoptionen",
     "description": "Title for the extension's options page."
   },
-  "options_debug": {
-    "message": "Aktivieren Sie den Debug-Modus (gefilterte Zeilen werden blau angezeigt)",
-    "description": "Label for the debug mode checkbox."
-  },
   "options_page_description": {
     "message": "Einstellungen für die Erweiterung Gmail-Kalenderoptionen.",
     "description": "A short summary of the options page."
@@ -162,5 +158,21 @@
   "options_show_dev_notifications": {
     "message": "Schaltfläche für Entwicklerbenachrichtigungen anzeigen",
     "description": "Checkbox label in options page to enable/disable Dev Notifications filter button."
+  },
+  "options_status_saved": {
+    "message": "Einstellungen gespeichert",
+    "description": "Status message shown on the options page after settings are saved."
+  },
+  "options_status_save_error": {
+    "message": "Einstellungen konnten nicht gespeichert werden. Bitte erneut versuchen.",
+    "description": "Status message shown on the options page when saving settings fails."
+  },
+  "options_status_load_error": {
+    "message": "Einstellungen konnten nicht geladen werden. Seite schließen und erneut öffnen.",
+    "description": "Status message shown on the options page when loading settings fails."
+  },
+  "alt_has_attachment": {
+    "message": "Mit Anhang",
+    "description": "Tooltip text Gmail uses for the attachment indicator. Should mirror Gmail's own localized 'Has attachment' tooltip so attachment detection works in this language."
   }
 }

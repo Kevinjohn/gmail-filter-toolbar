@@ -23,6 +23,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Lint
         run: pnpm exec eslint src tests
+      - name: Format check
+        run: pnpm run format:check
       - name: Validate locales
         run: pnpm run lint:locales
       - name: Unit tests

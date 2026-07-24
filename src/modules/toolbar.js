@@ -56,7 +56,26 @@ function ensureListElement(doc = document) {
   return list;
 }
 
+/**
+ * Detects an orphaned content script (extension updated/reloaded while the tab stayed open).
+ * WHY: An orphan's observers keep firing, and its injectToolbar would wipe the live toolbar built
+ * by the new script's context and then throw on the first chrome.* call — leaving the wrapper
+ * permanently empty. Checking runtime.id BEFORE any DOM mutation lets the orphan bow out cleanly.
+ */
+export function isExtensionContextInvalidated() {
+  // WHY: try/catch because Firefox replaces an orphaned content script's chrome/browser object
+  // with a dead wrapper whose property access can itself throw — a throw means "orphaned" too.
+  try {
+    const runtime = globalThis.chrome?.runtime;
+    return !!runtime && !runtime.id;
+  } catch {
+    return true;
+  }
+}
+
 export function injectToolbar(doc = document, headerElement) {
+  if (isExtensionContextInvalidated()) return;
+
   const header = headerElement || doc.querySelector(SELECTORS.gmailToolbarHeader);
   if (!header) return;
 
@@ -68,9 +87,16 @@ export function injectToolbar(doc = document, headerElement) {
     wrapper = doc.createElement('div');
     wrapper.className = FILTER_WRAPPER_CLASS;
   }
+
+  // WHY: Rebuilding (and even just repositioning — a DOM move blurs to <body>) drops keyboard
+  // focus if it was inside the wrapper. Capture the focused button BEFORE any DOM mutation so it
+  // can be restored after re-injection.
+  const previousFocusId = wrapper.contains(doc.activeElement) ? doc.activeElement.id : null;
+
   if (header.nextElementSibling !== wrapper) {
     header.insertAdjacentElement('afterend', wrapper);
   }
+
   wrapper.replaceChildren();
 
   // Create the bar element and append it to the wrapper
@@ -151,6 +177,13 @@ export function injectToolbar(doc = document, headerElement) {
   updateButtonTextView(showButtonText, doc);
   refreshUI(doc);
 
+  if (previousFocusId) {
+    const focusTarget = doc.getElementById(previousFocusId);
+    if (focusTarget && !focusTarget.hidden) {
+      focusTarget.focus();
+    }
+  }
+
   bar.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       const list = ensureListElement(doc);
@@ -175,6 +208,9 @@ function createFilterButton(doc, mode, iconName, labelKey) {
   const buttonText = chrome.i18n.getMessage(labelKey);
   button.setAttribute('aria-label', buttonText);
   button.dataset.tooltip = buttonText;
+  // WHY: data-tooltip is a Gmail-internal convention that Gmail does not render for injected
+  // elements; the native title attribute guarantees sighted mouse users a hover hint in icon-only mode.
+  button.title = buttonText;
 
   const icon = doc.createElement('span');
   icon.className = 'material-symbols-outlined';
@@ -189,9 +225,11 @@ function createFilterButton(doc, mode, iconName, labelKey) {
   return button;
 }
 
+const NAVIGATION_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End']);
+
 export function handleArrowNavigation(e) {
   const { key } = e;
-  if (key !== 'ArrowLeft' && key !== 'ArrowRight') return;
+  if (!NAVIGATION_KEYS.has(key)) return;
 
   // WHY: Exclude hidden buttons (Favourites/AI/Dev filters when disabled in options) — otherwise arrow keys
   // could focus and activate an invisible button, silently switching the user into a filter they can't see.
@@ -204,11 +242,32 @@ export function handleArrowNavigation(e) {
 
   e.preventDefault();
 
+  // WHY: Per the ARIA radiogroup pattern, horizontal arrows must follow the visual direction —
+  // in RTL Gmail (Arabic locale) ArrowRight moves to the visually-next button, which is DOM-previous.
+  // Resolve getComputedStyle from the element's own window so detached/foreign documents don't throw.
+  let isRtl = false;
+  const view = e.currentTarget?.ownerDocument?.defaultView;
+  if (view?.getComputedStyle) {
+    try {
+      isRtl = view.getComputedStyle(e.currentTarget).direction === 'rtl';
+    } catch {
+      isRtl = false;
+    }
+  }
+  const nextKey = isRtl ? 'ArrowLeft' : 'ArrowRight';
+  const previousKey = isRtl ? 'ArrowRight' : 'ArrowLeft';
+
   let nextIndex;
-  if (key === 'ArrowLeft') {
+  if (key === 'Home') {
+    nextIndex = 0;
+  } else if (key === 'End') {
+    nextIndex = buttons.length - 1;
+  } else if (key === previousKey || key === 'ArrowUp') {
     nextIndex = (focusedIndex - 1 + buttons.length) % buttons.length;
-  } else {
+  } else if (key === nextKey || key === 'ArrowDown') {
     nextIndex = (focusedIndex + 1) % buttons.length;
+  } else {
+    return;
   }
 
   buttons[nextIndex].focus();
@@ -252,6 +311,16 @@ export function updateButtonVisibility(mode, show, doc = document) {
   }
 }
 
+// WHY: Track the last announced filter across re-injections so the live region only speaks when the
+// filter actually changes. Without this, every Gmail reflow re-announced the unchanged filter to
+// screen-reader users. Starts as null so the initial page load records silently instead of announcing.
+let lastAnnouncedText = null;
+
+/** Reset announcement tracking (test helper). */
+export function resetAnnouncementTracking() {
+  lastAnnouncedText = null;
+}
+
 export function refreshUI(doc = document) {
   const bar = doc.querySelector(SELECTORS.filterBar);
   if (!bar) return;
@@ -280,6 +349,12 @@ export function refreshUI(doc = document) {
       labelKey = 'btn_all'; // Default to the Everything mode
     }
     const currentModeLabel = chrome.i18n.getMessage(labelKey);
-    liveRegion.textContent = chrome.i18n.getMessage('filter_status_update', [currentModeLabel]);
+    const announcement = chrome.i18n.getMessage('filter_status_update', [currentModeLabel]);
+    if (lastAnnouncedText === null) {
+      lastAnnouncedText = announcement;
+    } else if (announcement !== lastAnnouncedText) {
+      liveRegion.textContent = announcement;
+      lastAnnouncedText = announcement;
+    }
   }
 }

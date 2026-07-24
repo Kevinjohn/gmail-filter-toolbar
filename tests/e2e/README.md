@@ -109,6 +109,13 @@ If Gmail changes its DOM structure:
 3. Update `fixtures/gmail.html` to match new Gmail structure
 4. Re-run tests to verify
 
+> **Known limitation — the fixture is a snapshot.** `fixtures/gmail.html` is a hand-written copy of
+> Gmail's obfuscated markup (`.zA`, `.G-atb`, `.UI`, …). When Google rotates these class names, the
+> extension and the fixture break *together*: this suite can stay green against markup that no
+> longer resembles production Gmail. A green e2e run therefore proves the extension works against
+> the snapshot, not against live Gmail — periodically verify the selectors in
+> `src/modules/constants.js` against the real Gmail DOM and refresh the fixture to match.
+
 ## Coverage
 
 Coverage reports are saved in each test’s unique Playwright output directory and attached to the

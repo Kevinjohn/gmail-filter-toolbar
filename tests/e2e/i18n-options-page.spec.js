@@ -13,8 +13,8 @@ function getLocaleMessages(localeDirectory) {
 }
 
 const localeMatrix = [
-  { label: 'German', locale: 'de-DE', localeDirectory: 'de' },
-  { label: 'Latin American Spanish', locale: 'es-MX', localeDirectory: 'es_419' },
+  { label: 'German', locale: 'de', localeDirectory: 'de' },
+  { label: 'Latin American Spanish', locale: 'es-419', localeDirectory: 'es_419' },
   { label: 'Arabic', locale: 'ar', localeDirectory: 'ar' },
 ];
 
@@ -37,7 +37,9 @@ localeMatrix.forEach(({ label, locale, localeDirectory }) => {
       await optionsPage.navigate();
 
       const messages = getLocaleMessages(localeDirectory);
+      const activeLocale = await page.evaluate(() => chrome.i18n.getUILanguage());
 
+      expect(activeLocale).toBe(locale);
       await expect(optionsPage.pageTitle).toHaveText(messages.page_title.message);
       await expect(optionsPage.debugLegend).toHaveText(messages.options_debug_legend.message);
       await expect(optionsPage.alignmentLegend).toHaveText(

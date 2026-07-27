@@ -80,17 +80,12 @@ async function createServer() {
 
 async function runAudit() {
   const server = await createServer();
-  const chrome = await launch({
-    chromeFlags: [
-      '--headless',
-      '--no-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-gpu',
-      '--remote-debugging-port=0', // Let Chrome pick the port
-    ],
-  });
+  let chrome;
 
   try {
+    chrome = await launch({
+      chromeFlags: ['--headless', '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
+    });
     const url = `http://localhost:${PORT}/${DEFAULT_ENTRY}`;
     const options = {
       logLevel: 'info',
@@ -142,7 +137,7 @@ async function runAudit() {
       );
     }
   } finally {
-    await chrome.kill();
+    await chrome?.kill();
     await new Promise((resolve) => server.close(resolve));
   }
 }

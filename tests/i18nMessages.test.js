@@ -61,3 +61,14 @@ test('all locales include required keys with non-empty values', () => {
     }
   }
 });
+
+test('localisation issue template requests the complete current base locale', () => {
+  const template = fs.readFileSync(
+    path.join(process.cwd(), '.github', 'ISSUE_TEMPLATE', 'localisation_request.md'),
+    'utf8',
+  );
+
+  expect(template).toContain('src/_locales/en/messages.json');
+  expect(template).toContain('translate every `message`');
+  expect(template).not.toContain('YOUR TRANSLATION HERE');
+});

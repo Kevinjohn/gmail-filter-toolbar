@@ -1,7 +1,8 @@
 import { defineConfig } from '@playwright/test';
 import { execSync } from 'node:child_process';
 
-const isCI = !!process.env.CI;
+const ciValue = (process.env.CI ?? '').trim().toLowerCase();
+const isCI = ciValue !== '' && !['0', 'false'].includes(ciValue);
 const workers = process.env.E2E_WORKERS ? parseInt(process.env.E2E_WORKERS, 10) : isCI ? 2 : 1;
 
 // Detect WSL2 environment

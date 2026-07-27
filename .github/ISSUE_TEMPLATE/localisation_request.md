@@ -26,66 +26,11 @@ Please choose one of the following methods to contribute:
 
 ### Option 2: Issue Submission
 
-If you are not comfortable with creating a pull request, please provide the translations below. Copy the following template for each key-value pair from `src/_locales/en/messages.json`.
-
-```json
-{
-  "extension_name": {
-    "message": "YOUR TRANSLATION HERE"
-  },
-  "extension_description": {
-    "message": "YOUR TRANSLATION HERE"
-  },
-  "label_toolbar": {
-    "message": "YOUR TRANSLATION HERE"
-  },
-  "label_options": {
-    "message": "YOUR TRANSLATION HERE"
-  },
-  "btn_all": {
-    "message": "YOUR TRANSLATION HERE"
-  },
-  "btn_mail": {
-    "message": "YOUR TRANSLATION HERE"
-  },
-  "btn_cal": {
-    "message": "YOUR TRANSLATION HERE"
-  },
-  "btn_attach": {
-    "message": "YOUR TRANSLATION HERE"
-  },
-  "btn_fav": {
-    "message": "YOUR TRANSLATION HERE"
-  },
-  "page_title": {
-    "message": "YOUR TRANSLATION HERE"
-  },
-  "options_debug": {
-    "message": "YOUR TRANSLATION HERE"
-  },
-  "options_page_description": {
-    "message": "YOUR TRANSLATION HERE"
-  },
-  "options_debug_legend": {
-    "message": "YOUR TRANSLATION HERE"
-  },
-  "options_debug_label": {
-    "message": "YOUR TRANSLATION HERE"
-  },
-  "alt_calendar_event": {
-    "message": "YOUR TRANSLATION HERE"
-  },
-  "filter_status_update": {
-    "message": "YOUR TRANSLATION HERE"
-  },
-  "extension_action_title": {
-    "message": "YOUR TRANSLATION HERE"
-  },
-  "alt_starred": {
-    "message": "YOUR TRANSLATION HERE"
-  }
-}
-```
+If you are not comfortable creating a pull request, download the current
+[`src/_locales/en/messages.json`](https://github.com/Kevinjohn/gmail-filter-toolbar/blob/main/src/_locales/en/messages.json), translate every `message`
+value without changing its keys or placeholders, and attach the complete translated file here.
+Using the current base file ensures the submission includes every required message as the extension
+evolves.
 
 ## Additional Context
 

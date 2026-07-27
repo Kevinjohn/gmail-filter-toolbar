@@ -53,11 +53,45 @@ const prepareDocument = (config) => {
   return { document: doc, row };
 };
 
+const expectFiltered = (row, filtered) => {
+  expect(row.classList.contains('gcal-filter-hidden')).toBe(filtered);
+};
+
 describe('isCalendarRow', () => {
   test('returns true when ICS icon present', () => {
     const { row } = prepareDocument({ isCalendar: true });
     expect(isCalendarRow(row)).toBe(true);
   });
+
+  test.each(['INVITE.ICS', 'invite.IcS', 'invite.ics: 10 KB', 'invite.ics]'])(
+    'detects invitation with %s filename',
+    (filename) => {
+      const { row } = prepareDocument();
+      const icon = row.ownerDocument.createElement('img');
+      icon.alt = filename;
+      row.appendChild(icon);
+      expect(isCalendarRow(row)).toBe(true);
+    },
+  );
+
+  test('does not treat an ics substring as a file extension', () => {
+    const { row } = prepareDocument();
+    const icon = row.ownerDocument.createElement('img');
+    icon.alt = 'topics';
+    row.appendChild(icon);
+    expect(isCalendarRow(row)).toBe(false);
+  });
+
+  test.each(['invite.icsx', 'invite.ics.gz', 'invite.ics-copy'])(
+    'does not treat %s as an ICS filename',
+    (filename) => {
+      const { row } = prepareDocument();
+      const icon = row.ownerDocument.createElement('img');
+      icon.alt = filename;
+      row.appendChild(icon);
+      expect(isCalendarRow(row)).toBe(false);
+    },
+  );
 
   test('detects a language-independent Gmail calendar icon URL', () => {
     const { row } = prepareDocument();
@@ -273,7 +307,7 @@ describe('applyFilter edge cases', () => {
     setCurrentMode('UNKNOWN');
     applyFilter(doc);
     rows.forEach((row) => {
-      expect(row.style.display).toBe('');
+      expectFiltered(row, false);
     });
   });
 
@@ -284,7 +318,7 @@ describe('applyFilter edge cases', () => {
     applyFilter(doc);
     // Debug highlighting is class-based so the overlay colour follows the active theme.
     expect(rows[1].classList.contains('gcal-debug-highlight')).toBe(true);
-    expect(rows[1].style.display).toBe('');
+    expectFiltered(rows[1], false);
   });
 
   test('resets debug styling when debug disabled', () => {
@@ -295,7 +329,22 @@ describe('applyFilter edge cases', () => {
     setDebugOn(false);
     applyFilter(doc);
     expect(rows[1].classList.contains('gcal-debug-highlight')).toBe(false);
-    expect(rows[1].style.display).toBe('none');
+    expectFiltered(rows[1], true);
+  });
+
+  test('does not overwrite host inline display changes while filtering', () => {
+    const { document: doc, rows } = buildListWithRows();
+    rows[1].style.display = 'table-row';
+    setCurrentMode(MODES.CALENDAR);
+    applyFilter(doc);
+    expectFiltered(rows[1], true);
+    expect(rows[1].style.display).toBe('table-row');
+    rows[1].style.display = 'grid';
+
+    setCurrentMode(MODES.ALL);
+    applyFilter(doc);
+    expectFiltered(rows[1], false);
+    expect(rows[1].style.display).toBe('grid');
   });
 });
 
@@ -316,8 +365,8 @@ describe('applyFilter mode behaviour', () => {
     const { doc, rows } = buildRows([{ id: 'calendar', isCalendar: true }, { id: 'normal' }]);
     setCurrentMode(MODES.EMAIL);
     applyFilter(doc);
-    expect(rows[0].style.display).toBe('none');
-    expect(rows[1].style.display).toBe('');
+    expectFiltered(rows[0], true);
+    expectFiltered(rows[1], false);
   });
 
   test('ATTACH mode keeps attachment rows visible', () => {
@@ -328,17 +377,17 @@ describe('applyFilter mode behaviour', () => {
     ]);
     setCurrentMode(MODES.ATTACH);
     applyFilter(doc);
-    expect(rows[0].style.display).toBe('none');
-    expect(rows[1].style.display).toBe('');
-    expect(rows[2].style.display).toBe('none');
+    expectFiltered(rows[0], true);
+    expectFiltered(rows[1], false);
+    expectFiltered(rows[2], true);
   });
 
   test('FAVOURITES mode only shows starred rows', () => {
     const { doc, rows } = buildRows([{ id: 'plain' }, { id: 'starred', isFavourite: true }]);
     setCurrentMode(MODES.FAVOURITES);
     applyFilter(doc);
-    expect(rows[0].style.display).toBe('none');
-    expect(rows[1].style.display).toBe('');
+    expectFiltered(rows[0], true);
+    expectFiltered(rows[1], false);
   });
 
   test.each([
@@ -361,8 +410,8 @@ describe('applyFilter mode behaviour', () => {
     setCurrentMode(mode);
     setDebugOn(false);
     applyFilter(doc);
-    expect(matchRow.style.display).toBe('');
-    expect(otherRow.style.display).toBe('none');
+    expectFiltered(matchRow, false);
+    expectFiltered(otherRow, true);
   });
 });
 

@@ -6,11 +6,15 @@ release record so browser-specific behavior has repeatable evidence.
 ## Automated gates
 
 - [ ] `pnpm install --frozen-lockfile`
-- [ ] `pnpm exec eslint src tests`
+- [ ] `pnpm run lint`
+- [ ] `pnpm run format:check`
 - [ ] `pnpm run lint:locales`
+- [ ] `pnpm run lint:docs`
 - [ ] `pnpm run test:unit`
+- [ ] `pnpm run build`
+- [ ] `pnpm run verify:dist`
 - [ ] `pnpm run release:build`
-- [ ] Confirm all three archives contain `manifest.json` at the archive root.
+- [ ] Confirm release verification accepts all manifest-referenced assets in all three archives.
 - [ ] Confirm Firefox `web-ext lint` reports zero errors, notices, and warnings.
 - [ ] Confirm the enabled CI and browser-regression workflows pass.
 
@@ -24,6 +28,8 @@ release record so browser-specific behavior has repeatable evidence.
 - [ ] Confirm icon-only mode survives Gmail navigation and toolbar reinjection.
 - [ ] Upgrade from the previous release and confirm the selected filter and experimental settings
       remain unchanged.
+- [ ] Navigate the toolbar by keyboard, test 200% zoom and forced colours, and confirm live-region
+      announcements with a screen reader. Record the browser and assistive-technology versions.
 
 ## Firefox
 
@@ -45,6 +51,7 @@ release record so browser-specific behavior has repeatable evidence.
 - [ ] Confirm `package.json` and all three manifests use the same version.
 - [ ] Confirm `CHANGELOG.md` contains the tagged version and release date.
 - [ ] Confirm the Material Symbols licence and notice are present in every archive.
+- [ ] Confirm the root `LICENSE` in every archive exactly matches the repository MIT licence.
 - [ ] Enable GitHub private vulnerability reporting and confirm the **Report a vulnerability**
       button is visible after the repository becomes public.
 - [ ] Record the tested browser versions, operating systems, command output, and screenshots.

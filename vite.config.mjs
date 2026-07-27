@@ -55,6 +55,7 @@ export default defineConfig({
         { src: 'src/modules/storage.js', dest: 'modules' },
         { src: 'src/icons', dest: '.' },
         { src: 'src/_locales', dest: '.' },
+        { src: 'LICENSE', dest: '.' },
         // WHY: Copy font assets individually to exclude the .woff2 subset — the font ships inlined
         // as a data: URI in material-symbols.css, so the raw file would be dead weight in the
         // package (and, if made web-accessible, an extension-fingerprinting surface). The .woff2

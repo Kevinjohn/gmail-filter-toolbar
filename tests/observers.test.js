@@ -34,6 +34,23 @@ global.requestAnimationFrame = (cb) => {
 
 global.cancelAnimationFrame = (id) => clearTimeout(id);
 
+const MESSAGE_OBSERVER_OPTIONS = {
+  attributes: true,
+  attributeFilter: [
+    'alt',
+    'aria-checked',
+    'class',
+    'data-docurl',
+    'data-tooltip',
+    'email',
+    'name',
+    'src',
+    'title',
+  ],
+  childList: true,
+  subtree: true,
+};
+
 beforeEach(async () => {
   jest.resetModules();
   MockMutationObserver.reset();
@@ -72,12 +89,30 @@ describe('observeMessageList', () => {
 
     expect(MockMutationObserver.instances).toHaveLength(1);
     const instance = MockMutationObserver.instances[0];
-    expect(instance.observe).toHaveBeenCalledWith(list, { childList: true, subtree: true });
+    expect(instance.observe).toHaveBeenCalledWith(list, MESSAGE_OBSERVER_OPTIONS);
 
     instance.trigger();
     jest.advanceTimersByTime(200);
 
     expect(applyFilterMock).toHaveBeenCalledTimes(1);
+    jest.useRealTimers();
+  });
+
+  test('reapplies an active filter after row metadata changes', () => {
+    jest.useFakeTimers();
+    const doc = document.implementation.createHTMLDocument('list');
+    const list = doc.createElement('div');
+    list.className = 'UI';
+    doc.body.appendChild(list);
+    state.setCurrentMode(state.MODES.FAVOURITES);
+
+    observers.observeMessageList(doc);
+    MockMutationObserver.instances[0].trigger([
+      { type: 'attributes', attributeName: 'aria-checked' },
+    ]);
+    jest.advanceTimersByTime(200);
+
+    expect(applyFilterMock).toHaveBeenCalledWith(doc);
     jest.useRealTimers();
   });
 
@@ -141,7 +176,7 @@ describe('setupGmailToolbarObserver', () => {
     expect(injectToolbarMock).toHaveBeenCalledWith(doc, header);
     expect(MockMutationObserver.instances).toHaveLength(2);
     const [, listObserver] = MockMutationObserver.instances;
-    expect(listObserver.observe).toHaveBeenCalledWith(list, { childList: true, subtree: true });
+    expect(listObserver.observe).toHaveBeenCalledWith(list, MESSAGE_OBSERVER_OPTIONS);
     expect(applyFilterMock).toHaveBeenCalled();
     jest.useRealTimers();
   });
@@ -274,6 +309,20 @@ describe('setupGmailToolbarObserver', () => {
     expect(firstInstance.disconnect).toHaveBeenCalled();
   });
 
+  test('cancels a pending callback when replacing the toolbar observer', () => {
+    jest.useFakeTimers();
+    const doc = document.implementation.createHTMLDocument('gmail');
+    observers.setupGmailToolbarObserver(doc);
+    MockMutationObserver.instances[0].trigger([{ type: 'childList' }]);
+
+    observers.setupGmailToolbarObserver(doc);
+    jest.advanceTimersByTime(200);
+
+    expect(injectToolbarMock).not.toHaveBeenCalled();
+    expect(applyFilterMock).not.toHaveBeenCalled();
+    jest.useRealTimers();
+  });
+
   test('ignores mutations that are not childList updates', () => {
     jest.useFakeTimers();
     const doc = document.implementation.createHTMLDocument('gmail');
@@ -402,14 +451,14 @@ describe('multiple message lists (Multiple Inboxes)', () => {
     expect(observers.observeMessageList(doc)).toBe(true);
 
     expect(MockMutationObserver.instances).toHaveLength(2);
-    expect(MockMutationObserver.instances[0].observe).toHaveBeenCalledWith(first, {
-      childList: true,
-      subtree: true,
-    });
-    expect(MockMutationObserver.instances[1].observe).toHaveBeenCalledWith(second, {
-      childList: true,
-      subtree: true,
-    });
+    expect(MockMutationObserver.instances[0].observe).toHaveBeenCalledWith(
+      first,
+      MESSAGE_OBSERVER_OPTIONS,
+    );
+    expect(MockMutationObserver.instances[1].observe).toHaveBeenCalledWith(
+      second,
+      MESSAGE_OBSERVER_OPTIONS,
+    );
   });
 
   test('returns false when the same set of lists is already observed', () => {
@@ -441,6 +490,20 @@ describe('multiple message lists (Multiple Inboxes)', () => {
     expect(observers.observeMessageList(doc)).toBe(true);
     expect(initialObserver.disconnect).toHaveBeenCalled();
     expect(MockMutationObserver.instances).toHaveLength(3);
+  });
+
+  test('disconnects observers when a view no longer contains a message list', () => {
+    const doc = document.implementation.createHTMLDocument('multi');
+    const list = doc.createElement('div');
+    list.className = 'UI';
+    doc.body.appendChild(list);
+    observers.observeMessageList(doc);
+    const observer = MockMutationObserver.instances[0];
+
+    list.remove();
+    expect(observers.observeMessageList(doc)).toBe(false);
+
+    expect(observer.disconnect).toHaveBeenCalled();
   });
 });
 

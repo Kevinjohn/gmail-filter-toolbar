@@ -9,7 +9,7 @@ This playbook documents how we exercise the extension across unit, integration, 
 - Command: `pnpm run test:unit`
 - Location: `tests/` root (`*.test.js`) leveraging `tests/setup.js` for chrome/i18n mocks.
 - Focus: Pure functions, background message handlers, toolbar state reducers.
-- Tips: Use `--runTestsByPath tests/<file>` to target a specific spec during debugging.
+- Tips: Use `pnpm run test:unit -- --runTestsByPath tests/toolbar.test.js` to target a spec.
 
 ### Integration (Jest + JSDOM)
 
@@ -44,10 +44,16 @@ This playbook documents how we exercise the extension across unit, integration, 
 - Ensures every locale includes the English key set and that placeholders/plurals stay aligned.
 - Jest also enforces non-empty messages through `tests/i18nMessages.test.js`.
 
+### Documentation safeguards
+
+- Command: `pnpm run lint:docs`
+- Scans tracked and untracked, non-ignored Markdown throughout the repository.
+- Validates local files, heading fragments, inline links, and reference-style link definitions.
+
 ### Environment Validation
 
 - Command: `pnpm run validate:env`
-- Fails fast if required browsers or Chrome binaries are missing. Run this first on new machines or CI images.
+- Fails fast if Playwright's Chromium executable is missing. Run this first on new machines or CI images.
 
 ## Data, Fixtures, and Mocks
 
@@ -59,14 +65,14 @@ This playbook documents how we exercise the extension across unit, integration, 
 ## Debugging Techniques
 
 - Run Jest in watch mode: `pnpm test -- --watch` updates on file saves.
-- Log selective tests with `DEBUG=toolbar pnpm run test:unit -- --runTestsByPath tests/integration/toolbar.integration.test.js` (hooks into custom debug statements).
+- Run one Jest file with `pnpm run test:unit -- --runTestsByPath tests/toolbar.test.js`.
 - Execute a single Playwright spec: `pnpm run e2e -- tests/e2e/toolbar-persistence.spec.js`.
 - Capture traces/screenshots: append `--trace=on --headed` to the Playwright command when investigating failures; artifacts land under `artifacts/playwright/`.
 - Use Chrome DevTools protocol logs by launching Playwright with `DEBUG=pw:api` if you need granular navigation traces.
 
 ## Troubleshooting Checklist
 
-- `pnpm run validate:env` fails: rerun `pnpm exec playwright install` and ensure Chrome/Edge is on the PATH.
+- `pnpm run validate:env` fails: run `pnpm exec playwright install chromium`.
 - Jest crashes with ESM warnings: clear `node_modules/` (`rm -rf node_modules && pnpm install --frozen-lockfile`) to realign dependencies.
 - Playwright tests hang: delete `artifacts/playwright/`, rebuild the extension, and retry with `--trace=on` to inspect stuck steps.
 - Locale lint failures: cross-check the key diff printed in the console and update the affected `src/_locales/<locale>/messages.json` file.

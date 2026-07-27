@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
+import { writeFileBatch } from './utils/write-file-batch.mjs';
 
 const translations = {
   ar: [
@@ -166,14 +167,31 @@ const translations = {
   ],
 };
 
+const renderedLocales = [];
 for (const [locale, values] of Object.entries(translations)) {
   const file = path.join('src', '_locales', locale, 'messages.json');
   const messages = JSON.parse(readFileSync(file, 'utf8'));
+  for (const key of [
+    'extension_name',
+    'experimental_legend',
+    'experimental_description',
+    'options_show_ai_notetakers',
+    'btn_ai_notetakers',
+    'options_show_dev_notifications',
+  ]) {
+    if (!messages[key] || typeof messages[key].message !== 'string') {
+      throw new Error(`${file} is missing a valid ${key}.message`);
+    }
+  }
   messages.extension_name.message = 'Gmail Filter Toolbar';
   messages.experimental_legend.message = values[0];
   messages.experimental_description.message = values[1];
   messages.options_show_ai_notetakers.message = values[2];
   messages.btn_ai_notetakers.message = values[3];
   messages.options_show_dev_notifications.message = values[4];
-  writeFileSync(file, `${JSON.stringify(messages, null, 2)}\n`);
+  renderedLocales.push([file, `${JSON.stringify(messages, null, 2)}\n`]);
 }
+
+// Validate and render the complete batch before changing the first locale. A malformed late file
+// therefore cannot leave earlier locale files partially updated.
+writeFileBatch(renderedLocales);

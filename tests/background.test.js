@@ -82,6 +82,34 @@ describe('background.js', () => {
     );
   });
 
+  test('does not report a storage.set duration when every default is already present', async () => {
+    const chrome = useChromeMock({
+      storage: {
+        sync: {
+          get: jest.fn((keys, callback) =>
+            callback({
+              gmailCalMode: 'CALENDAR',
+              showAiNotetakers: true,
+              showDevNotifications: true,
+            }),
+          ),
+          set: jest.fn((data, callback) => callback?.()),
+        },
+      },
+    });
+    await loadBackground();
+    const installListener = chrome.runtime.onInstalled.addListener.mock.calls[0][0];
+
+    await installListener({ reason: 'install' });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(chrome.storage.sync.set).not.toHaveBeenCalled();
+    expect(infoSpy).toHaveBeenCalledWith(
+      expect.stringContaining('background:onInstalled defaults already present'),
+    );
+    expect(infoSpy).not.toHaveBeenCalledWith(expect.stringContaining('storage.set'));
+  });
+
   test('warns when installing defaults is slow', async () => {
     const chrome = useChromeMock();
     nowSpy.mockImplementationOnce(() => 0).mockImplementationOnce(() => 750);

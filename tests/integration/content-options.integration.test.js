@@ -251,7 +251,7 @@ describe('Integration: DOM + Message Passing', () => {
     await flushPromises();
 
     expect(global.chrome.storage.sync.set).toHaveBeenCalledWith(
-      { gmailCalMode: stateModule.MODES.CALENDAR },
+      expect.objectContaining({ gmailCalMode: stateModule.MODES.CALENDAR }),
       expect.any(Function),
     );
 
@@ -313,8 +313,7 @@ describe('Integration: DOM + Message Passing', () => {
 
     const payloads = global.chrome.storage.sync.set.mock.calls.map(([payload]) => payload);
     const fallBackPersisted = payloads.some(
-      (payload) =>
-        payload.gmailCalMode === stateModule.MODES.ALL && Object.keys(payload).length === 1,
+      (payload) => payload.gmailCalMode === stateModule.MODES.ALL && payload.gmailCalModeWriteId,
     );
     expect(fallBackPersisted).toBe(true);
   });

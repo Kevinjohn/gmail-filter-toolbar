@@ -45,7 +45,8 @@ Transform your Gmail inbox with instant, client-side filtering. A custom toolbar
 - **Persistent filters** – Your selection survives pagination and navigation
 - **Customizable UI** – Toggle button text visibility, choose start/center alignment, select theme (light/dark/system)
 - **Debug mode** – Visualize filtered emails with a blue tint instead of hiding them
-- **Accessibility-first** – Full keyboard navigation and WCAG 2.1 AA compliant
+- **Accessibility-minded** – Keyboard navigation, live announcements, forced-colour support, and
+  automated accessibility checks on the options page
 - **Privacy-focused** – Zero external requests, all filtering happens locally
 - **Multi-language ready** – Localizable strings with RTL language support
 
@@ -218,6 +219,13 @@ Access the extension options page via:
 
 ---
 
+## Debug Mode
+
+Enable **Debug Mode** from the extension options page to highlight rows that a filter would hide.
+This lets you inspect filter classification without removing messages from the visible list.
+
+---
+
 ## Keyboard & Accessibility Notes
 
 - **Tab** enters the radio group at the selected filter; use **Left/Right Arrow** to move and select.
@@ -271,6 +279,7 @@ src/
 │  └─ utils/debounce.js   # debounce helper
 ├─ _locales/              # message bundles for i18n
 ├─ assets/fonts/          # bundled Material Symbols icon font (subsetted)
+├─ assets/icon-source.svg # editable source for the extension icon PNGs
 ├─ icons/                 # 16 / 32 / 48 / 128 px PNGs (for extension icon)
 ├─ styles.css             # toolbar styling
 ├─ colours.css            # light/dark/high-contrast theme variables
@@ -284,6 +293,8 @@ scripts/                  # build, release & validation scripts
 dist/                     # build output (dist/chrome/, dist/firefox/, dist/safari/)
 docs/                     # additional documentation
 ```
+
+See [`docs/icon-maintenance.md`](docs/icon-maintenance.md) before changing the extension icon.
 
 ## Update Strategy
 
@@ -303,31 +314,39 @@ To update the selectors:
 
 This extension is built on a few core principles: listening for the right moment to act, efficiently filtering the DOM, and persisting user choices.
 
-**Important Note:** If you encounter issues with the filter not persisting after navigating between email pages, please consult `_remember_filter_on_pagination.md` for a detailed explanation of how dynamic content loading in Single-Page Applications (SPAs) like Gmail affects extension behaviour, and the architectural patterns used to address it.
+**Important Note:** If a filter does not persist after navigating between email pages, see
+[`docs/notes/filter-on-pagination.md`](docs/notes/filter-on-pagination.md) for the observer pattern
+used with Gmail's dynamic message lists.
 
-**Important Note:** If toolbar placement issues occur after Gmail pagination, usually with out toolbar appearing above/before the Gmail one, refer to `_remember_toolbar-placement.md` for detailed debugging steps and solutions.
+**Important Note:** For toolbar placement problems after Gmail navigation, see
+[`docs/notes/toolbar-placement.md`](docs/notes/toolbar-placement.md).
 
 1.  **Entry & Injection (`contentScript.js`)**:
     - The `manifest.json` file defines `contentScript.js` as the entry point, which runs after the Gmail page is idle (`"run_at": "document_idle"`).
-    - The script first polls the DOM using `requestAnimationFrame` inside the `waitForGmailToolbar` function until it finds a stable Gmail toolbar element (e.g., `.G-atb .G6`). This ensures the extension doesn't try to inject its UI before Gmail is ready.
+    - `src/modules/observers.js` polls with `setTimeout` until it finds a stable Gmail toolbar
+      element. Timer polling continues (at a browser-clamped rate) when a tab starts in the
+      background.
     - Once the anchor element is found, the script injects the filter toolbar HTML. The CSS (`styles.css`) is designed to force Gmail's native toolbar to wrap, making space for the new UI elements.
 
 - Toolbar icons use a locally bundled, subsetted Material Symbols Outlined font (`src/assets/fonts/`), injected via the manifest's `content_scripts` CSS — no external network requests are made.
 
-2.  **State Management (`background.js`, `options.js`)**:
-    - User preferences (the selected filter mode and the debug flag) are stored using the `chrome.storage.sync` API. This makes them persist across browser sessions and sync between devices.
+2.  **State Management (`storage.js`, `background.js`, `options.js`)**:
+    - The storage abstraction prefers `chrome.storage.sync`, falls back to `storage.local` when
+      sync is unavailable, and defensively rechecks sync before migrating legacy local values.
     - `background.js` sets a default filter mode (`ALL`) when the extension is first installed.
-    - `options.js` handles the logic for the debug mode checkbox on the extension's options page.
+    - `options.js` restores and serially persists the complete settings snapshot: debug mode,
+      button text, optional filters, alignment, and theme.
 
 3.  **Filtering Logic (`contentScript.js`)**:
-    - When a filter button is clicked, the `currentMode` variable is updated, and the choice is saved to `chrome.storage.sync`.
+    - When a filter button is clicked, the `currentMode` variable is updated, and the choice is saved through the active sync-or-local storage backend.
     - The `applyFilter` function is then called. It iterates through all email rows (identified by the selector `.UI tr.zA`).
-    - For each row, a helper function (`isCalendarRow` or `hasAttachmentRow`) determines if it matches the filter criteria. These helpers look for specific clues, like the presence of an `.ics` attachment image (`img[alt*=".ics"]`) or specific CSS classes that Gmail uses for attachments.
-    - Rows that should be hidden have their `style.display` set to `none`. In debug mode, they are instead made semi-transparent for inspection.
+    - For each row, a helper function (`isCalendarRow` or `hasAttachmentRow`) determines if it matches the filter criteria. These helpers look for clues such as a filename ending in `.ics`, Gmail's calendar icon URL, localized alternative text, and attachment classes.
+    - Rows that should be hidden receive a dedicated CSS class. In debug mode, they are instead made semi-transparent for inspection.
 
 4.  **Dynamic Updates (`contentScript.js`)**:
     - Gmail is a single-page application (SPA), so the list of emails can change without a full page reload (e.g., when paginating, searching, or receiving a new email).
-    - To handle this, a `MutationObserver` is attached to the main email list container. It listens for changes to the list of child elements (`childList: true`).
+    - To handle this, `observers.js` attaches `MutationObserver` instances to every active message
+      list. They watch child changes and the narrow set of metadata attributes used by filters.
 
 - When a subtree change is detected, it calls `applyFilter` again (after a short debounce) to ensure the filter is correctly applied to the new set of email rows.
 
@@ -340,15 +359,18 @@ This extension is built on a few core principles: listening for the right moment
 | `pnpm run build`         | Vite build → `dist/chrome/` and `dist/firefox/`                              |
 | `pnpm run build:chrome`  | Vite build → `dist/chrome/` only                                             |
 | `pnpm run build:firefox` | Vite build → `dist/firefox/` only                                            |
-| `pnpm run validate:env`  | Sanity-check required Playwright/Chrome binaries                             |
+| `pnpm run validate:env`  | Verify the Playwright Chromium binary used by E2E                            |
 | `pnpm run test:unit`     | Jest unit+integration suites (serial for CI stability)                       |
 | `pnpm test`              | Jest unit-test runner                                                        |
 | `pnpm run e2e`           | Playwright specs (auto-skip under WSL2; run on native Linux/macOS/Windows)   |
 | `pnpm run test:e2e:ci`   | Playwright in CI mode (`list,junit` reporters)                               |
 | `pnpm run audit:options` | Lighthouse check against the built options page (`dist/chrome/options.html`) |
-| `pnpm run lint`          | ESLint validation for source and tests                                       |
-| `pnpm run lint:fix`      | ESLint with autofix for source and tests                                     |
+| `pnpm run lint`          | ESLint validation for source, tests, scripts, and build configuration        |
+| `pnpm run lint:fix`      | ESLint autofix for source, tests, scripts, and build configuration           |
 | `pnpm run lint:locales`  | Lints i18n message files for key/placeholder parity                          |
+| `pnpm run lint:docs`     | Validates local Markdown links and heading fragments                         |
+| `pnpm run verify:dist`   | Confirms tracked Chrome/Firefox bundles exactly match the build              |
+| `pnpm run release:verify` | Packages and verifies existing browser builds (used after CI builds)         |
 | `pnpm run format`        | Prettier auto-format (JS/CSS/HTML/JSON under `src/`)                         |
 
 ---
@@ -357,7 +379,7 @@ This extension is built on a few core principles: listening for the right moment
 
 See `docs/testing-playbook.md` for the full test pyramid, fixtures, and debugging recipes. Quick reference commands:
 
-- `pnpm run validate:env` ensures Playwright browsers and Chrome binaries are available before e2e runs.
+- `pnpm run validate:env` ensures Playwright Chromium is available before e2e runs.
 - `pnpm run test:unit` executes the Jest unit and integration suites in-band; use `pnpm test -- --watch` for watch mode while iterating locally.
 - `pnpm run e2e` drives the Playwright UI flows against an offline Gmail fixture (auto-skips under WSL2 — see note below).
 - `pnpm run lint:locales` validates that every locale matches the English key set and placeholder structure.
@@ -381,6 +403,9 @@ Chrome MV3 extensions with service workers cannot run in Playwright under WSL2, 
 
 - Run `pnpm run audit:options`; the command enforces the documented Lighthouse performance,
   accessibility, and best-practices budgets.
+- Automated checks cover specific behaviours and surfaces; they are not a claim of full WCAG
+  conformance. Complete the keyboard, forced-colour, zoom, and assistive-technology checks in the
+  release checklist for each release.
 
 ---
 

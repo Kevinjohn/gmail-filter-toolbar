@@ -8,7 +8,7 @@ import {
   THEME_KEY,
   THEMES,
 } from './constants.js';
-import { storageGet, storageSet } from './storage.js';
+import { MODE_WRITE_ID_KEY, storageGet, storageSet } from './storage.js';
 
 /**
  * Storage key for current filter mode.
@@ -197,9 +197,12 @@ export function saveState() {
   });
 }
 
-export function persistMode(mode) {
+export function persistMode(mode, writeId) {
   if (!isValidMode(mode)) {
     return Promise.reject(new TypeError(`Invalid filter mode: ${String(mode)}`));
   }
-  return storageSet({ [KEY_MODE]: mode });
+  return storageSet({
+    [KEY_MODE]: mode,
+    ...(writeId ? { [MODE_WRITE_ID_KEY]: writeId } : {}),
+  });
 }

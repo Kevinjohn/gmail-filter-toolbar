@@ -1,6 +1,6 @@
 {
   "name": "gmail-filter-toolbar",
-  "version": "2.7.2",
+  "version": "2.8.0",
   "packageManager": "pnpm@11.7.0",
   "description": "Filter Gmail by calendar invites, attachments, starred messages, or regular mail.",
   "license": "MIT",
@@ -38,11 +38,12 @@
     "firefox:lint": "web-ext lint --source-dir dist/firefox",
     "firefox:package": "pnpm run build:firefox && cross-env web-ext build --source-dir dist/firefox --artifacts-dir artifacts/firefox --overwrite-dest",
     "release:build": "node scripts/build-release.mjs",
+    "release:verify": "node scripts/build-release.mjs --reuse-builds",
     "version:major": "node scripts/bump-version.mjs major",
     "version:minor": "node scripts/bump-version.mjs minor",
     "version:patch": "node scripts/bump-version.mjs patch",
-    "lint": "eslint src tests",
-    "lint:fix": "eslint src tests --fix",
+    "lint": "eslint src tests scripts *.config.{js,cjs,mjs} vite*.mjs",
+    "lint:fix": "eslint src tests scripts *.config.{js,cjs,mjs} vite*.mjs --fix",
     "test": "node --experimental-vm-modules --experimental-json-modules node_modules/jest/bin/jest.js",
     "e2e": "playwright test",
     "test:e2e:ci": "pnpm run e2e",
@@ -52,6 +53,8 @@
     "validate:env": "node scripts/validate-env.js",
     "test:unit": "node --experimental-vm-modules --experimental-json-modules node_modules/jest/bin/jest.js --runInBand",
     "lint:locales": "node scripts/lint-locales.js",
+    "lint:docs": "node scripts/lint-docs.mjs",
+    "verify:dist": "node scripts/verify-dist.mjs",
     "prepare": "husky"
   },
   "devDependencies": {

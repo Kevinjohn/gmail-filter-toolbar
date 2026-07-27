@@ -9,7 +9,14 @@ import {
   THEMES,
 } from './constants.js';
 import { applyTheme, normalizeTheme } from './theme.js';
-import { storageGet, storageSet, onStorageChanged, getActiveAreaName } from './storage.js';
+import {
+  createStorageWriteId,
+  getActiveAreaName,
+  onStorageChanged,
+  OPTIONS_WRITE_ID_KEY,
+  storageGet,
+  storageSet,
+} from './storage.js';
 
 const debugCheckbox = document.getElementById('debug');
 const showButtonTextCheckbox = document.getElementById('show-button-text-checkbox');
@@ -41,9 +48,8 @@ const ALL_CONTROLS = [
   showDevNotificationsCheckbox,
 ].filter(Boolean);
 
-// WHY: Controls stay disabled until the stored options have been restored. The change listeners
-// persist a full snapshot of every control, so a click that lands before restore_options() resolves
-// would otherwise save the HTML defaults and silently wipe the user's real preferences.
+// WHY: Controls stay disabled until the stored options have been restored. A click that lands before
+// restore_options() resolves would compare against HTML defaults instead of the user's real values.
 function setControlsDisabled(disabled) {
   ALL_CONTROLS.forEach((control) => {
     control.disabled = disabled;
@@ -229,6 +235,21 @@ if (showDevNotificationsLabel) {
 }
 
 let persistedOptions = null;
+let latestRequestedOptions = null;
+let saveGeneration = 0;
+let optionsSaveQueue = Promise.resolve();
+const localOptionsWriteIds = new Set();
+const optionIntentVersions = new Map();
+
+const OPTION_KEYS = [
+  'gmailCalDebug',
+  SHOW_BUTTON_TEXT_KEY,
+  SHOW_FAVOURITES_KEY,
+  SHOW_AI_NOTETAKERS_KEY,
+  SHOW_DEV_NOTIFICATIONS_KEY,
+  ALIGNMENT_KEY,
+  THEME_KEY,
+];
 
 function readOptionsFromControls() {
   return {
@@ -260,22 +281,77 @@ function applyOptionsToControls(options) {
 // Save options through the browser-compatible storage abstraction.
 function save_options() {
   // WHY: Never save before the stored options have been restored — the controls would still hold
-  // the HTML defaults and a full-snapshot write would wipe the user's real preferences.
+  // HTML defaults, so the change patch could be calculated against the wrong baseline.
   if (!persistedOptions) return;
 
   const nextOptions = readOptionsFromControls();
+  const patch = Object.fromEntries(
+    OPTION_KEYS.filter((key) => nextOptions[key] !== latestRequestedOptions?.[key]).map((key) => [
+      key,
+      nextOptions[key],
+    ]),
+  );
+  if (!Object.keys(patch).length) return;
+
+  const generation = ++saveGeneration;
+  const requestVersions = new Map(
+    Object.keys(patch).map((key) => {
+      const version = (optionIntentVersions.get(key) ?? 0) + 1;
+      optionIntentVersions.set(key, version);
+      return [key, version];
+    }),
+  );
+  latestRequestedOptions = nextOptions;
   applyTheme(document, nextOptions[THEME_KEY]);
-  storageSet(nextOptions)
-    .then(() => {
-      persistedOptions = nextOptions;
-      showStatus(getMessage('options_status_saved', 'Settings saved'), { transient: true });
+  const saveTask = optionsSaveQueue
+    .catch(() => {})
+    .then(async () => {
+      const activePatch = Object.fromEntries(
+        Object.entries(patch).filter(
+          ([key]) => optionIntentVersions.get(key) === requestVersions.get(key),
+        ),
+      );
+      if (!Object.keys(activePatch).length) return null;
+
+      const writeId = createStorageWriteId('options');
+      localOptionsWriteIds.add(writeId);
+      try {
+        await storageSet({ ...activePatch, [OPTIONS_WRITE_ID_KEY]: writeId });
+        return activePatch;
+      } catch (error) {
+        localOptionsWriteIds.delete(writeId);
+        throw error;
+      }
+    });
+  optionsSaveQueue = saveTask;
+  saveTask
+    .then((savedPatch) => {
+      if (!savedPatch) return;
+      const confirmedPatch = Object.fromEntries(
+        Object.entries(savedPatch).filter(
+          ([key]) => optionIntentVersions.get(key) === requestVersions.get(key),
+        ),
+      );
+      persistedOptions = normalizeOptions({ ...persistedOptions, ...confirmedPatch });
+      if (generation === saveGeneration && Object.keys(confirmedPatch).length) {
+        showStatus(getMessage('options_status_saved', 'Settings saved'), { transient: true });
+      }
     })
     .catch((error) => {
       console.error('Error saving options:', error);
-      applyOptionsToControls(persistedOptions);
-      showStatus(
-        getMessage('options_status_save_error', 'Couldn’t save settings. Please try again.'),
+      const failedCurrentKeys = Object.keys(patch).filter(
+        (key) => optionIntentVersions.get(key) === requestVersions.get(key),
       );
+      if (failedCurrentKeys.length) {
+        latestRequestedOptions = {
+          ...latestRequestedOptions,
+          ...Object.fromEntries(failedCurrentKeys.map((key) => [key, persistedOptions[key]])),
+        };
+        applyOptionsToControls(latestRequestedOptions);
+        showStatus(
+          getMessage('options_status_save_error', 'Couldn’t save settings. Please try again.'),
+        );
+      }
     });
 }
 
@@ -293,18 +369,11 @@ function restore_options() {
     return;
   }
 
-  storageGet([
-    'gmailCalDebug',
-    SHOW_BUTTON_TEXT_KEY,
-    SHOW_FAVOURITES_KEY,
-    SHOW_AI_NOTETAKERS_KEY,
-    SHOW_DEV_NOTIFICATIONS_KEY,
-    ALIGNMENT_KEY,
-    THEME_KEY,
-  ])
+  storageGet(OPTION_KEYS)
     .then((storageData) => {
       restoreAttempts = 0;
       persistedOptions = normalizeOptions(storageData);
+      latestRequestedOptions = persistedOptions;
       applyOptionsToControls(persistedOptions);
       setControlsDisabled(false);
       showStatus('');
@@ -337,18 +406,26 @@ if (globalThis.chrome?.storage?.onChanged) {
     if (areaName !== getActiveAreaName()) return;
     if (!persistedOptions) return;
 
-    const nextRaw = { ...persistedOptions };
+    const writeId = changes[OPTIONS_WRITE_ID_KEY]?.newValue;
+    if (localOptionsWriteIds.delete(writeId)) return;
+
+    const nextPersisted = { ...persistedOptions };
+    const nextRequested = { ...(latestRequestedOptions ?? persistedOptions) };
     let changed = false;
-    for (const key of Object.keys(nextRaw)) {
-      if (key in changes && changes[key].newValue !== nextRaw[key]) {
-        nextRaw[key] = changes[key].newValue;
+    for (const key of OPTION_KEYS) {
+      if (key in changes) {
+        const value = changes[key].newValue;
+        nextPersisted[key] = value;
+        nextRequested[key] = value;
+        optionIntentVersions.set(key, (optionIntentVersions.get(key) ?? 0) + 1);
         changed = true;
       }
     }
     if (!changed) return;
 
-    persistedOptions = normalizeOptions(nextRaw);
-    applyOptionsToControls(persistedOptions);
+    persistedOptions = normalizeOptions(nextPersisted);
+    latestRequestedOptions = normalizeOptions(nextRequested);
+    applyOptionsToControls(latestRequestedOptions);
   });
 }
 
@@ -372,4 +449,4 @@ if (showDevNotificationsCheckbox) {
 }
 
 // Load options when the page is loaded
-document.addEventListener('DOMContentLoaded', restore_options);
+document.addEventListener('DOMContentLoaded', restore_options, { once: true });

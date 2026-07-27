@@ -17,6 +17,24 @@ function getStorageBackend() {
   return chrome.storage.sync ?? chrome.storage.local;
 }
 
+export const MODE_WRITE_ID_KEY = 'gmailCalModeWriteId';
+export const OPTIONS_WRITE_ID_KEY = 'gmailCalOptionsWriteId';
+
+let storageWriteSequence = 0;
+const storageWriterId =
+  globalThis.crypto?.randomUUID?.() ??
+  `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+
+/**
+ * Returns an identifier that is unique to one storage write in this extension context.
+ * Callers persist it beside user data so their onChanged listener can distinguish a local
+ * acknowledgement from a genuinely external update.
+ */
+export function createStorageWriteId(scope) {
+  storageWriteSequence += 1;
+  return `${scope}:${storageWriterId}:${storageWriteSequence}`;
+}
+
 /**
  * Name of the storage area the abstraction actually writes to ('sync' or 'local').
  *
@@ -98,9 +116,20 @@ export async function storageGet(keys) {
   }
 
   const legacyValues = await getFromStorage(local, missingKeys);
+  // Narrow the migration race: another context may have populated sync while local.get was in
+  // flight. Re-read the candidates and migrate only values that are still absent.
+  let latestStored;
+  try {
+    latestStored = await getFromStorage(backend, missingKeys);
+  } catch (error) {
+    // The initial backend and legacy reads both succeeded. A transient failure in this defensive
+    // re-read must not discard usable values; return them without attempting a migration write.
+    console.warn('Failed to recheck sync storage before legacy migration:', error);
+    return { ...stored, ...legacyValues };
+  }
   const recovered = Object.fromEntries(
     missingKeys
-      .filter((key) => legacyValues[key] !== undefined)
+      .filter((key) => latestStored[key] === undefined && legacyValues[key] !== undefined)
       .map((key) => [key, legacyValues[key]]),
   );
   if (Object.keys(recovered).length) {
@@ -118,7 +147,7 @@ export async function storageGet(keys) {
       console.warn('Failed to migrate legacy storage values to sync:', error);
     }
   }
-  return { ...stored, ...recovered };
+  return { ...stored, ...latestStored, ...recovered };
 }
 
 /**

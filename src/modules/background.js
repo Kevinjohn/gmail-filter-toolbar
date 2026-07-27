@@ -29,11 +29,13 @@ chrome.runtime.onInstalled.addListener((details) => {
       const missingDefaults = Object.fromEntries(
         Object.entries(defaults).filter(([key]) => stored[key] === undefined),
       );
-      return Object.keys(missingDefaults).length ? storageSet(missingDefaults) : undefined;
-    })
-    .then(() => {
-      const duration = performance.now() - start;
-      logDuration('background:onInstalled storage.set', duration);
+      if (!Object.keys(missingDefaults).length) {
+        logDuration('background:onInstalled defaults already present', performance.now() - start);
+        return undefined;
+      }
+      return storageSet(missingDefaults).then(() => {
+        logDuration('background:onInstalled storage.set', performance.now() - start);
+      });
     })
     .catch((error) => {
       console.error('Error setting initial mode:', error);

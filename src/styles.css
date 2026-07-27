@@ -108,6 +108,10 @@ span.text-label {
 }
 
 /* Debug mode: highlight rows that would be hidden, using the theme-aware overlay colour. */
+tr.zA.gcal-filter-hidden {
+  display: none !important;
+}
+
 tr.zA.gcal-debug-highlight {
   background: var(--gcal-debug-overlay) !important;
   opacity: 0.5;

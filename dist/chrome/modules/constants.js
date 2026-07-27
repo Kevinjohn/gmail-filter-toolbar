@@ -138,6 +138,7 @@ export const FILTER_WRAPPER_CLASS = 'gcal-filter-wrapper';
  * @stable
  */
 export const DEBUG_HIGHLIGHT_CLASS = 'gcal-debug-highlight';
+export const FILTER_HIDDEN_CLASS = 'gcal-filter-hidden';
 
 /**
  * DOM selectors for Gmail elements.
@@ -209,11 +210,6 @@ export const SELECTORS = {
    * Targets elements with a `data-tooltip` attribute set to "Has attachment".
    */
   attachmentTooltip: '[data-tooltip="Has attachment"]',
-  /**
-   * Selector for the image indicating an ICS (calendar) attachment.
-   * Targets `img` elements whose `alt` attribute contains ".ics".
-   */
-  icsImage: 'img[alt*=".ics"]',
   calendarIcon: 'img[src*="/mail/images/calendar"]',
   starredIcon: '.T-KT-Jp, [aria-checked="true"].T-KT',
   /**

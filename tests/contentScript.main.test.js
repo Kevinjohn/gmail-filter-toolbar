@@ -164,7 +164,7 @@ describe('contentScript main lifecycle', () => {
     await flushPromises();
 
     expect(setCurrentModeMock).toHaveBeenCalledWith('CALENDAR');
-    expect(persistModeMock).toHaveBeenCalledWith('CALENDAR');
+    expect(persistModeMock).toHaveBeenCalledWith('CALENDAR', expect.any(String));
     expect(applyFilterMock).toHaveBeenCalled();
     expect(refreshUIMock).toHaveBeenCalledWith(document);
   });
@@ -194,12 +194,77 @@ describe('contentScript main lifecycle', () => {
     await flushPromises();
 
     expect(persistModeMock).toHaveBeenCalledTimes(1);
-    expect(persistModeMock).toHaveBeenLastCalledWith('CALENDAR');
+    expect(persistModeMock).toHaveBeenLastCalledWith('CALENDAR', expect.any(String));
 
     resolveFirstWrite();
     await flushPromises();
 
-    expect(persistModeMock).toHaveBeenNthCalledWith(2, 'ALL');
+    expect(persistModeMock).toHaveBeenNthCalledWith(2, 'ALL', expect.any(String));
+  });
+
+  test('keeps the latest queued mode after acknowledging an earlier local write', async () => {
+    let resolveFirstWrite;
+    persistModeMock
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            resolveFirstWrite = resolve;
+          }),
+      )
+      .mockImplementationOnce(() => Promise.resolve());
+    const bar = document.createElement('div');
+    bar.className = 'gcal-filter-bar';
+    const calendarButton = document.createElement('button');
+    calendarButton.dataset.mode = 'CALENDAR';
+    const allButton = document.createElement('button');
+    allButton.dataset.mode = 'ALL';
+    bar.append(calendarButton, allButton);
+    document.body.appendChild(bar);
+
+    calendarButton.click();
+    allButton.click();
+    await flushPromises();
+    const firstWriteId = persistModeMock.mock.calls[0][1];
+    storageChangeListener(
+      {
+        gmailCalMode: { newValue: 'CALENDAR' },
+        gmailCalModeWriteId: { newValue: firstWriteId },
+      },
+      'sync',
+    );
+    resolveFirstWrite();
+    await flushPromises();
+
+    expect(persistModeMock).toHaveBeenCalledTimes(2);
+    expect(persistModeMock).toHaveBeenNthCalledWith(2, 'ALL', expect.any(String));
+  });
+
+  test('drops a queued local mode write after an authoritative storage change', async () => {
+    let resolveFirstWrite;
+    persistModeMock.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveFirstWrite = resolve;
+        }),
+    );
+    const bar = document.createElement('div');
+    bar.className = 'gcal-filter-bar';
+    const calendarButton = document.createElement('button');
+    calendarButton.dataset.mode = 'CALENDAR';
+    const allButton = document.createElement('button');
+    allButton.dataset.mode = 'ALL';
+    bar.append(calendarButton, allButton);
+    document.body.appendChild(bar);
+
+    calendarButton.click();
+    allButton.click();
+    await flushPromises();
+    storageChangeListener({ gmailCalMode: { newValue: 'CALENDAR' } }, 'sync');
+    resolveFirstWrite();
+    await flushPromises();
+
+    expect(persistModeMock).toHaveBeenCalledTimes(1);
+    expect(persistModeMock).toHaveBeenCalledWith('CALENDAR', expect.any(String));
   });
 
   test('mirrors mode changes from other tabs without re-persisting', async () => {
@@ -308,7 +373,7 @@ describe('contentScript main lifecycle', () => {
 
     expect(result).toBe(true);
     await flushPromises();
-    expect(persistModeMock).toHaveBeenCalledWith('FAVOURITES');
+    expect(persistModeMock).toHaveBeenCalledWith('FAVOURITES', expect.any(String));
     expect(sendResponse).toHaveBeenCalledWith({ ok: true, mode: 'ALL' });
   });
 
@@ -322,7 +387,7 @@ describe('contentScript main lifecycle', () => {
     expect(result).toBe(true);
     await flushPromises();
     expect(setCurrentModeMock).toHaveBeenCalledWith('FAVOURITES');
-    expect(persistModeMock).toHaveBeenCalledWith('FAVOURITES');
+    expect(persistModeMock).toHaveBeenCalledWith('FAVOURITES', expect.any(String));
     expect(applyFilterMock).toHaveBeenCalled();
     expect(refreshUIMock).toHaveBeenCalledWith(document);
     expect(sendResponse).toHaveBeenCalledWith({ ok: true, mode: 'ALL' });

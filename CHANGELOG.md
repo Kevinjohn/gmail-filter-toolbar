@@ -4,6 +4,63 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.8.0] - 2026-07-27
+
+### Fixed
+
+- Rapid filter changes and options edits can no longer be overwritten by delayed storage
+  acknowledgements. Writes now carry per-writer transaction identifiers, options persist only the
+  fields that actually changed, obsolete queued writes are skipped, and genuine changes from other
+  tabs remain authoritative.
+- Preference migration now fails open when the defensive sync-storage re-read is temporarily
+  unavailable, preserving recovered legacy values without attempting a potentially destructive
+  migration.
+- Message filtering now hides rows with an extension-owned CSS class instead of rewriting Gmail's
+  inline `display` style, so Gmail can update row presentation while a filter is active without the
+  extension restoring stale style data later.
+- Calendar-invite detection now recognises realistic `.ics` filenames followed by punctuation or
+  query text while rejecting lookalike extensions such as `.icsx`, `.ics.gz`, and `.ics-copy`.
+- Message-list observers now react when Gmail updates attachment and message metadata attributes,
+  disconnect cleanly when lists disappear, and cancel obsolete toolbar mutation work when the
+  observer is replaced.
+- Installation timing now measures the actual default-preference write and reports the no-op case
+  separately instead of logging unrelated promise-chain time.
+- Options-page labels use logical spacing in right-to-left locales, and the page now includes a
+  mobile viewport declaration and extension icon.
+- The Lighthouse audit always closes its local server when Chrome fails to launch and no longer
+  supplies conflicting remote-debugging flags.
+
+### Build and release
+
+- Added release-package inventory checks for manifests, options dependencies, styles, locales,
+  licences, notices, and directly referenced assets across Chrome, Firefox, and Safari archives.
+- Added `pnpm run verify:dist` so CI rejects stale, modified, deleted, or untracked generated browser
+  distributions, plus `pnpm run release:verify` to package and inspect an existing verified build
+  without rebuilding Chrome and Firefox twice.
+- Batch file updates now reject duplicate destinations, preserve existing file permissions, use
+  collision-resistant temporary names, and roll back completed replacements if a later rename
+  fails.
+- Browser builds now include the project licence, and the release tooling verifies that every
+  manifest version matches `package.json`.
+- Added a tracked vector icon source, reproducible icon-regeneration instructions, and refreshed
+  raster icons for all supported sizes.
+- Environment validation now checks the Playwright Chromium executable actually used by the E2E
+  suite, while CI boolean parsing correctly treats `CI=0` and `CI=false` as local execution.
+
+### Documentation and quality
+
+- Added a repository-wide Markdown link validator covering nested destinations, optional titles,
+  reference-style links, URL-encoded paths, local fragments, and fenced-code exclusions; repaired
+  broken issue-template and pull-request-template links discovered by the check.
+- Expanded CI to run the complete linter, documentation validation, generated-distribution checks,
+  and release-package verification.
+- Updated filtering, storage, browser compatibility, icon maintenance, testing, and release
+  documentation to match shipped behaviour and current commands.
+- Strengthened keyboard-focus and live-region E2E assertions and added regression coverage for
+  storage races, migration failures, metadata mutations, ICS edge cases, atomic file writes,
+  documentation links, distribution drift, and release archive contents. The unit suite now
+  contains 231 tests.
+
 ## [2.7.2] - 2026-07-25
 
 ### Fixed

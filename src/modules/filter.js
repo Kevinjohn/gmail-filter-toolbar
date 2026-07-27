@@ -5,6 +5,7 @@ import {
   AI_NOTETAKER_PATTERNS,
   DEV_NOTIFICATION_PATTERNS,
   DEBUG_HIGHLIGHT_CLASS,
+  FILTER_HIDDEN_CLASS,
 } from './constants.js';
 
 /**
@@ -12,7 +13,9 @@ import {
  * @stable
  */
 export function isCalendarRow(row, chromeApi = globalThis.chrome) {
-  const hasIcs = !!row.querySelector(SELECTORS.icsImage);
+  const hasIcs = Array.from(row.querySelectorAll('img[alt]')).some((image) =>
+    /\.ics(?![\p{L}\p{N}_.-])/iu.test(image.getAttribute('alt') || ''),
+  );
   const hasCalendarEventIcon = !!row.querySelector(SELECTORS.calendarIcon);
   const calendarEventAltText = chromeApi?.i18n?.getMessage?.('alt_calendar_event');
   const hasLocalizedCalendarAlt =
@@ -264,11 +267,11 @@ export function applyFilter(doc = document) {
     // WHY: Debug highlighting uses a class backed by the --gcal-debug-overlay variable so the
     // overlay follows the active theme (and forced-colors mode) instead of a hardcoded light blue.
     if (debugOn) {
-      row.style.display = '';
+      row.classList.remove(FILTER_HIDDEN_CLASS);
       row.classList.toggle(DEBUG_HIGHLIGHT_CLASS, hide);
     } else {
       row.classList.remove(DEBUG_HIGHLIGHT_CLASS);
-      row.style.display = hide ? 'none' : '';
+      row.classList.toggle(FILTER_HIDDEN_CLASS, hide);
     }
   });
 }

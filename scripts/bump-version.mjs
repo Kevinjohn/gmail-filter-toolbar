@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
+import { writeFileBatch } from './utils/write-file-batch.mjs';
 
 const bumpType = process.argv[2];
 if (!['major', 'minor', 'patch'].includes(bumpType)) {
@@ -13,7 +14,11 @@ const manifestFiles = [
   'src/manifest.firefox.json',
   'src/manifest.safari.json',
 ];
-const packageJson = JSON.parse(readFileSync(packageFile, 'utf8'));
+const sourceFiles = [packageFile, ...manifestFiles];
+const parsedFiles = new Map(
+  sourceFiles.map((file) => [file, JSON.parse(readFileSync(file, 'utf8'))]),
+);
+const packageJson = parsedFiles.get(packageFile);
 const parts = packageJson.version.split('.').map(Number);
 if (parts.length !== 3 || parts.some((part) => !Number.isInteger(part) || part < 0)) {
   throw new Error(`Unsupported version: ${packageJson.version}`);
@@ -32,10 +37,11 @@ if (bumpType === 'major') {
 
 const version = parts.join('.');
 packageJson.version = version;
-writeFileSync(packageFile, `${JSON.stringify(packageJson, null, 2)}\n`);
+const renderedFiles = new Map([[packageFile, `${JSON.stringify(packageJson, null, 2)}\n`]]);
 for (const file of manifestFiles) {
-  const manifest = JSON.parse(readFileSync(file, 'utf8'));
+  const manifest = parsedFiles.get(file);
   manifest.version = version;
-  writeFileSync(file, `${JSON.stringify(manifest, null, 2)}\n`);
+  renderedFiles.set(file, `${JSON.stringify(manifest, null, 2)}\n`);
 }
+writeFileBatch([...renderedFiles]);
 console.log(`Version bumped to ${version} in package.json and all browser manifests.`);

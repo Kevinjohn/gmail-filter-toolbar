@@ -42,12 +42,24 @@ import {
   setupGmailToolbarObserver,
 } from './modules/observers.js';
 import { applyTheme } from './modules/theme.js';
-import { getActiveAreaName } from './modules/storage.js';
+import { createStorageWriteId, getActiveAreaName, MODE_WRITE_ID_KEY } from './modules/storage.js';
 
 let modePersistenceQueue = Promise.resolve();
+let modePersistenceEpoch = 0;
+const localModeWriteIds = new Set();
 
-function queueModePersistence(mode) {
-  modePersistenceQueue = modePersistenceQueue.catch(() => {}).then(() => persistMode(mode));
+function queueModePersistence(mode, epoch) {
+  modePersistenceQueue = modePersistenceQueue
+    .catch(() => {})
+    .then(() => {
+      if (epoch !== modePersistenceEpoch) return;
+      const writeId = createStorageWriteId('mode');
+      localModeWriteIds.add(writeId);
+      return persistMode(mode, writeId).catch((error) => {
+        localModeWriteIds.delete(writeId);
+        throw error;
+      });
+    });
   return modePersistenceQueue;
 }
 
@@ -58,11 +70,12 @@ function selectMode(mode, { allowHidden = false, rollbackOnFailure = true } = {}
   }
 
   const previousMode = currentMode;
+  const persistenceEpoch = modePersistenceEpoch;
   setCurrentMode(mode);
   applyFilter(document);
   refreshUI(document);
 
-  return queueModePersistence(mode).catch((error) => {
+  return queueModePersistence(mode, persistenceEpoch).catch((error) => {
     if (rollbackOnFailure && currentMode === mode) {
       setCurrentMode(previousMode);
       applyFilter(document);
@@ -152,8 +165,13 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   // tab's toolbar reflects the stored mode instead of drifting per-tab. Apply without re-persisting
   // to avoid write loops; our own write is a no-op here because currentMode already matches.
   if (KEY_MODE in changes) {
-    const nextMode = changes[KEY_MODE].newValue;
-    if (isValidMode(nextMode) && nextMode !== currentMode) {
+    const storedMode = changes[KEY_MODE].newValue;
+    const nextMode = isValidMode(storedMode) ? storedMode : MODES.ALL;
+    const writeId = changes[MODE_WRITE_ID_KEY]?.newValue;
+    const isLocalAcknowledgement = localModeWriteIds.delete(writeId);
+    if (!isLocalAcknowledgement && nextMode !== currentMode) {
+      // An authoritative storage update supersedes local intents that have not started writing.
+      modePersistenceEpoch += 1;
       setCurrentMode(nextMode);
       applyFilter(document);
       refreshUI(document);

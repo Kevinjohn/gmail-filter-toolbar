@@ -21,7 +21,7 @@ What kind of change does this PR introduce? (Check all that apply)
 
 Before submitting this pull request, please ensure the following:
 
-- [ ] I have read the [CONTRIBUTING.md](CONTRIBUTING.md) document.
+- [ ] I have read the [CONTRIBUTING.md](https://github.com/Kevinjohn/gmail-filter-toolbar/blob/main/CONTRIBUTING.md) document.
 - [ ] My code follows the project's code style guidelines.
 - [ ] I have performed a self-review of my own code.
 - [ ] I have commented my code, particularly in hard-to-understand areas.

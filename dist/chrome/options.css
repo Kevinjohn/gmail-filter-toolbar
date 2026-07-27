@@ -24,7 +24,7 @@ legend {
 
 .option-row label {
   flex-grow: 1;
-  margin-right: 10px;
+  margin-inline-end: 10px;
 }
 
 .option-row select {

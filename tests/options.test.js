@@ -154,6 +154,7 @@ async function loadModule({
   setError,
   setHandler,
   renderOptions,
+  waitForRestore = true,
 } = {}) {
   jest.resetModules();
   const chrome = useChromeMock({
@@ -194,7 +195,12 @@ async function loadModule({
     await import('../src/modules/options.js');
   });
   document.dispatchEvent(new Event('DOMContentLoaded'));
-  await new Promise((resolve) => setTimeout(resolve, 0));
+  if (waitForRestore) {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  } else {
+    await Promise.resolve();
+    await Promise.resolve();
+  }
   return chrome;
 }
 
@@ -272,6 +278,7 @@ describe('options module', () => {
     favouritesBox.dispatchEvent(new Event('change'));
     alignmentSelect.dispatchEvent(new Event('change'));
     themeSelect.dispatchEvent(new Event('change'));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     const lastPayload = chrome.storage.sync.set.mock.calls.pop()[0];
     expect(lastPayload).toMatchObject({
@@ -279,8 +286,6 @@ describe('options module', () => {
       gmailCalTheme: 'dark',
       showButtonText: false,
       showFavourites: true,
-      showAiNotetakers: false,
-      showDevNotifications: false,
       toolbarAlignment: 'center',
     });
   });
@@ -298,21 +303,104 @@ describe('options module', () => {
     themeSelect.dispatchEvent(new Event('change'));
 
     expect(document.documentElement.getAttribute('data-gcal-theme')).toBe('dark');
+    await new Promise((resolve) => setTimeout(resolve, 0));
     finishWrite();
     await new Promise((resolve) => setTimeout(resolve, 0));
   });
 
-  test('logs retrieval errors from storage', async () => {
-    await loadModule({ getError: 'boom' });
-    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  test('coalesces overlapping saves so only the newest value is written', async () => {
+    const writes = [];
+    const chrome = await loadModule({
+      setHandler: (payload, callback) => writes.push({ payload, callback }),
+    });
+    const debugBox = document.getElementById('debug');
 
-    document.dispatchEvent(new Event('DOMContentLoaded'));
-
-    // Wait for Promise rejection to be handled
+    debugBox.checked = true;
+    debugBox.dispatchEvent(new Event('change'));
+    debugBox.checked = false;
+    debugBox.dispatchEvent(new Event('change'));
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    expect(errorSpy).toHaveBeenCalledWith('Error retrieving options:', expect.any(Error));
-    errorSpy.mockRestore();
+    expect(writes).toHaveLength(1);
+    expect(writes[0].payload.gmailCalDebug).toBe(false);
+    writes[0].callback();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(writes).toHaveLength(1);
+
+    const storageListener = chrome.storage.onChanged.addListener.mock.calls[0][0];
+    storageListener({ gmailCalTheme: { newValue: 'dark' } }, 'sync');
+    expect(debugBox.checked).toBe(false);
+  });
+
+  test('does not apply an older local storage acknowledgement over a pending edit', async () => {
+    const writes = [];
+    const chrome = await loadModule({
+      setHandler: (payload, callback) => writes.push({ payload, callback }),
+    });
+    const debugBox = document.getElementById('debug');
+
+    debugBox.checked = true;
+    debugBox.dispatchEvent(new Event('change'));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    debugBox.checked = false;
+    debugBox.dispatchEvent(new Event('change'));
+
+    const firstWrite = writes[0];
+    firstWrite.callback();
+    const storageListener = chrome.storage.onChanged.addListener.mock.calls[0][0];
+    storageListener(
+      {
+        gmailCalDebug: { newValue: true },
+        gmailCalOptionsWriteId: { newValue: firstWrite.payload.gmailCalOptionsWriteId },
+      },
+      'sync',
+    );
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(debugBox.checked).toBe(false);
+    expect(writes[1].payload.gmailCalDebug).toBe(false);
+  });
+
+  test('does not overwrite an external setting with a queued local patch', async () => {
+    const writes = [];
+    const chrome = await loadModule({
+      setHandler: (payload, callback) => writes.push({ payload, callback }),
+    });
+    const debugBox = document.getElementById('debug');
+    const showTextBox = document.getElementById('show-button-text-checkbox');
+    const themeSelect = document.getElementById('theme-select');
+
+    debugBox.checked = true;
+    debugBox.dispatchEvent(new Event('change'));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    showTextBox.checked = false;
+    showTextBox.dispatchEvent(new Event('change'));
+
+    const storageListener = chrome.storage.onChanged.addListener.mock.calls[0][0];
+    storageListener({ gmailCalTheme: { newValue: 'dark' } }, 'sync');
+    writes[0].callback();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(themeSelect.value).toBe('dark');
+    expect(writes[1].payload).toMatchObject({ showButtonText: false });
+    expect(writes[1].payload).not.toHaveProperty('gmailCalTheme');
+  });
+
+  test('logs retrieval errors from storage', async () => {
+    jest.useFakeTimers();
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      const chrome = await loadModule({ getError: 'boom', waitForRestore: false });
+      await jest.advanceTimersByTimeAsync(3500);
+
+      expect(chrome.storage.sync.get).toHaveBeenCalledTimes(4);
+      expect(errorSpy).toHaveBeenCalledWith('Error retrieving options:', expect.any(Error));
+      expect(jest.getTimerCount()).toBe(0);
+    } finally {
+      errorSpy.mockRestore();
+      jest.useRealTimers();
+    }
   });
 
   test('logs saving errors to storage', async () => {
@@ -424,6 +512,7 @@ describe('options module', () => {
 
     aiNotetakersCheckbox.checked = true;
     aiNotetakersCheckbox.dispatchEvent(new Event('change'));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(chrome.storage.sync.set).toHaveBeenCalledWith(
       expect.objectContaining({ showAiNotetakers: true }),

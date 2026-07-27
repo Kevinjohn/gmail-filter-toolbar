@@ -110,9 +110,29 @@ describe('loadState', () => {
         sync: {
           get: jest
             .fn()
-            .mockImplementationOnce((keys, callback) => callback({ gmailCalMode: 'UNKNOWN' }))
             .mockImplementationOnce((keys, callback) =>
-              callback({ gmailCalMode: MODES.FAVOURITES, showFavourites: false }),
+              callback({
+                gmailCalMode: 'UNKNOWN',
+                gmailCalDebug: false,
+                showButtonText: true,
+                showFavourites: false,
+                showAiNotetakers: false,
+                showDevNotifications: false,
+                toolbarAlignment: ALIGNMENTS.START,
+                gmailCalTheme: THEMES.SYSTEM,
+              }),
+            )
+            .mockImplementationOnce((keys, callback) =>
+              callback({
+                gmailCalMode: MODES.FAVOURITES,
+                gmailCalDebug: false,
+                showButtonText: true,
+                showFavourites: false,
+                showAiNotetakers: false,
+                showDevNotifications: false,
+                toolbarAlignment: ALIGNMENTS.START,
+                gmailCalTheme: THEMES.SYSTEM,
+              }),
             ),
           set: jest.fn((payload, cb) => cb?.()),
         },

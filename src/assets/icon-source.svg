@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Gmail Filter Toolbar">
+  <defs>
+    <linearGradient id="background" x1="16" y1="8" x2="112" y2="120" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4f7cff" />
+      <stop offset="1" stop-color="#2744b8" />
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="26" fill="url(#background)" />
+  <path d="M24 37a8 8 0 0 1 8-8h64a8 8 0 0 1 8 8v46a8 8 0 0 1-8 8H32a8 8 0 0 1-8-8V37Z" fill="#fff" />
+  <path d="m29 36 35 27 35-27" fill="none" stroke="#2744b8" stroke-linecap="round" stroke-linejoin="round" stroke-width="8" />
+  <path d="M68 70h44L96 88v24l-13-7V88L68 70Z" fill="#ffcc4d" stroke="#fff" stroke-linejoin="round" stroke-width="6" />
+</svg>

@@ -22,14 +22,20 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Lint
-        run: pnpm exec eslint src tests
+        run: pnpm run lint
       - name: Format check
         run: pnpm run format:check
       - name: Validate locales
         run: pnpm run lint:locales
+      - name: Validate documentation links
+        run: pnpm run lint:docs
       - name: Unit tests
         run: pnpm run test:unit
       - name: Build (Chrome + Firefox)
         run: pnpm run build
+      - name: Verify tracked distributions are current
+        run: pnpm run verify:dist
       - name: Firefox add-on lint
         run: pnpm run firefox:lint
+      - name: Verify release packages
+        run: pnpm run release:verify

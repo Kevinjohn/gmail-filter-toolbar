@@ -7,15 +7,18 @@
 - `filter.test.js` validates filter parsing and calendar detection helpers
 - `i18nMessages.test.js` asserts locale bundles include required keys
 - `options.test.js` drives the options page form behaviour and storage writes
+- `maintenanceScripts.test.js` covers atomic file updates, documentation links, distribution state,
+  and release inventory checks
 - `toolbar.test.js` verifies toolbar state transitions and messaging
 
-Shared tooling lives in `setup.js`, which currently polyfills `TextEncoder`/`TextDecoder` for the Jest environment.
+Shared tooling lives in `setup.js`, which provides encoder polyfills plus resettable Chrome,
+storage, runtime, and i18n mocks for the Jest environment.
 
 ## Toolchain Snapshot
 
 - Jest `^29.0.0` with `jest-environment-jsdom` `^29.7.0`
 - Playwright Test `^1.42.1`
-- ESLint `^8.57.1`
+- ESLint `^9.31.0`
 - Prettier `^3.6.1`
 
 The supported development runtime is Node 20 or newer.
@@ -25,7 +28,7 @@ The supported development runtime is Node 20 or newer.
 Jest enforces 85% global statement, branch, function, and line coverage. High-fanout entry points
 should also receive focused regression tests rather than relying only on the aggregate threshold.
 
-Full HTML output is stored under `../artifacts/coverage/lcov-report/index.html` for visual inspection.
+Full HTML output is stored under `../coverage/lcov-report/index.html` for visual inspection.
 
 ## Browser coverage
 

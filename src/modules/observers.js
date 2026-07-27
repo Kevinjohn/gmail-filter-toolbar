@@ -9,6 +9,19 @@ let messageListObservers = [];
 let messageListTargets = [];
 let pendingMessageListFilter = null;
 let gmailToolbarObserver = null;
+let pendingToolbarMutation = null;
+
+const MESSAGE_METADATA_ATTRIBUTES = [
+  'alt',
+  'aria-checked',
+  'class',
+  'data-docurl',
+  'data-tooltip',
+  'email',
+  'name',
+  'src',
+  'title',
+];
 
 function disconnectMessageListObservers() {
   messageListObservers.forEach((observer) => observer.disconnect());
@@ -24,7 +37,10 @@ export function observeMessageList(doc = document) {
   // WHY: Observe every message list, not just the first — Gmail's Multiple Inboxes and split panes
   // render several .UI sections, and mail arriving in the later sections must re-trigger filtering too.
   const targets = Array.from(doc.querySelectorAll(SELECTORS.emailList));
-  if (!targets.length) return false;
+  if (!targets.length) {
+    disconnectMessageListObservers();
+    return false;
+  }
   if (
     messageListObservers.length &&
     targets.length === messageListTargets.length &&
@@ -48,7 +64,12 @@ export function observeMessageList(doc = document) {
 
   messageListObservers = targets.map((target) => {
     const observer = new MutationObserver(debouncedApplyFilter);
-    observer.observe(target, { childList: true, subtree: true });
+    observer.observe(target, {
+      attributes: true,
+      attributeFilter: MESSAGE_METADATA_ATTRIBUTES,
+      childList: true,
+      subtree: true,
+    });
     return observer;
   });
   return true;
@@ -59,6 +80,7 @@ export function setupGmailToolbarObserver(doc = document) {
   if (gmailToolbarObserver) {
     gmailToolbarObserver.disconnect();
   }
+  pendingToolbarMutation?.cancel();
 
   // WHY: Debounce the re-injection check because this observer watches the whole body subtree and Gmail mutates
   // its DOM constantly. Without debouncing, every keystroke/hover/refresh would re-run selector queries,
@@ -100,6 +122,7 @@ export function setupGmailToolbarObserver(doc = document) {
     // one-shot sample taken at init. Cheap: one computed-style walk per settled mutation burst.
     applyTheme(doc, themePreference);
   }, 200);
+  pendingToolbarMutation = handleChildListMutation;
 
   // WHY: Observe document.body (not Gmail's toolbar) because it's a stable parent that survives Gmail's SPA navigation.
   // Gmail can replace specific elements during pagination/navigation, but document.body persists, allowing us to detect

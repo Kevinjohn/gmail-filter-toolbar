@@ -18,20 +18,7 @@ test.describe('Keyboard navigation', () => {
     // Press Escape
     await page.keyboard.press('Escape');
 
-    // Focus should move to message list container
-    const focusedElement = await page.evaluate(() => {
-      const activeElement = document.activeElement;
-      return {
-        tagName: activeElement.tagName,
-        className: activeElement.className,
-      };
-    });
-
-    // Verify focus moved away from button to the message list area
-    expect(focusedElement.tagName).not.toBe('BUTTON');
-    // The exact focus target depends on implementation, but it should be in/near .UI
-    // For now, just verify it's not on the button anymore
-    await expect(gmailPage.emailButton).not.toBeFocused();
+    await expect(page.locator('.UI').first()).toBeFocused();
 
     await unstubGmailRoute(page);
   });
@@ -75,10 +62,7 @@ test.describe('ARIA announcements', () => {
     const liveRegion = page.locator('.gcal-live-region');
     await expect(liveRegion).toHaveAttribute('aria-live', 'polite');
 
-    // Verify live region content updates (exact text depends on i18n)
-    const announcement = await liveRegion.textContent();
-    expect(announcement).toBeTruthy();
-    expect(announcement.length).toBeGreaterThan(0);
+    await expect(liveRegion).toHaveText('Filter set to Attachments');
 
     await unstubGmailRoute(page);
   });

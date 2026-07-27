@@ -13,12 +13,18 @@ function getLocaleMessages(localeDirectory) {
 }
 
 const localeMatrix = [
-  { label: 'German', locale: 'de', localeDirectory: 'de' },
-  { label: 'Latin American Spanish', locale: 'es-419', localeDirectory: 'es_419' },
-  { label: 'Arabic', locale: 'ar', localeDirectory: 'ar' },
+  { label: 'German', locale: 'de', uiLanguage: 'de', localeDirectory: 'de' },
+  // Chromium selects the es_419 bundle for es-419 but reports its UI language as es-MX.
+  {
+    label: 'Latin American Spanish',
+    locale: 'es-419',
+    uiLanguage: 'es-MX',
+    localeDirectory: 'es_419',
+  },
+  { label: 'Arabic', locale: 'ar', uiLanguage: 'ar', localeDirectory: 'ar' },
 ];
 
-localeMatrix.forEach(({ label, locale, localeDirectory }) => {
+localeMatrix.forEach(({ label, locale, uiLanguage, localeDirectory }) => {
   test.describe(`Internationalisation: ${label}`, () => {
     test.use({ locale });
 
@@ -39,7 +45,7 @@ localeMatrix.forEach(({ label, locale, localeDirectory }) => {
       const messages = getLocaleMessages(localeDirectory);
       const activeLocale = await page.evaluate(() => chrome.i18n.getUILanguage());
 
-      expect(activeLocale).toBe(locale);
+      expect(activeLocale).toBe(uiLanguage);
       await expect(optionsPage.pageTitle).toHaveText(messages.page_title.message);
       await expect(optionsPage.debugLegend).toHaveText(messages.options_debug_legend.message);
       await expect(optionsPage.alignmentLegend).toHaveText(

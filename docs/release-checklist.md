@@ -55,3 +55,47 @@ release record so browser-specific behavior has repeatable evidence.
 - [ ] Enable GitHub private vulnerability reporting and confirm the **Report a vulnerability**
       button is visible after the repository becomes public.
 - [ ] Record the tested browser versions, operating systems, command output, and screenshots.
+
+## Chrome Web Store listing
+
+Complete this section for the first submission, then re-check the starred items on every update.
+
+### Before uploading
+
+- [ ] Confirm the developer account has paid the one-time registration fee and completed email and
+      publisher verification.
+- [ ] Confirm the extension name does not lead with a Google trademark. Google branding rules
+      disallow "Gmail" as the leading or prominent word in a third-party product name; use the
+      `<Name> for Gmail` form instead.
+- [ ] \* Confirm `PRIVACY.md` is published at a public URL and its "Last updated" date matches the
+      release.
+- [ ] \* Confirm the built archive contains no remote code, no source maps, and no `.DS_Store`
+      entries: `unzip -l artifacts/chrome/*.zip`.
+- [ ] \* Confirm the store description is 132 characters or fewer and matches
+      `extension_description` in `src/_locales/en/messages.json`.
+
+### Listing assets
+
+- [ ] At least one screenshot at 1280x800 or 640x400 (PNG or JPEG, no alpha). Five is the maximum.
+- [ ] Screenshots cover the toolbar in the inbox, each filter mode, the options page, and icon-only
+      mode.
+- [ ] 128x128 store icon (reuse `src/icons/icon128.png`).
+- [ ] Optional: 440x280 small promo tile.
+
+### Dashboard fields
+
+- [ ] Single purpose: "Adds a toolbar to Gmail that filters the visible message list client-side by
+      category."
+- [ ] `storage` justification: "Persists the user's selected filter mode and display preferences
+      across sessions."
+- [ ] `https://mail.google.com/*` justification: "The toolbar is injected into and filters the Gmail
+      message list; the extension has no function on any other site."
+- [ ] \* Data usage certification: declare no data collected and tick all three compliance
+      statements (no sale, no unrelated use, no creditworthiness use).
+- [ ] \* Privacy policy URL entered.
+
+### After submission
+
+- [ ] Record the submission date and item ID. Expect manual review because the extension requests a
+      host permission on Gmail; a first submission can take up to two weeks.
+- [ ] On approval, add the Web Store link to `README.md`.

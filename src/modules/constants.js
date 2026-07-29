@@ -1,40 +1,52 @@
 /**
+ * Storage key for current filter mode.
+ * @stable
+ */
+export const KEY_MODE = 'siftMode';
+
+/**
+ * Storage key for debug mode.
+ * @stable
+ */
+export const KEY_DEBUG = 'siftDebug';
+
+/**
  * Storage key for button text visibility preference.
  * @stable
  */
-export const SHOW_BUTTON_TEXT_KEY = 'showButtonText';
+export const SHOW_BUTTON_TEXT_KEY = 'siftShowButtonText';
 
 /**
  * Storage key for favourites button visibility.
  * @stable
  */
-export const SHOW_FAVOURITES_KEY = 'showFavourites';
+export const SHOW_FAVOURITES_KEY = 'siftShowFavourites';
 
 /**
  * Storage key for AI & Transcription button visibility.
  * @experimental
  * @since 2.3.0
  */
-export const SHOW_AI_NOTETAKERS_KEY = 'showAiNotetakers';
+export const SHOW_AI_NOTETAKERS_KEY = 'siftShowAiNotetakers';
 
 /**
  * Storage key for Dev Notifications button visibility.
  * @experimental
  * @since 2.4.0
  */
-export const SHOW_DEV_NOTIFICATIONS_KEY = 'showDevNotifications';
+export const SHOW_DEV_NOTIFICATIONS_KEY = 'siftShowDevNotifications';
 
 /**
  * Storage key for toolbar alignment preference.
  * @stable
  */
-export const ALIGNMENT_KEY = 'toolbarAlignment';
+export const ALIGNMENT_KEY = 'siftToolbarAlignment';
 
 /**
  * Storage key for theme preference.
  * @stable
  */
-export const THEME_KEY = 'gmailCalTheme';
+export const THEME_KEY = 'siftTheme';
 
 /**
  * Theme options enum.

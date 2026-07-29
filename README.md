@@ -1,4 +1,4 @@
-# Gmail Filter Toolbar
+# Sift — A Filter Toolbar for Gmail
 
 > Lightweight browser extension (Chrome & Firefox) that adds a powerful filtering toolbar to Gmail, letting you instantly view only the emails you want – calendar invites, attachments, starred messages, or regular mail – directly in your inbox or any folder.
 
@@ -47,7 +47,8 @@ Transform your Gmail inbox with instant, client-side filtering. A custom toolbar
 - **Debug mode** – Visualize filtered emails with a blue tint instead of hiding them
 - **Accessibility-minded** – Keyboard navigation, live announcements, forced-colour support, and
   automated accessibility checks on the options page
-- **Privacy-focused** – Zero external requests, all filtering happens locally
+- **Privacy-focused** – Zero external requests, all filtering happens locally. No data is collected
+  or transmitted; see [PRIVACY.md](PRIVACY.md)
 - **Multi-language ready** – Localizable strings with RTL language support
 
 ---
@@ -67,8 +68,8 @@ Transform your Gmail inbox with instant, client-side filtering. A custom toolbar
 ### For Chrome/Edge
 
 ```bash
-git clone https://github.com/Kevinjohn/gmail-filter-toolbar.git
-cd gmail-filter-toolbar
+git clone https://github.com/Kevinjohn/sift.git
+cd sift
 
 # install dev dependencies
 pnpm install --frozen-lockfile
@@ -85,8 +86,8 @@ pnpm run build:chrome
 ### For Firefox
 
 ```bash
-git clone https://github.com/Kevinjohn/gmail-filter-toolbar.git
-cd gmail-filter-toolbar
+git clone https://github.com/Kevinjohn/sift.git
+cd sift
 
 # install dev dependencies
 pnpm install --frozen-lockfile
@@ -110,8 +111,8 @@ Firefox will open automatically with the extension loaded.
 ### For Safari (macOS only)
 
 ```bash
-git clone https://github.com/Kevinjohn/gmail-filter-toolbar.git
-cd gmail-filter-toolbar
+git clone https://github.com/Kevinjohn/sift.git
+cd sift
 
 # install dev dependencies
 pnpm install --frozen-lockfile
@@ -128,7 +129,7 @@ In Xcode:
 1. Build and Run (Cmd+R)
 2. Safari will launch
 3. Go to Safari > Preferences > Extensions
-4. Enable "Gmail Filter Toolbar"
+4. Enable "Sift — A Filter Toolbar for Gmail"
 5. Grant permissions when prompted
 
 **Note:** Safari extensions require an Xcode wrapper app. Settings use synced storage when
@@ -202,8 +203,8 @@ Firefox executes the background script as an event page (non-persistent backgrou
 
 Access the extension options page via:
 
-- **Chrome/Edge**: `chrome://extensions` → _Gmail Filter Toolbar_ → **Extension options**
-- **Firefox**: `about:addons` → _Gmail Filter Toolbar_ → **Options**
+- **Chrome/Edge**: `chrome://extensions` → _Sift — A Filter Toolbar for Gmail_ → **Extension options**
+- **Firefox**: `about:addons` → _Sift — A Filter Toolbar for Gmail_ → **Options**
 
 ### Available Settings
 
@@ -354,24 +355,24 @@ used with Gmail's dynamic message lists.
 
 ## Scripts
 
-| Command                  | Purpose                                                                      |
-| ------------------------ | ---------------------------------------------------------------------------- |
-| `pnpm run build`         | Vite build → `dist/chrome/` and `dist/firefox/`                              |
-| `pnpm run build:chrome`  | Vite build → `dist/chrome/` only                                             |
-| `pnpm run build:firefox` | Vite build → `dist/firefox/` only                                            |
-| `pnpm run validate:env`  | Verify the Playwright Chromium binary used by E2E                            |
-| `pnpm run test:unit`     | Jest unit+integration suites (serial for CI stability)                       |
-| `pnpm test`              | Jest unit-test runner                                                        |
-| `pnpm run e2e`           | Playwright specs (auto-skip under WSL2; run on native Linux/macOS/Windows)   |
-| `pnpm run test:e2e:ci`   | Playwright in CI mode (`list,junit` reporters)                               |
-| `pnpm run audit:options` | Lighthouse check against the built options page (`dist/chrome/options.html`) |
-| `pnpm run lint`          | ESLint validation for source, tests, scripts, and build configuration        |
-| `pnpm run lint:fix`      | ESLint autofix for source, tests, scripts, and build configuration           |
-| `pnpm run lint:locales`  | Lints i18n message files for key/placeholder parity                          |
-| `pnpm run lint:docs`     | Validates local Markdown links and heading fragments                         |
-| `pnpm run verify:dist`   | Confirms tracked Chrome/Firefox bundles exactly match the build              |
+| Command                   | Purpose                                                                      |
+| ------------------------- | ---------------------------------------------------------------------------- |
+| `pnpm run build`          | Vite build → `dist/chrome/` and `dist/firefox/`                              |
+| `pnpm run build:chrome`   | Vite build → `dist/chrome/` only                                             |
+| `pnpm run build:firefox`  | Vite build → `dist/firefox/` only                                            |
+| `pnpm run validate:env`   | Verify the Playwright Chromium binary used by E2E                            |
+| `pnpm run test:unit`      | Jest unit+integration suites (serial for CI stability)                       |
+| `pnpm test`               | Jest unit-test runner                                                        |
+| `pnpm run e2e`            | Playwright specs (auto-skip under WSL2; run on native Linux/macOS/Windows)   |
+| `pnpm run test:e2e:ci`    | Playwright in CI mode (`list,junit` reporters)                               |
+| `pnpm run audit:options`  | Lighthouse check against the built options page (`dist/chrome/options.html`) |
+| `pnpm run lint`           | ESLint validation for source, tests, scripts, and build configuration        |
+| `pnpm run lint:fix`       | ESLint autofix for source, tests, scripts, and build configuration           |
+| `pnpm run lint:locales`   | Lints i18n message files for key/placeholder parity                          |
+| `pnpm run lint:docs`      | Validates local Markdown links and heading fragments                         |
+| `pnpm run verify:dist`    | Confirms tracked Chrome/Firefox bundles exactly match the build              |
 | `pnpm run release:verify` | Packages and verifies existing browser builds (used after CI builds)         |
-| `pnpm run format`        | Prettier auto-format (JS/CSS/HTML/JSON under `src/`)                         |
+| `pnpm run format`         | Prettier auto-format (JS/CSS/HTML/JSON under `src/`)                         |
 
 ---
 

@@ -17,7 +17,7 @@ test.describe('Debug mode', () => {
     // Enable debug mode in options
     await optionsPage.navigate();
     await optionsPage.enableDebug();
-    await optionsPage.waitForStorageValue('gmailCalDebug', true);
+    await optionsPage.waitForStorageValue('siftDebug', true);
 
     // Navigate to Gmail and apply mail-only filter
     await stubGmailRoute(page, gmailHtml);
@@ -70,7 +70,7 @@ test.describe('Debug mode', () => {
     // Ensure debug mode is OFF (default state)
     await optionsPage.navigate();
     await optionsPage.disableDebug();
-    await optionsPage.waitForStorageValue('gmailCalDebug', false);
+    await optionsPage.waitForStorageValue('siftDebug', false);
 
     // Navigate to Gmail and apply mail-only filter
     await stubGmailRoute(page, gmailHtml);

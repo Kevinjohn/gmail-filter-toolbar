@@ -27,7 +27,7 @@ Please choose one of the following methods to contribute:
 ### Option 2: Issue Submission
 
 If you are not comfortable creating a pull request, download the current
-[`src/_locales/en/messages.json`](https://github.com/Kevinjohn/gmail-filter-toolbar/blob/main/src/_locales/en/messages.json), translate every `message`
+[`src/_locales/en/messages.json`](https://github.com/Kevinjohn/sift/blob/main/src/_locales/en/messages.json), translate every `message`
 value without changing its keys or placeholders, and attach the complete translated file here.
 Using the current base file ensures the submission includes every required message as the extension
 evolves.

@@ -28,7 +28,6 @@ describe('contentScript main lifecycle', () => {
   let setupGmailToolbarObserverMock;
   let applyThemeMock;
   let storageChangeListener;
-  let messageListener;
   let header;
 
   beforeEach(async () => {
@@ -39,9 +38,6 @@ describe('contentScript main lifecycle', () => {
     const chrome = useChromeMock();
     chrome.storage.onChanged.addListener.mockImplementation((listener) => {
       storageChangeListener = listener;
-    });
-    chrome.runtime.onMessage.addListener.mockImplementation((listener) => {
-      messageListener = listener;
     });
 
     header = document.createElement('div');
@@ -85,8 +81,6 @@ describe('contentScript main lifecycle', () => {
       setDebugOn: jest.fn(),
       setShowButtonText: jest.fn(),
       showButtonText: true,
-      KEY_DEBUG: 'gmailCalDebug',
-      KEY_MODE: 'gmailCalMode',
       currentMode: 'ALL',
       toolbarAlignment: 'start',
       setToolbarAlignment: setToolbarAlignmentMock,
@@ -137,7 +131,6 @@ describe('contentScript main lifecycle', () => {
     document.head.innerHTML = '';
     document.body.innerHTML = '';
     storageChangeListener = undefined;
-    messageListener = undefined;
   });
 
   test('initialises toolbar and observers', async () => {
@@ -227,8 +220,8 @@ describe('contentScript main lifecycle', () => {
     const firstWriteId = persistModeMock.mock.calls[0][1];
     storageChangeListener(
       {
-        gmailCalMode: { newValue: 'CALENDAR' },
-        gmailCalModeWriteId: { newValue: firstWriteId },
+        siftMode: { newValue: 'CALENDAR' },
+        siftModeWriteId: { newValue: firstWriteId },
       },
       'sync',
     );
@@ -259,7 +252,7 @@ describe('contentScript main lifecycle', () => {
     calendarButton.click();
     allButton.click();
     await flushPromises();
-    storageChangeListener({ gmailCalMode: { newValue: 'CALENDAR' } }, 'sync');
+    storageChangeListener({ siftMode: { newValue: 'CALENDAR' } }, 'sync');
     resolveFirstWrite();
     await flushPromises();
 
@@ -268,7 +261,7 @@ describe('contentScript main lifecycle', () => {
   });
 
   test('mirrors mode changes from other tabs without re-persisting', async () => {
-    storageChangeListener({ gmailCalMode: { newValue: 'CALENDAR' } }, 'sync');
+    storageChangeListener({ siftMode: { newValue: 'CALENDAR' } }, 'sync');
     await flushPromises();
 
     expect(setCurrentModeMock).toHaveBeenCalledWith('CALENDAR');
@@ -280,7 +273,7 @@ describe('contentScript main lifecycle', () => {
 
   test('ignores storage changes from unrelated areas', async () => {
     storageChangeListener(
-      { gmailCalMode: { newValue: 'CALENDAR' }, showButtonText: { newValue: false } },
+      { siftMode: { newValue: 'CALENDAR' }, siftShowButtonText: { newValue: false } },
       'managed',
     );
     await flushPromises();
@@ -289,15 +282,15 @@ describe('contentScript main lifecycle', () => {
     expect(updateButtonTextViewMock).not.toHaveBeenCalled();
   });
 
-  test('ignores local-area events when sync is the active backend (migration cleanup)', async () => {
-    // WHY: The legacy migration removes keys from local after copying them to sync; those removal
-    // events (newValue: undefined) must not be misread as "reset everything to defaults".
+  test('ignores local-area events when sync is the active backend', async () => {
+    // WHY: onChanged fires for every storage area. Removals in the inactive area
+    // (newValue: undefined) must not be misread as "reset everything to defaults".
     applyFilterMock.mockClear(); // ignore the applyFilter call from init
     storageChangeListener(
       {
-        gmailCalDebug: { oldValue: true },
-        showButtonText: { oldValue: false },
-        gmailCalTheme: { oldValue: 'dark' },
+        siftDebug: { oldValue: true },
+        siftShowButtonText: { oldValue: false },
+        siftTheme: { oldValue: 'dark' },
       },
       'local',
     );
@@ -312,11 +305,11 @@ describe('contentScript main lifecycle', () => {
     expect(typeof storageChangeListener).toBe('function');
     storageChangeListener(
       {
-        gmailCalDebug: { newValue: true },
-        showButtonText: { newValue: false },
-        toolbarAlignment: { newValue: 'center' },
-        showFavourites: { newValue: true },
-        gmailCalTheme: { newValue: 'dark' },
+        siftDebug: { newValue: true },
+        siftShowButtonText: { newValue: false },
+        siftToolbarAlignment: { newValue: 'center' },
+        siftShowFavourites: { newValue: true },
+        siftTheme: { newValue: 'dark' },
       },
       'sync',
     );
@@ -332,96 +325,8 @@ describe('contentScript main lifecycle', () => {
   });
 
   test('restores visible button text when the storage key is removed', () => {
-    storageChangeListener({ showButtonText: { newValue: undefined } }, 'sync');
+    storageChangeListener({ siftShowButtonText: { newValue: undefined } }, 'sync');
 
     expect(updateButtonTextViewMock).toHaveBeenCalledWith(true);
-  });
-
-  test('runtime handler ignores non-object messages', () => {
-    expect(messageListener(undefined, {}, jest.fn())).toBe(false);
-    expect(messageListener('hello', {}, jest.fn())).toBe(false);
-  });
-
-  test('runtime handler reports missing mode payload', () => {
-    const sendResponse = jest.fn();
-    const result = messageListener({ type: 'gmailCal:setMode', payload: {} }, {}, sendResponse);
-    expect(result).toBe(false);
-    expect(sendResponse).toHaveBeenCalledWith({ ok: false, error: 'Invalid mode payload' });
-  });
-
-  test('runtime handler rejects unknown modes', () => {
-    const sendResponse = jest.fn();
-    const result = messageListener(
-      { type: 'gmailCal:setMode', payload: { mode: 'UNKNOWN' } },
-      {},
-      sendResponse,
-    );
-    expect(result).toBe(false);
-    expect(persistModeMock).not.toHaveBeenCalledWith('UNKNOWN');
-    expect(sendResponse).toHaveBeenCalledWith({ ok: false, error: 'Invalid mode payload' });
-  });
-
-  test('runtime handler accepts valid optional modes when their buttons are disabled', async () => {
-    isModeAvailableMock.mockImplementation((mode) => mode !== 'FAVOURITES');
-    const sendResponse = jest.fn();
-
-    const result = messageListener(
-      { type: 'gmailCal:setMode', payload: { mode: 'FAVOURITES' } },
-      {},
-      sendResponse,
-    );
-
-    expect(result).toBe(true);
-    await flushPromises();
-    expect(persistModeMock).toHaveBeenCalledWith('FAVOURITES', expect.any(String));
-    expect(sendResponse).toHaveBeenCalledWith({ ok: true, mode: 'ALL' });
-  });
-
-  test('runtime handler persists mode and responds with success', async () => {
-    const sendResponse = jest.fn();
-    const result = messageListener(
-      { type: 'gmailCal:setMode', payload: { mode: 'FAVOURITES' } },
-      {},
-      sendResponse,
-    );
-    expect(result).toBe(true);
-    await flushPromises();
-    expect(setCurrentModeMock).toHaveBeenCalledWith('FAVOURITES');
-    expect(persistModeMock).toHaveBeenCalledWith('FAVOURITES', expect.any(String));
-    expect(applyFilterMock).toHaveBeenCalled();
-    expect(refreshUIMock).toHaveBeenCalledWith(document);
-    expect(sendResponse).toHaveBeenCalledWith({ ok: true, mode: 'ALL' });
-  });
-
-  test('runtime handler surfaces save errors', async () => {
-    persistModeMock.mockImplementationOnce(() => Promise.reject(new Error('write failure')));
-    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    const sendResponse = jest.fn();
-    const result = messageListener(
-      { type: 'gmailCal:setMode', payload: { mode: 'FAVOURITES' } },
-      {},
-      sendResponse,
-    );
-    expect(result).toBe(true);
-    await flushPromises();
-    expect(errorSpy).toHaveBeenCalledWith('Error saving mode:', expect.any(Error));
-    expect(sendResponse).toHaveBeenCalledWith({ ok: false, error: 'write failure' });
-    errorSpy.mockRestore();
-  });
-
-  test('runtime handler refreshes filter on demand', () => {
-    const sendResponse = jest.fn();
-    const result = messageListener({ type: 'gmailCal:refreshFilter' }, {}, sendResponse);
-    expect(result).toBe(false);
-    expect(applyFilterMock).toHaveBeenCalled();
-    expect(refreshUIMock).toHaveBeenCalledWith(document);
-    expect(sendResponse).toHaveBeenCalledWith({ ok: true, mode: 'ALL' });
-  });
-
-  test('runtime handler returns false for unknown messages', () => {
-    const sendResponse = jest.fn();
-    const result = messageListener({ type: 'gmailCal:noop' }, {}, sendResponse);
-    expect(result).toBe(false);
-    expect(sendResponse).not.toHaveBeenCalled();
   });
 });

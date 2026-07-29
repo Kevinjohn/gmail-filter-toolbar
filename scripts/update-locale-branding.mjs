@@ -183,7 +183,7 @@ for (const [locale, values] of Object.entries(translations)) {
       throw new Error(`${file} is missing a valid ${key}.message`);
     }
   }
-  messages.extension_name.message = 'Gmail Filter Toolbar';
+  messages.extension_name.message = 'Sift — A Filter Toolbar for Gmail';
   messages.experimental_legend.message = values[0];
   messages.experimental_description.message = values[1];
   messages.options_show_ai_notetakers.message = values[2];

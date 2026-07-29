@@ -28,12 +28,12 @@ async function hydrateDefaults() {
       sync: {
         get: jest.fn((keys, callback) =>
           callback({
-            gmailCalMode: MODES.ALL,
-            gmailCalDebug: false,
-            showButtonText: true,
-            showFavourites: false,
-            toolbarAlignment: ALIGNMENTS.START,
-            gmailCalTheme: THEMES.SYSTEM,
+            siftMode: MODES.ALL,
+            siftDebug: false,
+            siftShowButtonText: true,
+            siftShowFavourites: false,
+            siftToolbarAlignment: ALIGNMENTS.START,
+            siftTheme: THEMES.SYSTEM,
           }),
         ),
         set: jest.fn((payload, cb) => cb?.()),
@@ -56,12 +56,12 @@ describe('loadState', () => {
         sync: {
           get: jest.fn((keys, callback) =>
             callback({
-              gmailCalMode: MODES.CALENDAR,
-              gmailCalDebug: true,
-              showButtonText: false,
-              showFavourites: true,
-              toolbarAlignment: ALIGNMENTS.CENTER,
-              gmailCalTheme: THEMES.DARK,
+              siftMode: MODES.CALENDAR,
+              siftDebug: true,
+              siftShowButtonText: false,
+              siftShowFavourites: true,
+              siftToolbarAlignment: ALIGNMENTS.CENTER,
+              siftTheme: THEMES.DARK,
             }),
           ),
           set: jest.fn((payload, cb) => cb?.()),
@@ -112,26 +112,26 @@ describe('loadState', () => {
             .fn()
             .mockImplementationOnce((keys, callback) =>
               callback({
-                gmailCalMode: 'UNKNOWN',
-                gmailCalDebug: false,
-                showButtonText: true,
-                showFavourites: false,
-                showAiNotetakers: false,
-                showDevNotifications: false,
-                toolbarAlignment: ALIGNMENTS.START,
-                gmailCalTheme: THEMES.SYSTEM,
+                siftMode: 'UNKNOWN',
+                siftDebug: false,
+                siftShowButtonText: true,
+                siftShowFavourites: false,
+                siftShowAiNotetakers: false,
+                siftShowDevNotifications: false,
+                siftToolbarAlignment: ALIGNMENTS.START,
+                siftTheme: THEMES.SYSTEM,
               }),
             )
             .mockImplementationOnce((keys, callback) =>
               callback({
-                gmailCalMode: MODES.FAVOURITES,
-                gmailCalDebug: false,
-                showButtonText: true,
-                showFavourites: false,
-                showAiNotetakers: false,
-                showDevNotifications: false,
-                toolbarAlignment: ALIGNMENTS.START,
-                gmailCalTheme: THEMES.SYSTEM,
+                siftMode: MODES.FAVOURITES,
+                siftDebug: false,
+                siftShowButtonText: true,
+                siftShowFavourites: false,
+                siftShowAiNotetakers: false,
+                siftShowDevNotifications: false,
+                siftToolbarAlignment: ALIGNMENTS.START,
+                siftTheme: THEMES.SYSTEM,
               }),
             ),
           set: jest.fn((payload, cb) => cb?.()),
@@ -154,7 +154,7 @@ describe('saveState', () => {
     setCurrentMode(MODES.ATTACH);
     await expect(saveState()).resolves.toBeUndefined();
     expect(chrome.storage.sync.set).toHaveBeenCalledWith(
-      { gmailCalMode: MODES.ATTACH },
+      { siftMode: MODES.ATTACH },
       expect.any(Function),
     );
   });
@@ -182,7 +182,7 @@ describe('saveState', () => {
     await persistMode(MODES.CALENDAR);
     expect(currentMode).toBe(MODES.ALL);
     expect(chrome.storage.sync.set).toHaveBeenCalledWith(
-      { gmailCalMode: MODES.CALENDAR },
+      { siftMode: MODES.CALENDAR },
       expect.any(Function),
     );
   });
@@ -199,7 +199,7 @@ describe('saveState', () => {
     expect(isModeAvailable(MODES.FAVOURITES)).toBe(false);
     await expect(persistMode(MODES.FAVOURITES)).resolves.toBeUndefined();
     expect(chrome.storage.sync.set).toHaveBeenCalledWith(
-      { gmailCalMode: MODES.FAVOURITES },
+      { siftMode: MODES.FAVOURITES },
       expect.any(Function),
     );
   });

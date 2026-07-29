@@ -1,5 +1,7 @@
 import {
   ALIGNMENT_KEY,
+  KEY_DEBUG,
+  KEY_MODE,
   SELECTORS,
   SHOW_BUTTON_TEXT_KEY,
   SHOW_FAVOURITES_KEY,
@@ -15,8 +17,6 @@ import {
   isValidMode,
   setDebugOn,
   setShowButtonText,
-  KEY_DEBUG,
-  KEY_MODE,
   currentMode,
   toolbarAlignment,
   setToolbarAlignment,
@@ -156,9 +156,10 @@ document.addEventListener('click', (e) => {
 
 // Listen for storage changes (e.g., debug mode or showButtonText toggled in options.html)
 chrome.storage.onChanged.addListener((changes, areaName) => {
-  // WHY: Only react to the active backend's area. The legacy migration removes keys from *local*
-  // after copying them to sync — accepting 'local' events alongside 'sync' would misread those
-  // removals (newValue: undefined) as "reset everything to defaults" and clobber live state.
+  // WHY: Only react to the active backend's area. onChanged fires for every area, but preferences
+  // only ever live in one — accepting the inactive area's events would apply unrelated writes as
+  // preference changes, and a removal there (newValue: undefined) would read as "reset everything
+  // to defaults" and clobber live state.
   if (areaName !== getActiveAreaName()) return;
 
   // WHY: The filter mode is a global preference — mirror changes made in another Gmail tab so each
@@ -200,42 +201,5 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
     applyTheme(document, themePreference);
   }
 });
-
-function handleRuntimeMessage(message, _sender, sendResponse) {
-  if (!message || typeof message !== 'object') {
-    return false;
-  }
-
-  if (message.type === 'gmailCal:setMode') {
-    const mode = message.payload?.mode;
-    if (!isValidMode(mode)) {
-      sendResponse?.({ ok: false, error: 'Invalid mode payload' });
-      return false;
-    }
-
-    selectMode(mode, { allowHidden: true })
-      .then(() => {
-        sendResponse?.({ ok: true, mode: currentMode });
-      })
-      .catch((error) => {
-        console.error('Error saving mode:', error);
-        sendResponse?.({ ok: false, error: error.message });
-      });
-    return true;
-  }
-
-  if (message.type === 'gmailCal:refreshFilter') {
-    applyFilter(document);
-    refreshUI(document);
-    sendResponse?.({ ok: true, mode: currentMode });
-    return false;
-  }
-
-  return false;
-}
-
-if (chrome.runtime?.onMessage?.addListener) {
-  chrome.runtime.onMessage.addListener(handleRuntimeMessage);
-}
 
 void main();

@@ -1,3 +1,4 @@
+import { KEY_MODE, SHOW_AI_NOTETAKERS_KEY, SHOW_DEV_NOTIFICATIONS_KEY } from './constants.js';
 import { storageGet, storageSet } from './storage.js';
 
 const SLOW_TASK_THRESHOLD_MS = 500;
@@ -17,12 +18,11 @@ chrome.runtime.onInstalled.addListener((details) => {
     return;
   }
 
-  console.log('Gmail Filter Toolbar installed');
   const start = performance.now();
   const defaults = {
-    gmailCalMode: 'ALL',
-    showAiNotetakers: false,
-    showDevNotifications: false,
+    [KEY_MODE]: 'ALL',
+    [SHOW_AI_NOTETAKERS_KEY]: false,
+    [SHOW_DEV_NOTIFICATIONS_KEY]: false,
   };
   storageGet(Object.keys(defaults))
     .then((stored) => {
@@ -40,4 +40,22 @@ chrome.runtime.onInstalled.addListener((details) => {
     .catch((error) => {
       console.error('Error setting initial mode:', error);
     });
+});
+
+// WHY: the manifest declares an action with no default_popup, so without this listener clicking the
+// toolbar icon is a dead click. onClicked only fires when no popup is declared.
+chrome.action?.onClicked.addListener(() => {
+  const logFailure = (error) => console.error('Error opening the options page:', error);
+  try {
+    // WHY: openOptionsPage() returns a promise under MV3 when called without a callback, so a
+    // failure arrives as a rejection that try/catch cannot see. Handle both shapes — Safari's
+    // callback form returns undefined — or the dead click this listener exists to fix comes back
+    // with nothing but an unhandled rejection to diagnose it.
+    const opening = chrome.runtime.openOptionsPage();
+    if (typeof opening?.catch === 'function') {
+      opening.catch(logFailure);
+    }
+  } catch (error) {
+    logFailure(error);
+  }
 });

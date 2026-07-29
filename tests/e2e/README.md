@@ -1,6 +1,6 @@
 # End-to-End Tests
 
-This directory contains Playwright-based e2e tests for the Gmail Filter Toolbar extension.
+This directory contains Playwright-based e2e tests for the Sift extension.
 
 ## Architecture
 

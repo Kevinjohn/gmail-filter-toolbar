@@ -53,7 +53,7 @@ test('all locales include required keys with non-empty values', () => {
     );
     expect(supportedLocales).toContain(locale);
     expect(new Set(Object.keys(localeMessages))).toEqual(requiredKeys);
-    expect(localeMessages.extension_name.message).toBe('Gmail Filter Toolbar');
+    expect(localeMessages.extension_name.message).toBe('Sift — A Filter Toolbar for Gmail');
 
     for (const key of requiredKeys) {
       expect(localeMessages).toHaveProperty(key);

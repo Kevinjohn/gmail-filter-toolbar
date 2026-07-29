@@ -37,6 +37,9 @@ const createBaseChromeMock = () => ({
     get: jest.fn((name, callback) => callback?.({ name })),
     onAlarm: createListenerMock(),
   },
+  action: {
+    onClicked: createListenerMock(),
+  },
   i18n: {
     getMessage: jest.fn((key) => key),
     getUILanguage: jest.fn(() => 'en'),
@@ -48,6 +51,7 @@ const createBaseChromeMock = () => ({
     lastError: null,
     onInstalled: createListenerMock(),
     onMessage: createListenerMock(),
+    openOptionsPage: jest.fn(),
     sendMessage: jest.fn((message, responseCallback) => responseCallback?.()),
   },
   storage: {

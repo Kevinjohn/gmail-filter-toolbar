@@ -26,7 +26,7 @@ test.describe('Responsive toolbar behavior', () => {
       // Enable favourites to maximize button count
       await optionsPage.navigate();
       await optionsPage.enableFavourites();
-      await optionsPage.waitForStorageValue('showFavourites', true);
+      await optionsPage.waitForStorageValue('siftShowFavourites', true);
 
       await stubGmailRoute(page, gmailHtml);
       await page.setViewportSize({ width, height });
@@ -64,7 +64,7 @@ test.describe('Responsive toolbar behavior', () => {
     // Test center alignment at desktop width
     await optionsPage.navigate();
     await optionsPage.setAlignment('center');
-    await optionsPage.waitForStorageValue('toolbarAlignment', 'center');
+    await optionsPage.waitForStorageValue('siftToolbarAlignment', 'center');
 
     await stubGmailRoute(page, gmailHtml);
     await page.setViewportSize({ width: 1024, height: 768 });
@@ -76,7 +76,7 @@ test.describe('Responsive toolbar behavior', () => {
     // Switch to start alignment
     await optionsPage.navigate();
     await optionsPage.setAlignment('start');
-    await optionsPage.waitForStorageValue('toolbarAlignment', 'start');
+    await optionsPage.waitForStorageValue('siftToolbarAlignment', 'start');
 
     await gmailPage.navigate();
     await toolbarComponent.assertAlignment('start');

@@ -4,6 +4,81 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **Rebranding**: The extension is now "Sift — A Filter Toolbar for Gmail". Google's branding rules
+  do not permit a Google trademark as the leading word in a third-party product name, which would
+  have blocked Chrome Web Store submission. Because nothing had been published yet, the rename was
+  applied throughout rather than layered on top of the old identifiers:
+  - npm package name is now `sift`.
+  - Release archives are named `sift-<browser>-v<version>.zip`.
+  - The Safari wrapper app is generated as `Sift` with bundle identifier
+    `com.kevinjohngallagher.Sift`.
+  - The Firefox gecko ID is now `sift@kevinjohngallagher.com`. Firefox treats this as a new add-on,
+    so a locally installed copy under the old ID must be removed.
+- **Storage keys renamed.** Every key was namespaced under `sift`, replacing the `gmailCal` prefix
+  left over from when the extension only showed, hid, or highlighted calendar invites, and the
+  unprefixed `showButtonText` / `showFavourites` / `showAiNotetakers` / `showDevNotifications` /
+  `toolbarAlignment` keys.
+
+  | Was                      | Now                        |
+  | ------------------------ | -------------------------- |
+  | `gmailCalMode`           | `siftMode`                 |
+  | `gmailCalDebug`          | `siftDebug`                |
+  | `gmailCalTheme`          | `siftTheme`                |
+  | `gmailCalModeWriteId`    | `siftModeWriteId`          |
+  | `gmailCalOptionsWriteId` | `siftOptionsWriteId`       |
+  | `showButtonText`         | `siftShowButtonText`       |
+  | `showFavourites`         | `siftShowFavourites`       |
+  | `showAiNotetakers`       | `siftShowAiNotetakers`     |
+  | `showDevNotifications`   | `siftShowDevNotifications` |
+  | `toolbarAlignment`       | `siftToolbarAlignment`     |
+
+  This is a cold rename with no compatibility shim, because there are no installs to migrate. Any
+  locally installed copy loses its saved preferences once and falls back to defaults.
+
+- `KEY_MODE` and `KEY_DEBUG` moved from `state.js` to `constants.js`, where every other storage key
+  already lived, so the background service worker imports them instead of repeating the literals.
+  `contentScript.js` imports them from `constants.js` too, leaving one canonical path per key.
+- The debug key in `options.js` now flows through `KEY_DEBUG` instead of being repeated as a bare
+  `'siftDebug'` literal in four places.
+- Manifests now declare `homepage_url`.
+
+### Fixed
+
+- `storageGet` and `storageSet` are `async` again. Resolving the storage backend dereferences
+  `chrome.storage`, which Firefox strips from an orphaned content script after an extension update;
+  without `async` that TypeError is thrown synchronously, and `loadState()` attaches its fail-safe
+  `.catch` to the returned promise rather than wrapping the call — so the safe defaults were skipped
+  and content-script initialisation aborted with an unhandled rejection instead of degrading
+  gracefully.
+
+### Added
+
+- Clicking the browser toolbar icon opens the options page. The manifest declares an action with no
+  popup, so previously the icon was a dead click. Failures are reported from both the throw and the
+  promise-rejection path, since `openOptionsPage()` returns a promise under MV3.
+- `PRIVACY.md`, documenting that the extension collects, stores, and transmits no user data, and
+  enumerating the display preferences it keeps in extension storage. Required for Chrome Web Store
+  submission because the extension runs on Gmail.
+- A Chrome Web Store listing section in `docs/release-checklist.md` covering asset specifications,
+  permission justifications, and the data usage certification.
+
+### Removed
+
+- The legacy `storage.local` to `storage.sync` recovery path in `storageGet`. It existed to carry
+  preferences written by an older local-only build into sync storage, along with the defensive
+  re-read, one-time cleanup, and best-effort write-failure handling that made it safe. With no
+  installs in existence it could never fire. `storageGet` is now a single read from the active
+  backend, and the `removeFromStorage` and `getRequestedKeys` helpers it needed are gone with it.
+  Six tests covering the migration were removed; `storage.js` remains at 100% coverage.
+- The `chrome.runtime.onMessage` handler in the content script, along with its `setMode` and
+  `refreshFilter` branches. Nothing in the extension ever sent those messages — only tests did — so
+  roughly 30 lines of validation and response logic were being maintained for a path that could not
+  execute. The behaviour those tests covered indirectly (click-driven mode changes, persistence,
+  and the optional-mode fallback) is now driven through real toolbar clicks instead.
+- A stray `console.log` emitted on install.
+
 ## [2.8.0] - 2026-07-27
 
 ### Fixed
@@ -396,7 +471,7 @@ All notable changes to this project will be documented in this file.
 
 - **Branding Update**: Rebranded extension from "Gmail Calendar Options" to "Gmail Filter Toolbar" to better reflect expanded functionality
   - Updated extension name, description, and all user-facing strings
-  - Package name updated to `gmail-filter-toolbar`
+  - Package name updated to `sift`
   - Emphasizes email filtering capabilities (calendar invites, attachments, starred messages, regular mail)
 - **Documentation**: Improved descriptions of filtering functionality and cross-browser compatibility
 
@@ -405,7 +480,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - **Firefox Support**: Full Mozilla Firefox compatibility (Firefox ≥ 121)
-  - Firefox-specific manifest with gecko ID `gmail-calendar-options@kevinjohngallagher.com`
+  - Firefox-specific manifest with gecko ID `sift@kevinjohngallagher.com`
   - Dual background script declaration (service_worker + scripts)
   - Cross-browser build system with environment-based manifest selection
 - **Multi-Browser Build System**:

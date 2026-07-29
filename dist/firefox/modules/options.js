@@ -1,6 +1,7 @@
 import {
   ALIGNMENT_KEY,
   ALIGNMENTS,
+  KEY_DEBUG,
   SHOW_BUTTON_TEXT_KEY,
   SHOW_FAVOURITES_KEY,
   SHOW_AI_NOTETAKERS_KEY,
@@ -132,7 +133,7 @@ function normalizeAlignment(value) {
  */
 function normalizeOptions(raw = {}) {
   return {
-    gmailCalDebug: !!raw.gmailCalDebug,
+    [KEY_DEBUG]: !!raw[KEY_DEBUG],
     [SHOW_BUTTON_TEXT_KEY]:
       raw[SHOW_BUTTON_TEXT_KEY] === undefined ? true : !!raw[SHOW_BUTTON_TEXT_KEY],
     [SHOW_FAVOURITES_KEY]: !!raw[SHOW_FAVOURITES_KEY],
@@ -242,7 +243,7 @@ const localOptionsWriteIds = new Set();
 const optionIntentVersions = new Map();
 
 const OPTION_KEYS = [
-  'gmailCalDebug',
+  KEY_DEBUG,
   SHOW_BUTTON_TEXT_KEY,
   SHOW_FAVOURITES_KEY,
   SHOW_AI_NOTETAKERS_KEY,
@@ -253,7 +254,7 @@ const OPTION_KEYS = [
 
 function readOptionsFromControls() {
   return {
-    gmailCalDebug: debugCheckbox.checked,
+    [KEY_DEBUG]: debugCheckbox.checked,
     [SHOW_BUTTON_TEXT_KEY]: showButtonTextCheckbox.checked,
     [SHOW_FAVOURITES_KEY]: showFavouritesCheckbox?.checked ?? false,
     [SHOW_AI_NOTETAKERS_KEY]: showAiNotetakersCheckbox?.checked ?? false,
@@ -264,7 +265,7 @@ function readOptionsFromControls() {
 }
 
 function applyOptionsToControls(options) {
-  debugCheckbox.checked = options.gmailCalDebug;
+  debugCheckbox.checked = options[KEY_DEBUG];
   showButtonTextCheckbox.checked = options[SHOW_BUTTON_TEXT_KEY];
   if (showFavouritesCheckbox) showFavouritesCheckbox.checked = options[SHOW_FAVOURITES_KEY];
   if (showAiNotetakersCheckbox) {
@@ -400,9 +401,9 @@ function restore_options() {
 // Keep the page in sync when settings change elsewhere (another window, another synced profile).
 if (globalThis.chrome?.storage?.onChanged) {
   onStorageChanged((changes, areaName) => {
-    // WHY: Only react to the active backend's area — the legacy migration removes keys from
-    // *local* after copying them to sync, and treating those removals (newValue: undefined) as
-    // changes would reset every control to defaults and clobber the just-migrated preferences.
+    // WHY: Only react to the active backend's area. onChanged fires for every area, but
+    // preferences only ever live in one — treating the inactive area's removals
+    // (newValue: undefined) as changes would reset every control to defaults.
     if (areaName !== getActiveAreaName()) return;
     if (!persistedOptions) return;
 

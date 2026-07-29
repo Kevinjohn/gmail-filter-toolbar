@@ -1,6 +1,8 @@
 import {
   ALIGNMENT_KEY,
   ALIGNMENTS,
+  KEY_DEBUG,
+  KEY_MODE,
   SHOW_BUTTON_TEXT_KEY,
   SHOW_FAVOURITES_KEY,
   SHOW_AI_NOTETAKERS_KEY,
@@ -9,18 +11,6 @@ import {
   THEMES,
 } from './constants.js';
 import { MODE_WRITE_ID_KEY, storageGet, storageSet } from './storage.js';
-
-/**
- * Storage key for current filter mode.
- * @stable
- */
-export const KEY_MODE = 'gmailCalMode';
-
-/**
- * Storage key for debug mode.
- * @stable
- */
-export const KEY_DEBUG = 'gmailCalDebug';
 
 /**
  * Available filter modes.

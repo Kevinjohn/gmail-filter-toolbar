@@ -27,7 +27,7 @@ describe('background.js', () => {
     warnSpy.mockRestore();
   });
 
-  test('sets gmailCalMode to ALL on installation', async () => {
+  test('sets siftMode to ALL on installation', async () => {
     const chrome = useChromeMock();
     await loadBackground();
 
@@ -39,7 +39,7 @@ describe('background.js', () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(chrome.storage.sync.set).toHaveBeenCalledWith(
-      { gmailCalMode: 'ALL', showAiNotetakers: false, showDevNotifications: false },
+      { siftMode: 'ALL', siftShowAiNotetakers: false, siftShowDevNotifications: false },
       expect.any(Function),
     );
     expect(infoSpy).toHaveBeenCalledWith(
@@ -64,7 +64,7 @@ describe('background.js', () => {
       storage: {
         sync: {
           get: jest.fn((keys, callback) =>
-            callback({ gmailCalMode: 'CALENDAR', showAiNotetakers: true }),
+            callback({ siftMode: 'CALENDAR', siftShowAiNotetakers: true }),
           ),
           set: jest.fn((data, callback) => callback?.()),
         },
@@ -77,7 +77,7 @@ describe('background.js', () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(chrome.storage.sync.set).toHaveBeenCalledWith(
-      { showDevNotifications: false },
+      { siftShowDevNotifications: false },
       expect.any(Function),
     );
   });
@@ -88,9 +88,9 @@ describe('background.js', () => {
         sync: {
           get: jest.fn((keys, callback) =>
             callback({
-              gmailCalMode: 'CALENDAR',
-              showAiNotetakers: true,
-              showDevNotifications: true,
+              siftMode: 'CALENDAR',
+              siftShowAiNotetakers: true,
+              siftShowDevNotifications: true,
             }),
           ),
           set: jest.fn((data, callback) => callback?.()),
@@ -122,6 +122,55 @@ describe('background.js', () => {
     expect(warnSpy).toHaveBeenCalledWith(
       expect.stringContaining('[perf] background:onInstalled storage.set completed in 750ms'),
     );
+  });
+
+  test('opens the options page when the toolbar icon is clicked', async () => {
+    const chrome = useChromeMock();
+    await loadBackground();
+
+    expect(chrome.action.onClicked.addListener).toHaveBeenCalledTimes(1);
+    const clickListener = chrome.action.onClicked.addListener.mock.calls[0][0];
+    clickListener();
+
+    expect(chrome.runtime.openOptionsPage).toHaveBeenCalledTimes(1);
+  });
+
+  test('logs an error when openOptionsPage rejects', async () => {
+    // WHY: under MV3 openOptionsPage returns a promise, so the failure path is a rejection rather
+    // than a throw and try/catch alone would never see it.
+    const chrome = useChromeMock({
+      runtime: {
+        openOptionsPage: jest.fn(() => Promise.reject(new Error('options page unavailable'))),
+      },
+    });
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    await loadBackground();
+
+    const clickListener = chrome.action.onClicked.addListener.mock.calls[0][0];
+    clickListener();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(errorSpy).toHaveBeenCalledWith('Error opening the options page:', expect.any(Error));
+
+    errorSpy.mockRestore();
+  });
+
+  test('logs an error when the options page cannot be opened', async () => {
+    const chrome = useChromeMock({
+      runtime: {
+        openOptionsPage: jest.fn(() => {
+          throw new Error('no options page');
+        }),
+      },
+    });
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    await loadBackground();
+
+    const clickListener = chrome.action.onClicked.addListener.mock.calls[0][0];
+    expect(() => clickListener()).not.toThrow();
+    expect(errorSpy).toHaveBeenCalledWith('Error opening the options page:', expect.any(Error));
+
+    errorSpy.mockRestore();
   });
 
   test('logs storage error when initial mode fails to persist', async () => {

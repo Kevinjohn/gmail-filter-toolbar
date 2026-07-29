@@ -215,13 +215,13 @@ describe('options module', () => {
 
     expect(chrome.storage.sync.get).toHaveBeenCalledWith(
       [
-        'gmailCalDebug',
-        'showButtonText',
-        'showFavourites',
-        'showAiNotetakers',
-        'showDevNotifications',
-        'toolbarAlignment',
-        'gmailCalTheme',
+        'siftDebug',
+        'siftShowButtonText',
+        'siftShowFavourites',
+        'siftShowAiNotetakers',
+        'siftShowDevNotifications',
+        'siftToolbarAlignment',
+        'siftTheme',
       ],
       expect.any(Function),
     );
@@ -282,11 +282,11 @@ describe('options module', () => {
 
     const lastPayload = chrome.storage.sync.set.mock.calls.pop()[0];
     expect(lastPayload).toMatchObject({
-      gmailCalDebug: true,
-      gmailCalTheme: 'dark',
-      showButtonText: false,
-      showFavourites: true,
-      toolbarAlignment: 'center',
+      siftDebug: true,
+      siftTheme: 'dark',
+      siftShowButtonText: false,
+      siftShowFavourites: true,
+      siftToolbarAlignment: 'center',
     });
   });
 
@@ -322,14 +322,14 @@ describe('options module', () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(writes).toHaveLength(1);
-    expect(writes[0].payload.gmailCalDebug).toBe(false);
+    expect(writes[0].payload.siftDebug).toBe(false);
     writes[0].callback();
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(writes).toHaveLength(1);
 
     const storageListener = chrome.storage.onChanged.addListener.mock.calls[0][0];
-    storageListener({ gmailCalTheme: { newValue: 'dark' } }, 'sync');
+    storageListener({ siftTheme: { newValue: 'dark' } }, 'sync');
     expect(debugBox.checked).toBe(false);
   });
 
@@ -351,15 +351,15 @@ describe('options module', () => {
     const storageListener = chrome.storage.onChanged.addListener.mock.calls[0][0];
     storageListener(
       {
-        gmailCalDebug: { newValue: true },
-        gmailCalOptionsWriteId: { newValue: firstWrite.payload.gmailCalOptionsWriteId },
+        siftDebug: { newValue: true },
+        siftOptionsWriteId: { newValue: firstWrite.payload.siftOptionsWriteId },
       },
       'sync',
     );
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(debugBox.checked).toBe(false);
-    expect(writes[1].payload.gmailCalDebug).toBe(false);
+    expect(writes[1].payload.siftDebug).toBe(false);
   });
 
   test('does not overwrite an external setting with a queued local patch', async () => {
@@ -378,13 +378,13 @@ describe('options module', () => {
     showTextBox.dispatchEvent(new Event('change'));
 
     const storageListener = chrome.storage.onChanged.addListener.mock.calls[0][0];
-    storageListener({ gmailCalTheme: { newValue: 'dark' } }, 'sync');
+    storageListener({ siftTheme: { newValue: 'dark' } }, 'sync');
     writes[0].callback();
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(themeSelect.value).toBe('dark');
-    expect(writes[1].payload).toMatchObject({ showButtonText: false });
-    expect(writes[1].payload).not.toHaveProperty('gmailCalTheme');
+    expect(writes[1].payload).toMatchObject({ siftShowButtonText: false });
+    expect(writes[1].payload).not.toHaveProperty('siftTheme');
   });
 
   test('logs retrieval errors from storage', async () => {
@@ -406,7 +406,7 @@ describe('options module', () => {
   test('logs saving errors to storage', async () => {
     await loadModule({
       setError: 'save failure',
-      storageValues: { gmailCalDebug: false, showButtonText: true },
+      storageValues: { siftDebug: false, siftShowButtonText: true },
     });
     const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     const debugBox = document.getElementById('debug');
@@ -501,7 +501,7 @@ describe('options module', () => {
   });
 
   test('restores AI & Transcription checkbox state', async () => {
-    await loadModule({ storageValues: { showAiNotetakers: true } });
+    await loadModule({ storageValues: { siftShowAiNotetakers: true } });
     const aiNotetakersCheckbox = document.getElementById('show-ai-notetakers-checkbox');
     expect(aiNotetakersCheckbox.checked).toBe(true);
   });
@@ -515,7 +515,7 @@ describe('options module', () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(chrome.storage.sync.set).toHaveBeenCalledWith(
-      expect.objectContaining({ showAiNotetakers: true }),
+      expect.objectContaining({ siftShowAiNotetakers: true }),
       expect.any(Function),
     );
   });

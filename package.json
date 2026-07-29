@@ -1,5 +1,5 @@
 {
-  "name": "gmail-filter-toolbar",
+  "name": "sift",
   "version": "2.8.0",
   "packageManager": "pnpm@11.7.0",
   "description": "Filter Gmail by calendar invites, attachments, starred messages, or regular mail.",
@@ -7,11 +7,11 @@
   "author": "Kevinjohn Gallagher",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Kevinjohn/gmail-filter-toolbar.git"
+    "url": "git+https://github.com/Kevinjohn/sift.git"
   },
-  "homepage": "https://github.com/Kevinjohn/gmail-filter-toolbar#readme",
+  "homepage": "https://github.com/Kevinjohn/sift#readme",
   "bugs": {
-    "url": "https://github.com/Kevinjohn/gmail-filter-toolbar/issues"
+    "url": "https://github.com/Kevinjohn/sift/issues"
   },
   "keywords": [
     "gmail",
@@ -32,8 +32,8 @@
     "build:chrome": "vite build && vite build --config vite.background.config.mjs",
     "build:firefox": "cross-env BROWSER=firefox vite build && cross-env BROWSER=firefox vite build --config vite.background.config.mjs",
     "build:safari": "cross-env BROWSER=safari vite build && cross-env BROWSER=safari vite build --config vite.background.config.mjs",
-    "safari:convert": "pnpm run build:safari && xcrun safari-web-extension-converter dist/safari --project-location safari-xcode --app-name 'Gmail Filter Toolbar' --bundle-identifier com.kevinjohngallagher.Gmail-Filter-Toolbar --macos-only --no-open --no-prompt --force",
-    "safari:open": "open safari-xcode/Gmail\\ Filter\\ Toolbar/Gmail\\ Filter\\ Toolbar.xcodeproj",
+    "safari:convert": "pnpm run build:safari && xcrun safari-web-extension-converter dist/safari --project-location safari-xcode --app-name 'Sift' --bundle-identifier com.kevinjohngallagher.Sift --macos-only --no-open --no-prompt --force",
+    "safari:open": "open safari-xcode/Sift/Sift.xcodeproj",
     "firefox:run": "pnpm run build:firefox && cross-env web-ext run --source-dir dist/firefox --firefox-preview",
     "firefox:lint": "web-ext lint --source-dir dist/firefox",
     "firefox:package": "pnpm run build:firefox && cross-env web-ext build --source-dir dist/firefox --artifacts-dir artifacts/firefox --overwrite-dest",

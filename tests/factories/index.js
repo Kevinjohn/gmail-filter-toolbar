@@ -22,7 +22,7 @@ export function makeToolbarState(overrides = {}) {
 
 export function makeOptionsPayload(overrides = {}) {
   return {
-    gmailCalDebug: false,
+    siftDebug: false,
     [SHOW_BUTTON_TEXT_KEY]: true,
     [SHOW_FAVOURITES_KEY]: false,
     [ALIGNMENT_KEY]: ALIGNMENTS.START,

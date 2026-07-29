@@ -115,7 +115,7 @@ function verifySafariManifest() {
 function zipDirectory(browser) {
   const sourceDir = path.resolve('dist', browser);
   const targetDir = path.join(artifactsDir, browser);
-  const archive = path.join(targetDir, `gmail-filter-toolbar-${browser}-v${version}.zip`);
+  const archive = path.join(targetDir, `sift-${browser}-v${version}.zip`);
   mkdirSync(targetDir, { recursive: true });
   run('zip', ['-q', '-r', archive, '.'], { cwd: sourceDir });
   verifyArchive(browser, archive);
@@ -124,7 +124,7 @@ function zipDirectory(browser) {
 
 function packageFirefox() {
   const targetDir = path.join(artifactsDir, 'firefox');
-  const filename = `gmail-filter-toolbar-firefox-v${version}.zip`;
+  const filename = `sift-firefox-v${version}.zip`;
   const archive = path.join(targetDir, filename);
   mkdirSync(targetDir, { recursive: true });
   run('pnpm', [

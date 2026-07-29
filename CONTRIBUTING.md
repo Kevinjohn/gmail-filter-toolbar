@@ -1,14 +1,14 @@
-# Contributing to Gmail Filter Toolbar
+# Contributing to Sift
 
 We welcome contributions to this project! To ensure a smooth and collaborative process, please follow these guidelines.
 
 ## How to Contribute
 
-1.  **Fork the Repository**: Start by forking the `gmail-filter-toolbar` repository to your GitHub account.
+1.  **Fork the Repository**: Start by forking the `sift` repository to your GitHub account.
 2.  **Clone Your Fork**: Clone your forked repository to your local machine:
     ```bash
-    git clone https://github.com/YOUR_USERNAME/gmail-filter-toolbar.git
-    cd gmail-filter-toolbar
+    git clone https://github.com/YOUR_USERNAME/sift.git
+    cd sift
     ```
 3.  **Create a New Branch**: Create a new branch for your feature or bug fix. Use a descriptive name (e.g., `feature/add-new-filter` or `fix/toolbar-injection-bug`).
     ```bash
@@ -25,7 +25,7 @@ We welcome contributions to this project! To ensure a smooth and collaborative p
     ```bash
     git push origin your-branch-name
     ```
-7.  **Create a Pull Request**: Go to the original `gmail-filter-toolbar` repository on GitHub and create a new pull request from your branch. Provide a clear description of your changes and reference any related issues.
+7.  **Create a Pull Request**: Go to the original `sift` repository on GitHub and create a new pull request from your branch. Provide a clear description of your changes and reference any related issues.
 
 ## Code Style and Quality
 

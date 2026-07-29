@@ -45,30 +45,6 @@ describe('storageGet', () => {
     expect(result).toEqual({ testKey: 'safariValue' });
   });
 
-  test('migrates missing legacy local values into sync storage', async () => {
-    const chrome = useChromeMock({
-      storage: {
-        sync: {
-          get: jest.fn((keys, callback) => callback({ currentKey: 'syncValue' })),
-          set: jest.fn((items, callback) => callback()),
-        },
-        local: {
-          get: jest.fn((keys, callback) => callback({ legacyKey: 'localValue' })),
-        },
-      },
-      runtime: { lastError: null },
-    });
-
-    const result = await storageGet(['currentKey', 'legacyKey']);
-
-    expect(chrome.storage.local.get).toHaveBeenCalledWith(['legacyKey'], expect.any(Function));
-    expect(chrome.storage.sync.set).toHaveBeenCalledWith(
-      { legacyKey: 'localValue' },
-      expect.any(Function),
-    );
-    expect(result).toEqual({ currentKey: 'syncValue', legacyKey: 'localValue' });
-  });
-
   test('rejects on storage error', async () => {
     const chrome = useChromeMock({
       storage: {
@@ -83,6 +59,26 @@ describe('storageGet', () => {
     });
 
     await expect(storageGet(['testKey'])).rejects.toThrow('Storage error');
+  });
+
+  test('rejects rather than throwing when the storage API is missing entirely', async () => {
+    // WHY: Firefox strips an orphaned content script's chrome global after an extension update, so
+    // resolving the backend throws synchronously. loadState() attaches .catch to the returned
+    // promise instead of wrapping the call, so a synchronous throw would skip its fail-safe
+    // defaults and abort content-script initialisation with an unhandled rejection.
+    const chrome = useChromeMock();
+    delete chrome.storage;
+
+    let thrownSynchronously = false;
+    let promise;
+    try {
+      promise = storageGet(['testKey']);
+    } catch {
+      thrownSynchronously = true;
+    }
+
+    expect(thrownSynchronously).toBe(false);
+    await expect(promise).rejects.toThrow();
   });
 });
 
@@ -156,121 +152,6 @@ describe('onStorageChanged', () => {
   });
 });
 
-describe('storage migration cleanup', () => {
-  test('removes migrated legacy keys from local storage', async () => {
-    const chrome = useChromeMock({
-      storage: {
-        sync: {
-          get: jest.fn((keys, callback) => callback({ currentKey: 'syncValue' })),
-          set: jest.fn((items, callback) => callback()),
-        },
-        local: {
-          get: jest.fn((keys, callback) => callback({ legacyKey: 'localValue' })),
-          remove: jest.fn((keys, callback) => callback()),
-        },
-      },
-      runtime: { lastError: null },
-    });
-
-    const result = await storageGet(['currentKey', 'legacyKey']);
-
-    expect(chrome.storage.local.remove).toHaveBeenCalledWith(['legacyKey'], expect.any(Function));
-    expect(result).toEqual({ currentKey: 'syncValue', legacyKey: 'localValue' });
-  });
-
-  test('tolerates legacy cleanup failure and still returns recovered values', async () => {
-    const chrome = useChromeMock({
-      storage: {
-        sync: {
-          get: jest.fn((keys, callback) => callback({})),
-          set: jest.fn((items, callback) => callback()),
-        },
-        local: {
-          get: jest.fn((keys, callback) => callback({ legacyKey: 'localValue' })),
-          remove: jest.fn((keys, callback) => {
-            chrome.runtime.lastError = new Error('remove failed');
-            callback();
-            chrome.runtime.lastError = null;
-          }),
-        },
-      },
-      runtime: { lastError: null },
-    });
-
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const result = await storageGet(['legacyKey']);
-
-    expect(result).toEqual({ legacyKey: 'localValue' });
-    expect(warnSpy).toHaveBeenCalled();
-    warnSpy.mockRestore();
-  });
-});
-
-describe('storage migration concurrency', () => {
-  test('does not overwrite a sync value populated while reading legacy storage', async () => {
-    let releaseLocalRead;
-    const chrome = useChromeMock({
-      storage: {
-        sync: {
-          get: jest
-            .fn()
-            .mockImplementationOnce((keys, callback) => callback({}))
-            .mockImplementationOnce((keys, callback) => callback({ legacyKey: 'newerSync' })),
-          set: jest.fn((items, callback) => callback()),
-        },
-        local: {
-          get: jest.fn((keys, callback) => {
-            releaseLocalRead = () => callback({ legacyKey: 'legacyLocal' });
-          }),
-          remove: jest.fn((keys, callback) => callback()),
-        },
-      },
-      runtime: { lastError: null },
-    });
-
-    const read = storageGet(['legacyKey']);
-    await Promise.resolve();
-    releaseLocalRead();
-
-    await expect(read).resolves.toEqual({ legacyKey: 'newerSync' });
-    expect(chrome.storage.sync.set).not.toHaveBeenCalled();
-    expect(chrome.storage.local.remove).not.toHaveBeenCalled();
-  });
-
-  test('returns legacy values when the defensive sync re-read fails', async () => {
-    const chrome = useChromeMock({
-      storage: {
-        sync: {
-          get: jest
-            .fn()
-            .mockImplementationOnce((keys, callback) => callback({}))
-            .mockImplementationOnce((keys, callback) => {
-              chrome.runtime.lastError = new Error('temporary sync failure');
-              callback({});
-              chrome.runtime.lastError = null;
-            }),
-          set: jest.fn((items, callback) => callback()),
-        },
-        local: {
-          get: jest.fn((keys, callback) => callback({ legacyKey: 'legacyLocal' })),
-          remove: jest.fn((keys, callback) => callback()),
-        },
-      },
-      runtime: { lastError: null },
-    });
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-    await expect(storageGet(['legacyKey'])).resolves.toEqual({ legacyKey: 'legacyLocal' });
-    expect(chrome.storage.sync.set).not.toHaveBeenCalled();
-    expect(chrome.storage.local.remove).not.toHaveBeenCalled();
-    expect(warnSpy).toHaveBeenCalledWith(
-      'Failed to recheck sync storage before legacy migration:',
-      expect.any(Error),
-    );
-    warnSpy.mockRestore();
-  });
-});
-
 describe('getActiveAreaName', () => {
   test('reports sync when sync storage exists', async () => {
     useChromeMock();
@@ -283,36 +164,5 @@ describe('getActiveAreaName', () => {
     delete chrome.storage.sync;
     const { getActiveAreaName } = await import('../src/modules/storage.js');
     expect(getActiveAreaName()).toBe('local');
-  });
-});
-
-describe('migration write failure tolerance', () => {
-  test('a failed sync write during migration does not reject storageGet', async () => {
-    const chrome = useChromeMock({
-      storage: {
-        sync: {
-          get: jest.fn((keys, callback) => callback({})),
-          set: jest.fn((items, callback) => {
-            chrome.runtime.lastError = new Error('quota exceeded');
-            callback();
-            chrome.runtime.lastError = null;
-          }),
-        },
-        local: {
-          get: jest.fn((keys, callback) => callback({ legacyKey: 'localValue' })),
-          remove: jest.fn((keys, callback) => callback()),
-        },
-      },
-      runtime: { lastError: null },
-    });
-
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const result = await storageGet(['legacyKey']);
-
-    // The read still succeeds with the recovered value, legacy keys stay for the next attempt.
-    expect(result).toEqual({ legacyKey: 'localValue' });
-    expect(chrome.storage.local.remove).not.toHaveBeenCalled();
-    expect(warnSpy).toHaveBeenCalled();
-    warnSpy.mockRestore();
   });
 });

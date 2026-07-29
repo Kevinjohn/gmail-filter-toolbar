@@ -83,10 +83,10 @@ localeMatrix.forEach(({ label, locale, localeDirectory, direction }) => {
         await page.locator('#theme-select').selectOption(theme);
 
         await waitForStorageOptions(page, {
-          toolbarAlignment: 'center',
-          showFavourites: true,
-          showButtonText: false,
-          gmailCalTheme: theme,
+          siftToolbarAlignment: 'center',
+          siftShowFavourites: true,
+          siftShowButtonText: false,
+          siftTheme: theme,
         });
 
         await stubGmailRoute(page, gmailHtml);
@@ -141,7 +141,7 @@ test.describe('Toolbar interactions', () => {
 
     await page.waitForSelector('#alignment-select');
     await page.locator('#show-favourites-checkbox').check();
-    await waitForStorageOptions(page, { showFavourites: true });
+    await waitForStorageOptions(page, { siftShowFavourites: true });
 
     await stubGmailRoute(page, gmailHtml);
     await page.goto('https://mail.google.com/mail/u/0/#inbox');

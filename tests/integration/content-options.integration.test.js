@@ -73,16 +73,12 @@ const getOptionsMarkup = () => `
   </section>
 `;
 
-describe('Integration: DOM + Message Passing', () => {
+describe('Integration: DOM + options propagation', () => {
   let storageListeners;
   let storedState;
   let failNextSet;
   let failMessage;
   let stateModule;
-  let messageListener;
-
-  const getMessageListener = () =>
-    messageListener ?? global.chrome.runtime.onMessage.addListener.mock.calls.at(-1)?.[0];
 
   const initialiseDom = () => {
     const dom = new JSDOM('<!doctype html><html><head></head><body></body></html>', {
@@ -117,16 +113,15 @@ describe('Integration: DOM + Message Passing', () => {
     jest.resetModules();
     storageListeners = [];
     storedState = {
-      gmailCalMode: 'ALL',
-      gmailCalDebug: false,
-      showButtonText: true,
-      showFavourites: false,
-      toolbarAlignment: 'start',
-      gmailCalTheme: 'system',
+      siftMode: 'ALL',
+      siftDebug: false,
+      siftShowButtonText: true,
+      siftShowFavourites: false,
+      siftToolbarAlignment: 'start',
+      siftTheme: 'system',
     };
     failNextSet = false;
     failMessage = 'Storage write failure';
-    messageListener = undefined;
 
     const overrideFactory = () => ({
       i18n: {
@@ -169,18 +164,6 @@ describe('Integration: DOM + Message Passing', () => {
       },
       runtime: {
         lastError: null,
-        onMessage: {
-          addListener: jest.fn((listener) => {
-            messageListener = listener;
-          }),
-          removeListener: jest.fn((listener) => {
-            if (messageListener === listener) {
-              messageListener = undefined;
-            }
-          }),
-          hasListener: jest.fn((listener) => messageListener === listener),
-        },
-        sendMessage: jest.fn(),
       },
       storage: {
         sync: {
@@ -232,32 +215,23 @@ describe('Integration: DOM + Message Passing', () => {
     await flushPromises();
   };
 
-  test('responds to runtime mode messages by updating toolbar and storage', async () => {
+  test('toolbar clicks update the toolbar and persist the mode', async () => {
     document.body.innerHTML = getGmailMarkup();
     await loadContentScript();
 
-    expect(global.chrome.runtime.onMessage.addListener).toHaveBeenCalled();
-    const listener = getMessageListener();
-    expect(listener).toBeDefined();
-
-    const sendResponse = jest.fn();
-    const result = listener(
-      { type: 'gmailCal:setMode', payload: { mode: stateModule.MODES.CALENDAR } },
-      {},
-      sendResponse,
-    );
-
-    expect(result).toBe(true);
+    document
+      .querySelector('#filter-CALENDAR')
+      .dispatchEvent(createEvent('click', { bubbles: true }));
     await flushPromises();
 
     expect(global.chrome.storage.sync.set).toHaveBeenCalledWith(
-      expect.objectContaining({ gmailCalMode: stateModule.MODES.CALENDAR }),
+      expect.objectContaining({ siftMode: stateModule.MODES.CALENDAR }),
       expect.any(Function),
     );
 
     const calendarButton = document.querySelector('#filter-CALENDAR');
     expect(calendarButton?.getAttribute('aria-checked')).toBe('true');
-    expect(sendResponse).toHaveBeenCalledWith({ ok: true, mode: stateModule.MODES.CALENDAR });
+    expect(stateModule.currentMode).toBe(stateModule.MODES.CALENDAR);
   });
 
   test('options changes persist and propagate to toolbar listeners', async () => {
@@ -292,16 +266,9 @@ describe('Integration: DOM + Message Passing', () => {
     const favouritesButton = document.querySelector('#filter-FAVOURITES');
     expect(favouritesButton?.hidden).toBe(false);
 
-    expect(global.chrome.runtime.onMessage.addListener).toHaveBeenCalled();
-    const listener = getMessageListener();
-    const sendResponse = jest.fn();
-    listener(
-      { type: 'gmailCal:setMode', payload: { mode: stateModule.MODES.FAVOURITES } },
-      {},
-      sendResponse,
-    );
+    favouritesButton.dispatchEvent(createEvent('click', { bubbles: true }));
     await flushPromises();
-    expect(sendResponse).toHaveBeenCalledWith({ ok: true, mode: stateModule.MODES.FAVOURITES });
+    expect(stateModule.currentMode).toBe(stateModule.MODES.FAVOURITES);
 
     favouritesCheckbox.checked = false;
     favouritesCheckbox.dispatchEvent(createEvent('change', { bubbles: true }));
@@ -309,36 +276,33 @@ describe('Integration: DOM + Message Passing', () => {
 
     expect(favouritesButton?.hidden).toBe(true);
     expect(favouritesButton?.getAttribute('aria-hidden')).toBe('true');
-    expect(storedState.gmailCalMode).toBe(stateModule.MODES.ALL);
+    expect(storedState.siftMode).toBe(stateModule.MODES.ALL);
 
     const payloads = global.chrome.storage.sync.set.mock.calls.map(([payload]) => payload);
     const fallBackPersisted = payloads.some(
-      (payload) => payload.gmailCalMode === stateModule.MODES.ALL && payload.gmailCalModeWriteId,
+      (payload) => payload.siftMode === stateModule.MODES.ALL && payload.siftModeWriteId,
     );
     expect(fallBackPersisted).toBe(true);
   });
 
   test('keeps All active when hiding the current mode cannot be persisted', async () => {
-    storedState.showFavourites = true;
+    storedState.siftShowFavourites = true;
     document.body.innerHTML = getGmailMarkup();
     await loadContentScript();
 
-    const listener = getMessageListener();
-    listener(
-      { type: 'gmailCal:setMode', payload: { mode: stateModule.MODES.FAVOURITES } },
-      {},
-      jest.fn(),
-    );
+    document
+      .querySelector('#filter-FAVOURITES')
+      .dispatchEvent(createEvent('click', { bubbles: true }));
     await flushPromises();
     expect(stateModule.currentMode).toBe(stateModule.MODES.FAVOURITES);
 
-    storedState.showFavourites = false;
+    storedState.siftShowFavourites = false;
     failNextSet = true;
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     storageListeners.forEach((storageListener) =>
       storageListener(
         {
-          showFavourites: {
+          siftShowFavourites: {
             oldValue: true,
             newValue: false,
           },
@@ -353,61 +317,6 @@ describe('Integration: DOM + Message Passing', () => {
     expect(document.querySelector('#filter-ALL')?.getAttribute('aria-checked')).toBe('true');
     expect(consoleErrorSpy).toHaveBeenCalledWith('Error saving mode:', expect.any(Error));
     consoleErrorSpy.mockRestore();
-  });
-
-  test('returns an error response when storage write fails', async () => {
-    document.body.innerHTML = getGmailMarkup();
-    await loadContentScript();
-
-    expect(global.chrome.runtime.onMessage.addListener).toHaveBeenCalled();
-    failNextSet = true;
-    failMessage = 'Quota exceeded';
-    const listener = getMessageListener();
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    const sendResponse = jest.fn();
-    const result = listener(
-      { type: 'gmailCal:setMode', payload: { mode: stateModule.MODES.CALENDAR } },
-      {},
-      sendResponse,
-    );
-
-    expect(result).toBe(true);
-    await flushPromises();
-
-    expect(global.chrome.storage.sync.set).toHaveBeenCalled();
-    expect(failNextSet).toBe(false);
-    expect(global.chrome.runtime.lastError).toEqual(expect.any(Error));
-    expect(sendResponse).toHaveBeenCalledWith({ ok: false, error: 'Quota exceeded' });
-    expect(consoleErrorSpy).toHaveBeenCalled();
-
-    const calendarButton = document.querySelector('#filter-CALENDAR');
-    expect(calendarButton?.getAttribute('aria-checked')).not.toBe('true');
-
-    consoleErrorSpy.mockRestore();
-  });
-
-  test('refresh messages re-run filter logic without mutating storage', async () => {
-    document.body.innerHTML = getGmailMarkup();
-    await loadContentScript();
-
-    const sendResponse = jest.fn();
-    const liveRegion = document.querySelector('.gcal-live-region');
-    expect(liveRegion).not.toBeNull();
-    if (liveRegion) {
-      liveRegion.textContent = '';
-    }
-
-    expect(global.chrome.runtime.onMessage.addListener).toHaveBeenCalled();
-    const listener = getMessageListener();
-    const result = listener({ type: 'gmailCal:refreshFilter' }, {}, sendResponse);
-    expect(result).toBe(false);
-    await flushPromises();
-
-    // WHY: The mode did not change, so the live region must stay silent — re-announcing the
-    // unchanged filter on every refresh/re-injection was screen-reader spam.
-    expect(liveRegion?.textContent).toBe('');
-    expect(global.chrome.storage.sync.set).not.toHaveBeenCalled();
-    expect(sendResponse).toHaveBeenCalledWith({ ok: true, mode: stateModule.MODES.ALL });
   });
 
   test('options gracefully handle storage quota errors', async () => {
@@ -432,7 +341,7 @@ describe('Integration: DOM + Message Passing', () => {
 
     expect(consoleErrorSpy).toHaveBeenCalledWith('Error saving options:', expect.any(Error));
     expect(filterBar.classList.contains('show-icon-only')).toBe(false);
-    expect(storedState.showButtonText).toBe(true);
+    expect(storedState.siftShowButtonText).toBe(true);
 
     consoleErrorSpy.mockRestore();
   });

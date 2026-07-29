@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.9.0] - 2026-07-29
+
 ### Changed
 
 - **Rebranding**: The extension is now "Sift — A Filter Toolbar for Gmail". Google's branding rules

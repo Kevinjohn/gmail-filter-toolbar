@@ -12,11 +12,11 @@
         padding: 12px;
         background: #f1f3f4;
       }
-      .G6[role='toolbar'] {
+      .G-atb[gh='tm'] {
         display: flex;
         gap: 8px;
       }
-      .G6[role='toolbar'] button {
+      .G-atb[gh='tm'] button {
         padding: 6px 10px;
       }
       .UI {
@@ -55,14 +55,17 @@
     </style>
   </head>
   <body>
+    <!--
+      Mirrors Gmail as of 2026-07: the action bar carries gh="tm" and no longer has role="toolbar"
+      or the .G6 wrapper. Keep this in step with real Gmail — when it drifted, the extension's
+      selectors broke in production while this fixture kept the e2e suite green.
+    -->
     <div class="aeH">
-      <div class="G-atb">
-        <div class="G6" role="toolbar" aria-label="Main toolbar">
-          <button type="button" data-testid="archive-button">Archive</button>
-          <button type="button" data-testid="spam-button">Report spam</button>
-          <button type="button" data-testid="delete-button">Delete</button>
-          <button type="button" data-testid="mark-read-button">Mark as read</button>
-        </div>
+      <div class="D E G-atb" gh="tm">
+        <button type="button" data-testid="archive-button">Archive</button>
+        <button type="button" data-testid="spam-button">Report spam</button>
+        <button type="button" data-testid="delete-button">Delete</button>
+        <button type="button" data-testid="mark-read-button">Mark as read</button>
       </div>
     </div>
 

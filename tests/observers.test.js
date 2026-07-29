@@ -1,5 +1,4 @@
 import { describe, beforeEach, afterEach, test, expect, jest } from '@jest/globals';
-import { SELECTORS } from '../src/modules/constants.js';
 
 let observers;
 let state;
@@ -383,39 +382,47 @@ describe('waiters', () => {
     jest.useRealTimers();
   });
 
-  test('waitForGmailToolbar polls until closest header appears', async () => {
-    jest.useFakeTimers();
+  test('waitForGmailToolbar resolves against current Gmail markup', async () => {
+    // WHY: Gmail dropped role="toolbar" and the .G6 class from the action bar, leaving only
+    // `.aeH > .G-atb[gh="tm"]`. Every selector the waiter knew about stopped matching, so it timed
+    // out on every page load while the observer silently carried injection instead.
+    document.body.innerHTML = '';
     const header = document.createElement('div');
     header.className = 'aeH';
-    const toolbar = {
-      closest: jest
-        .fn()
-        .mockImplementationOnce(() => null)
-        .mockImplementationOnce(() => header),
-    };
+    const actionBar = document.createElement('div');
+    actionBar.className = 'D E G-atb';
+    actionBar.setAttribute('gh', 'tm');
+    header.appendChild(actionBar);
+    document.body.appendChild(header);
 
-    const originalQuery = document.querySelector.bind(document);
-    const querySpy = jest.spyOn(document, 'querySelector').mockImplementation((selector) => {
-      if (
-        selector === SELECTORS.gmailToolbar ||
-        selector === SELECTORS.gmailToolbarLegacy ||
-        selector === SELECTORS.gmailToolbarAria
-      ) {
-        return toolbar;
-      }
-      if (selector === SELECTORS.gmailToolbarHeader) {
-        return header;
-      }
-      return originalQuery(selector);
-    });
+    await expect(observers.waitForGmailToolbar()).resolves.toBe(header);
+  });
 
-    const promise = observers.waitForGmailToolbar();
-    jest.runOnlyPendingTimers();
-    await promise;
+  test('waitForGmailToolbar skips candidates that are not inside a header', async () => {
+    // WHY: Gmail renders ~20 [role="toolbar"] elements, nearly all outside .aeH. The waiter used to
+    // take the first selector that matched anything, and when closest('.aeH') came back null it
+    // re-polled that same doomed element until timeout rather than trying the other candidates.
+    document.body.innerHTML = '';
+    const decoy = document.createElement('div');
+    decoy.setAttribute('role', 'toolbar');
+    decoy.setAttribute('aria-label', 'Main toolbar');
+    document.body.appendChild(decoy);
 
-    expect(toolbar.closest).toHaveBeenCalledTimes(2);
-    querySpy.mockRestore();
-    jest.useRealTimers();
+    const header = document.createElement('div');
+    header.className = 'aeH';
+    const actionBar = document.createElement('div');
+    actionBar.className = 'G-atb';
+    actionBar.setAttribute('gh', 'tm');
+    header.appendChild(actionBar);
+    document.body.appendChild(header);
+
+    await expect(observers.waitForGmailToolbar()).resolves.toBe(header);
+  });
+
+  test('findGmailToolbarHeader returns null when nothing matches', () => {
+    document.body.innerHTML = '<div class="aeH"></div>';
+    // A bare header with no toolbar candidate inside is not yet ready.
+    expect(observers.findGmailToolbarHeader(document)).toBeNull();
   });
 
   test('waitForGmailToolbar rejects after timeout', async () => {

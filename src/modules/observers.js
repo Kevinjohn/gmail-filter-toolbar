@@ -95,6 +95,12 @@ export function setupGmailToolbarObserver(doc = document) {
       return;
     }
 
+    // WHY this queries the header directly instead of reusing findGmailToolbarHeader(): the header
+    // is the only element injection actually needs, so this path stays working even when every
+    // toolbar-candidate selector goes stale. That asymmetry is deliberate defence in depth — when
+    // Gmail dropped role="toolbar" and .G6, this observer kept injecting the toolbar while
+    // waitForGmailToolbar timed out. Tightening it to match would convert a logged warning into a
+    // completely dead toolbar. Do not "unify" these two selectors.
     const gmailToolbarHeader = doc.querySelector(SELECTORS.gmailToolbarHeader);
     const filterWrappers = doc.querySelectorAll(SELECTORS.filterWrapper);
     const filterWrapper = filterWrappers[0];
@@ -141,6 +147,40 @@ export function setupGmailToolbarObserver(doc = document) {
 // timeout budget.
 const POLL_INTERVAL_MS = 100;
 
+/**
+ * Ordered toolbar candidates, most current Gmail first. Each is only a readiness signal — the
+ * value the caller needs is the `.aeH` header the candidate lives in.
+ */
+const TOOLBAR_CANDIDATE_SELECTORS = [
+  SELECTORS.gmailToolbarMain,
+  SELECTORS.gmailToolbar,
+  SELECTORS.gmailToolbarLegacy,
+  SELECTORS.gmailToolbarAria,
+  SELECTORS.gmailToolbarStructural,
+];
+
+/**
+ * Finds the Gmail header to inject the toolbar against, or null if Gmail has not rendered it yet.
+ *
+ * WHY it walks every candidate rather than taking the first match: the previous form picked the
+ * first selector that matched anything and then required that element to have an `.aeH` ancestor.
+ * A match outside `.aeH` — Gmail has ~20 `[role="toolbar"]` elements, nearly all elsewhere — made
+ * `closest` return null, and the poll retried the same doomed element until it timed out instead of
+ * falling through to a selector that would have worked.
+ *
+ * @param {Document} doc
+ * @returns {Element|null}
+ */
+export function findGmailToolbarHeader(doc = document) {
+  for (const selector of TOOLBAR_CANDIDATE_SELECTORS) {
+    for (const candidate of doc.querySelectorAll(selector)) {
+      const header = candidate.closest(SELECTORS.gmailToolbarHeader);
+      if (header) return header;
+    }
+  }
+  return null;
+}
+
 export function waitForGmailToolbar(doc = document) {
   return new Promise((resolve, reject) => {
     let timedOut = false;
@@ -151,20 +191,10 @@ export function waitForGmailToolbar(doc = document) {
 
     (function poll() {
       if (timedOut) return;
-      const toolbar =
-        doc.querySelector(SELECTORS.gmailToolbar) ||
-        doc.querySelector(SELECTORS.gmailToolbarLegacy) ||
-        doc.querySelector(SELECTORS.gmailToolbarAria) ||
-        doc.querySelector(SELECTORS.gmailToolbarStructural);
-
-      if (toolbar) {
-        const header = toolbar.closest(SELECTORS.gmailToolbarHeader);
-        if (header) {
-          clearTimeout(timeoutId);
-          resolve(header);
-        } else {
-          setTimeout(poll, POLL_INTERVAL_MS);
-        }
+      const header = findGmailToolbarHeader(doc);
+      if (header) {
+        clearTimeout(timeoutId);
+        resolve(header);
       } else {
         setTimeout(poll, POLL_INTERVAL_MS);
       }

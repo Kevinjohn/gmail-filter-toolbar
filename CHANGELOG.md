@@ -4,6 +4,42 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.10.0] - 2026-07-29
+
+### Fixed
+
+- **The toolbar no longer depends on the mutation observer to appear.** Gmail dropped both
+  `role="toolbar"` and the `.G6` class from its action bar, which left all four of the extension's
+  toolbar selectors matching nothing. `waitForGmailToolbar` therefore rejected after ten seconds on
+  every page load, and because that rejection happens inside `main()`, the whole initial setup —
+  `injectToolbar`, `refreshUI`, `waitForMessageTable`, `applyFilter` and `observeMessageList` — was
+  skipped. The extension only kept working because the toolbar observer queries the `.aeH` header
+  directly and re-injected on the next DOM mutation, which is also why the toolbar visibly lagged on
+  load. A page load quiet enough not to trigger a `childList` mutation would have left no toolbar at
+  all.
+
+  Added `gmailToolbarMain` (`.aeH [gh="tm"]`) as the primary selector. `gh="tm"` is Gmail's own
+  long-lived hook for the main toolbar, is not locale-dependent, and is structurally guaranteed to
+  sit inside the `.aeH` header that injection targets. The previous selectors are retained as
+  fallbacks for older Gmail.
+
+- **Toolbar lookup no longer dead-ends on the first matching selector.** The lookup took the first
+  selector that matched anything, then required that element to have an `.aeH` ancestor. Gmail
+  renders around twenty `[role="toolbar"]` elements, nearly all of them outside `.aeH`, so a match
+  in the wrong place made `closest()` return null — and the poll retried that same element every
+  100ms until timeout instead of trying the remaining candidates. Lookup now walks every candidate
+  and returns the first that actually resolves to a header, exposed as `findGmailToolbarHeader`.
+
+### Internal
+
+- The Playwright Gmail fixture now mirrors Gmail's current action-bar markup (`gh="tm"`, no
+  `role="toolbar"`, no `.G6`). It previously used the older structure, so the e2e suite stayed green
+  against selectors that had already stopped matching real Gmail — the reason this reached
+  production. With the fixture updated, reverting the selector fix fails five e2e specs.
+- The toolbar observer deliberately continues to query `.aeH` directly rather than sharing the
+  candidate chain. That asymmetry is what kept the extension usable through this Gmail change;
+  unifying the two would turn a logged warning into a completely dead toolbar. Commented in place.
+
 ## [2.9.0] - 2026-07-29
 
 ### Changed

@@ -158,7 +158,14 @@ export const FILTER_HIDDEN_CLASS = 'gcal-filter-hidden';
  */
 export const SELECTORS = {
   /**
-   * Selector for the primary Gmail toolbar (newer versions).
+   * Selector for the primary Gmail toolbar (current Gmail).
+   * WHY: Gmail dropped both `role="toolbar"` and the `.G6` class from the action bar, which broke
+   * every selector below it. `gh="tm"` ("toolbar, main") is Gmail's own long-lived hook, is not
+   * locale-dependent, and sits inside the `.aeH` header the toolbar is injected against.
+   */
+  gmailToolbarMain: '.aeH [gh="tm"]',
+  /**
+   * Selector for the primary Gmail toolbar (older versions).
    * Targets the main action bar where buttons like "Archive", "Report spam" are located.
    */
   gmailToolbar: '.G-atb .G6[role="toolbar"]',

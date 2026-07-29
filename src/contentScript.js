@@ -11,7 +11,6 @@ import {
 } from './modules/constants.js';
 import {
   loadState,
-  persistMode,
   setCurrentMode,
   isModeAvailable,
   isValidMode,
@@ -42,48 +41,8 @@ import {
   setupGmailToolbarObserver,
 } from './modules/observers.js';
 import { applyTheme } from './modules/theme.js';
-import { createStorageWriteId, getActiveAreaName, MODE_WRITE_ID_KEY } from './modules/storage.js';
-
-let modePersistenceQueue = Promise.resolve();
-let modePersistenceEpoch = 0;
-const localModeWriteIds = new Set();
-
-function queueModePersistence(mode, epoch) {
-  modePersistenceQueue = modePersistenceQueue
-    .catch(() => {})
-    .then(() => {
-      if (epoch !== modePersistenceEpoch) return;
-      const writeId = createStorageWriteId('mode');
-      localModeWriteIds.add(writeId);
-      return persistMode(mode, writeId).catch((error) => {
-        localModeWriteIds.delete(writeId);
-        throw error;
-      });
-    });
-  return modePersistenceQueue;
-}
-
-function selectMode(mode, { allowHidden = false, rollbackOnFailure = true } = {}) {
-  const isAllowed = allowHidden ? isValidMode(mode) : isModeAvailable(mode);
-  if (!isAllowed) {
-    return Promise.reject(new TypeError(`Unavailable filter mode: ${String(mode)}`));
-  }
-
-  const previousMode = currentMode;
-  const persistenceEpoch = modePersistenceEpoch;
-  setCurrentMode(mode);
-  applyFilter(document);
-  refreshUI(document);
-
-  return queueModePersistence(mode, persistenceEpoch).catch((error) => {
-    if (rollbackOnFailure && currentMode === mode) {
-      setCurrentMode(previousMode);
-      applyFilter(document);
-      refreshUI(document);
-    }
-    throw error;
-  });
-}
+import { getActiveAreaName, MODE_WRITE_ID_KEY } from './modules/storage.js';
+import { consumeLocalModeWrite, selectMode, supersedeQueuedModeWrites } from './modules/mode.js';
 
 const OPTIONAL_MODE_CONTROLS = {
   [SHOW_FAVOURITES_KEY]: {
@@ -169,10 +128,10 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
     const storedMode = changes[KEY_MODE].newValue;
     const nextMode = isValidMode(storedMode) ? storedMode : MODES.ALL;
     const writeId = changes[MODE_WRITE_ID_KEY]?.newValue;
-    const isLocalAcknowledgement = localModeWriteIds.delete(writeId);
+    const isLocalAcknowledgement = consumeLocalModeWrite(writeId);
     if (!isLocalAcknowledgement && nextMode !== currentMode) {
       // An authoritative storage update supersedes local intents that have not started writing.
-      modePersistenceEpoch += 1;
+      supersedeQueuedModeWrites();
       setCurrentMode(nextMode);
       applyFilter(document);
       refreshUI(document);

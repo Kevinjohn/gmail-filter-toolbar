@@ -107,6 +107,9 @@ describe('contentScript main lifecycle', () => {
     jest.unstable_mockModule('../src/modules/toolbar.js', () => ({
       injectToolbar: injectToolbarMock,
       refreshUI: refreshUIMock,
+      markToolbarStale: jest.fn(),
+      // A live extension context — the orphaned-script path is covered in tests/mode.test.js.
+      isExtensionContextInvalidated: jest.fn(() => false),
       updateAlignmentView: updateAlignmentViewMock,
       updateButtonTextView: updateButtonTextViewMock,
       updateButtonVisibility: updateButtonVisibilityMock,

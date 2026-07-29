@@ -21,6 +21,9 @@ release record so browser-specific behavior has repeatable evidence.
 ## Chrome and Edge
 
 - [ ] Load `dist/chrome/` unpacked in a clean browser profile.
+- [ ] Run the selector check in `docs/notes/gmail-selector-drift.md` against real Gmail and confirm
+      the console is free of `Failed to find Gmail toolbar`. Gmail's markup changes without notice
+      and the e2e fixture only catches drift once someone updates it.
 - [ ] Open Gmail in English, German, French, Spanish, and one right-to-left locale.
 - [ ] Confirm the toolbar and options page use the selected locale rather than falling back to
       English.

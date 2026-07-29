@@ -3,6 +3,7 @@ import { JSDOM } from 'jsdom';
 import {
   injectToolbar,
   isExtensionContextInvalidated,
+  markToolbarStale,
   updateButtonTextView,
   updateAlignmentView,
   updateButtonVisibility,
@@ -525,5 +526,40 @@ describe('extended keyboard navigation', () => {
       expect(buttons[0].focus).toHaveBeenCalled();
       expect(buttons[0].click).toHaveBeenCalled();
     });
+  });
+});
+
+describe('markToolbarStale', () => {
+  test('disables every filter button and flags the bar', () => {
+    const { doc } = renderToolbar();
+
+    markToolbarStale(doc);
+
+    const bar = doc.querySelector(SELECTORS.filterBar);
+    expect(bar.classList.contains('gcal-filter-stale')).toBe(true);
+    const buttons = [...bar.querySelectorAll('button[data-mode]')];
+    expect(buttons.length).toBeGreaterThan(0);
+    expect(buttons.every((b) => b.disabled)).toBe(true);
+    expect(buttons.every((b) => b.getAttribute('aria-disabled') === 'true')).toBe(true);
+    // Nothing in the retired toolbar should remain reachable by keyboard.
+    expect(buttons.every((b) => b.getAttribute('tabindex') === '-1')).toBe(true);
+  });
+
+  test('touches no extension API, since it only ever runs on a dead context', () => {
+    const { doc } = renderToolbar();
+    const liveChrome = global.chrome;
+    global.chrome = undefined;
+
+    try {
+      expect(() => markToolbarStale(doc)).not.toThrow();
+    } finally {
+      global.chrome = liveChrome;
+    }
+  });
+
+  test('is a no-op when the toolbar was never injected', () => {
+    const doc = createDocument();
+
+    expect(() => markToolbarStale(doc)).not.toThrow();
   });
 });

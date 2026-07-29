@@ -316,6 +316,31 @@ export function updateButtonVisibility(mode, show, doc = document) {
   }
 }
 
+/**
+ * Visibly retires the toolbar of an orphaned content script.
+ *
+ * WHY: after an extension update the old content script keeps running, and its toolbar keeps
+ * looking interactive. Clicking a filter used to apply optimistically and then quietly do nothing —
+ * the write had no live `chrome.storage` to reach — so the mode silently reverted on the next page
+ * load. Disabling the controls turns that lie into an honest "reload Gmail".
+ *
+ * WHY no i18n here: this only ever runs when the extension context is dead, which is exactly when
+ * `chrome.i18n.getMessage` throws. Everything below is DOM-only on purpose.
+ *
+ * @param {Document} doc
+ */
+export function markToolbarStale(doc = document) {
+  const bar = doc.querySelector(SELECTORS.filterBar);
+  if (!bar) return;
+
+  bar.classList.add('gcal-filter-stale');
+  bar.querySelectorAll('button[data-mode]').forEach((filterButton) => {
+    filterButton.disabled = true;
+    filterButton.setAttribute('aria-disabled', 'true');
+    filterButton.setAttribute('tabindex', '-1');
+  });
+}
+
 // WHY: Track the last announced filter across re-injections so the live region only speaks when the
 // filter actually changes. Without this, every Gmail reflow re-announced the unchanged filter to
 // screen-reader users. Starts as null so the initial page load records silently instead of announcing.

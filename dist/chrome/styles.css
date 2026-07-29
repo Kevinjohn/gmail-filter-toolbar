@@ -107,6 +107,16 @@ span.text-label {
   display: none;
 }
 
+/* An orphaned content script's toolbar, retired after an extension update. Dimmed and
+   non-interactive so it reads as "reload Gmail" rather than as working controls. */
+.gcal-filter-bar.gcal-filter-stale {
+  opacity: 0.5;
+}
+
+.gcal-filter-bar.gcal-filter-stale button[data-mode] {
+  cursor: default;
+}
+
 /* Debug mode: highlight rows that would be hidden, using the theme-aware overlay colour. */
 tr.zA.gcal-filter-hidden {
   display: none !important;

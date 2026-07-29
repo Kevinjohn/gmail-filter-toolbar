@@ -4,6 +4,47 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.10.1] - 2026-07-29
+
+### Fixed
+
+- **A stale toolbar no longer pretends to work after the extension updates.** When the extension is
+  updated or reloaded, already-open Gmail tabs keep running the previous content script. Its toolbar
+  stayed fully interactive but was attached to a dead extension context: clicking a filter applied
+  it optimistically, then threw `TypeError: Cannot read properties of undefined (reading
+  'getMessage')` from `refreshUI`, because an orphaned script has no `chrome.i18n`. The write had no
+  live `chrome.storage` to reach either, so the chosen filter silently reverted on the next page
+  load — the toolbar looked like it worked and did not.
+
+  `selectMode` now checks `isExtensionContextInvalidated()` before touching state or the DOM, and
+  the new `markToolbarStale` disables the filter buttons, removes them from the tab order and dims
+  the bar, so it reads as "reload Gmail" rather than as working controls. `markToolbarStale` is
+  deliberately DOM-only and calls no extension API, since it runs precisely when those APIs are
+  gone; a test nulls `chrome` entirely to hold that line.
+
+  Found by exercising the extension against real Gmail. Every automated gate was green throughout —
+  an orphaned content script needs a real extension reload underneath a live page, which neither the
+  unit suite nor Playwright can manufacture.
+
+### Internal
+
+- **Extracted the filter mode's write path into `src/modules/mode.js`.** `selectMode`, the
+  serialised persistence queue and the local write-ID bookkeeping are one unit — a caller that
+  bumped the queue's epoch without owning the queue could silently drop a write — so they now live
+  behind three verbs (`selectMode`, `consumeLocalModeWrite`, `supersedeQueuedModeWrites`) instead of
+  as loose module state in `contentScript.js`, which is back to being wiring.
+- **Covered the optimistic-update rollback, which was previously untestable.** Rolling back a failed
+  mode write depends on reading the `currentMode` binding that `setCurrentMode` just mutated, and
+  the contentScript suite mocks the state module — where `currentMode` is a frozen literal in the
+  mock namespace, so the guard is permanently false and the branch never ran. `tests/mode.test.js`
+  exercises the real state module; both the rollback and its stale-mode guard now fail the suite
+  when broken. Coverage floors: `mode.js` pinned at 100% statements/branches/lines,
+  `contentScript.js` raised to 88/90/70/90.
+- **Documented how to detect Gmail selector drift** in `docs/notes/gmail-selector-drift.md`, with a
+  console check for the toolbar candidates and instructions to update the e2e fixture alongside the
+  selectors. Added it to the Chrome section of the release checklist. Gmail's markup change in
+  2.10.0 was invisible to CI because the fixture described a Gmail that no longer existed.
+
 ## [2.10.0] - 2026-07-29
 
 ### Fixed

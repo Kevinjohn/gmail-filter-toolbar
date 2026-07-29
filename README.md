@@ -7,17 +7,18 @@
 ## Table of Contents
 
 1. [What It Does](#what-it-does)
-2. [Requirements](#requirements)
-3. [Quick Start](#quick-start)
-4. [Building for Production](#building-for-production)
-5. [Debug Mode](#debug-mode)
-6. [Keyboard & Accessibility Notes](#keyboard--accessibility-notes)
-7. [Localisation](#localisation)
-8. [Project Structure](#project-structure)
-9. [Scripts](#scripts)
-10. [Testing](#testing)
-11. [Contributing](#contributing)
-12. [Licence](#licence)
+2. [See It In Action](#see-it-in-action)
+3. [Requirements](#requirements)
+4. [Quick Start](#quick-start)
+5. [Building for Production](#building-for-production)
+6. [Debug Mode](#debug-mode)
+7. [Keyboard & Accessibility Notes](#keyboard--accessibility-notes)
+8. [Localisation](#localisation)
+9. [Project Structure](#project-structure)
+10. [Scripts](#scripts)
+11. [Testing](#testing)
+12. [Contributing](#contributing)
+13. [Licence](#licence)
 
 ---
 
@@ -50,6 +51,40 @@ Transform your Gmail inbox with instant, client-side filtering. A custom toolbar
 - **Privacy-focused** – Zero external requests, all filtering happens locally. No data is collected
   or transmitted; see [PRIVACY.md](PRIVACY.md)
 - **Multi-language ready** – Localizable strings with RTL language support
+
+---
+
+## See It In Action
+
+The toolbar sits directly beneath Gmail's own action bar, so it reads as part of the interface
+rather than something bolted on top:
+
+![Sift's filter toolbar in a Gmail inbox, showing All, Emails, Calendar, Attachments, Images, PDFs, Docs, Sheets and Slides buttons above a full list of messages. "All" is selected and every message is visible.](docs/screenshots/all-mail.png)
+
+Pick a filter and the list narrows instantly – no page reload and no network request. **Calendar**
+leaves only the meeting invites standing:
+
+![The same inbox with the Calendar filter selected. The list has narrowed from twenty-one messages to the two calendar invitations, each showing a calendar icon.](docs/screenshots/calendar-only.png)
+
+**Attachments** shows only messages carrying files, with Gmail's own attachment chips intact:
+
+![The same inbox with the Attachments filter selected, showing four messages that each display one or more attachment chips beneath the subject line.](docs/screenshots/attachments.png)
+
+…and you can go straight to a single file type. **PDFs** ignores the images and spreadsheets in
+those same threads:
+
+![The same inbox with the PDFs filter selected, showing the two messages that contain a PDF attachment.](docs/screenshots/pdfs.png)
+
+Everything is configurable from the options page – button text, alignment, theme, and the
+experimental filters:
+
+![Sift's options page in dark theme, with sections for Debugging, Display, Toolbar layout, Appearance and Experimental features.](docs/screenshots/options.png)
+
+> **Note on the screenshots:** these are real captures of the extension running against live Gmail,
+> but the sender names, subjects, message previews, attachment filenames and label names have all
+> been replaced with invented ones. Nothing in the images is a real person, message or file. The
+> markup Sift actually inspects – attachment types, calendar-invite markers, star state – was left
+> untouched, so the filter results shown are genuine.
 
 ---
 

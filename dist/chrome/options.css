@@ -3,6 +3,12 @@ body {
   padding: 1em;
   background-color: var(--gcal-bg-color);
   color: var(--gcal-text-color);
+  /* WHY rem rather than px: .option-row is a space-between flex row, so on a full-width tab the
+     label and its control end up at opposite edges of the screen with nothing between them. A
+     measure keeps them readably paired. Expressed in rem so it tracks the user's default font
+     size — at a larger base size the column grows with the text instead of squeezing it. */
+  max-width: 45rem;
+  margin-inline: auto;
 }
 fieldset {
   border: 1px solid var(--gcal-border-color);

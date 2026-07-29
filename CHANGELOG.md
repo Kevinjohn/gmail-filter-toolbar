@@ -4,6 +4,38 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.10.2] - 2026-07-29
+
+### Changed
+
+- **The options page now holds a readable measure instead of stretching to the window.** Each
+  setting is a `space-between` flex row, so on a full-width browser tab the label sat against the
+  left edge and its checkbox or select against the right, with a lot of empty space between them —
+  the further apart they got, the harder it was to be sure which control belonged to which label.
+  The page is now capped at `45rem` and centred.
+
+  The cap is expressed in `rem` rather than pixels on purpose: it is a measure for *text*, so it
+  should follow whatever base font size the reader has configured. At a 24px root it opens out to
+  1080px instead of squeezing the larger type into a 720px column, and at a 12px root it tightens to
+  540px. A fixed `720px` would have quietly worked against anyone who had increased their default
+  font size for legibility.
+
+### Documentation
+
+- **Added a "See It In Action" section to the README** with five screenshots: the toolbar in a full
+  inbox, the Calendar, Attachments and PDFs filters narrowing that same inbox, and the options page.
+  The repository described what the extension did without ever showing it.
+
+  The screenshots are captures of the extension running against live Gmail, with sender names,
+  subjects, previews, attachment filenames and label names replaced. The substitution deliberately
+  left every signal the filters read — attachment file extensions, `.ics` markers, calendar icons,
+  star state — untouched, and the visible-row counts were compared before and after to confirm the
+  results are real rather than staged. The README says so explicitly, so nobody has to take the
+  images on trust.
+
+  Each image carries descriptive alt text stating both what is on screen and what the filter did,
+  since the point being illustrated is the change in the list, which a filename cannot convey.
+
 ## [2.10.1] - 2026-07-29
 
 ### Fixed

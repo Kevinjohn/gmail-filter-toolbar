@@ -8,11 +8,11 @@
     "description": "Description of the extension."
   },
   "label_toolbar": {
-    "message": "Фильтр календаря",
+    "message": "Панель фильтров почты и календаря",
     "description": "ARIA label for the main toolbar."
   },
   "label_options": {
-    "message": "Фильтр электронной почты: ",
+    "message": "Фильтр почты и календаря: ",
     "description": "Label preceding the filter buttons."
   },
   "btn_all": {
@@ -56,11 +56,11 @@
     "description": "Button to show only emails with presentation attachments."
   },
   "page_title": {
-    "message": "Параметры календаря",
+    "message": "Настройки панели фильтров",
     "description": "Title for the extension's options page."
   },
   "options_page_description": {
-    "message": "Настройки для расширения параметров календаря Gmail.",
+    "message": "Настройте параметры фильтрации и панели инструментов для Gmail.",
     "description": "A short summary of the options page."
   },
   "options_debug_legend": {
@@ -124,7 +124,7 @@
     "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
   },
   "extension_action_title": {
-    "message": "Фильтр календаря встроен в страницы Gmail",
+    "message": "Панель фильтров почты и календаря встроена в страницы Gmail",
     "description": "The title of the extension's action button in the browser toolbar."
   },
   "alt_starred": {

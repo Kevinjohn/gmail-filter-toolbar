@@ -8,11 +8,11 @@
     "description": "Description of the extension."
   },
   "label_toolbar": {
-    "message": "日历筛选器",
+    "message": "邮件和日历筛选工具栏",
     "description": "ARIA label for the main toolbar."
   },
   "label_options": {
-    "message": "邮件筛选：",
+    "message": "邮件和日历筛选：",
     "description": "Label preceding the filter buttons."
   },
   "btn_all": {
@@ -56,11 +56,11 @@
     "description": "Button to show only emails with presentation attachments."
   },
   "page_title": {
-    "message": "日历选项",
+    "message": "筛选工具栏选项",
     "description": "Title for the extension's options page."
   },
   "options_page_description": {
-    "message": "Gmail 日历选项扩展的设置。",
+    "message": "配置 Gmail 的筛选选项和工具栏偏好设置。",
     "description": "A short summary of the options page."
   },
   "options_debug_legend": {
@@ -124,7 +124,7 @@
     "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
   },
   "extension_action_title": {
-    "message": "日历筛选器已嵌入 Gmail 页面",
+    "message": "邮件和日历筛选工具栏已嵌入 Gmail 页面",
     "description": "The title of the extension's action button in the browser toolbar."
   },
   "alt_starred": {

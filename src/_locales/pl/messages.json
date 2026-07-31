@@ -8,11 +8,11 @@
     "description": "Description of the extension."
   },
   "label_toolbar": {
-    "message": "Filtr kalendarza",
+    "message": "Pasek narzędzi filtra poczty i kalendarza",
     "description": "ARIA label for the main toolbar."
   },
   "label_options": {
-    "message": "Filtr wiadomości e-mail: ",
+    "message": "Filtr poczty i kalendarza: ",
     "description": "Label preceding the filter buttons."
   },
   "btn_all": {
@@ -56,11 +56,11 @@
     "description": "Button to show only emails with presentation attachments."
   },
   "page_title": {
-    "message": "Opcje kalendarza",
+    "message": "Opcje paska filtrów",
     "description": "Title for the extension's options page."
   },
   "options_page_description": {
-    "message": "Ustawienia rozszerzenia opcji kalendarza Gmail.",
+    "message": "Skonfiguruj opcje filtrowania i preferencje paska narzędzi dla Gmaila.",
     "description": "A short summary of the options page."
   },
   "options_debug_legend": {
@@ -124,7 +124,7 @@
     "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
   },
   "extension_action_title": {
-    "message": "Filtr kalendarza jest osadzony na stronach Gmail",
+    "message": "Pasek narzędzi filtra poczty i kalendarza jest osadzony na stronach Gmaila",
     "description": "The title of the extension's action button in the browser toolbar."
   },
   "alt_starred": {

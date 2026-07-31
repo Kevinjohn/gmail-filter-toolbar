@@ -8,11 +8,11 @@
     "description": "Description of the extension."
   },
   "label_toolbar": {
-    "message": "Naptárszűrő",
+    "message": "E-mail- és naptárszűrő eszköztár",
     "description": "ARIA label for the main toolbar."
   },
   "label_options": {
-    "message": "E-mail szűrő: ",
+    "message": "E-mail- és naptárszűrő: ",
     "description": "Label preceding the filter buttons."
   },
   "btn_all": {
@@ -56,11 +56,11 @@
     "description": "Button to show only emails with presentation attachments."
   },
   "page_title": {
-    "message": "Naptár beállításai",
+    "message": "Szűrőeszköztár beállításai",
     "description": "Title for the extension's options page."
   },
   "options_page_description": {
-    "message": "A Gmail Naptár beállítások bővítmény beállításai.",
+    "message": "Adja meg a szűrési beállításokat és az eszköztár beállításait a Gmailhez.",
     "description": "A short summary of the options page."
   },
   "options_debug_legend": {
@@ -124,7 +124,7 @@
     "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
   },
   "extension_action_title": {
-    "message": "A naptárszűrő be van ágyazva a Gmail oldalakba",
+    "message": "Az e-mail- és naptárszűrő eszköztár be van ágyazva a Gmail oldalaiba",
     "description": "The title of the extension's action button in the browser toolbar."
   },
   "alt_starred": {

@@ -59,32 +59,39 @@ Transform your Gmail inbox with instant, client-side filtering. A custom toolbar
 The toolbar sits directly beneath Gmail's own action bar, so it reads as part of the interface
 rather than something bolted on top:
 
-![Sift's filter toolbar in a Gmail inbox, showing All, Emails, Calendar, Attachments, Images, PDFs, Docs, Sheets and Slides buttons above a full list of messages. "All" is selected and every message is visible.](docs/screenshots/all-mail.png)
+![Sift's filter toolbar in a Gmail inbox, showing All, Emails, Calendar, Favourites, Attachments, Images, PDFs, Docs, Sheets, Slides, AI & Notes and Dev buttons above a full list of messages. "All" is selected and all twenty-six messages are visible.](docs/screenshots/filter-all.png)
 
 Pick a filter and the list narrows instantly – no page reload and no network request. **Calendar**
 leaves only the meeting invites standing:
 
-![The same inbox with the Calendar filter selected. The list has narrowed from twenty-one messages to the two calendar invitations, each showing a calendar icon.](docs/screenshots/calendar-only.png)
+![The same inbox with the Calendar filter selected. The list has narrowed from twenty-six messages to the two meeting invitations, each showing a calendar icon at the end of its row.](docs/screenshots/filter-calendar.png)
 
 **Attachments** shows only messages carrying files, with Gmail's own attachment chips intact:
 
-![The same inbox with the Attachments filter selected, showing four messages that each display one or more attachment chips beneath the subject line.](docs/screenshots/attachments.png)
+![The same inbox with the Attachments filter selected, showing eight messages that each display one or more attachment chips beneath the subject line.](docs/screenshots/filter-attachments.png)
 
-…and you can go straight to a single file type. **PDFs** ignores the images and spreadsheets in
-those same threads:
+…and you can go straight to a single file type. **PDFs** ignores the images, spreadsheets and
+documents in those same threads:
 
-![The same inbox with the PDFs filter selected, showing the two messages that contain a PDF attachment.](docs/screenshots/pdfs.png)
+![The same inbox with the PDFs filter selected, showing the two messages that contain a PDF attachment.](docs/screenshots/filter-pdfs.png)
 
 Everything is configurable from the options page – button text, alignment, theme, and the
 experimental filters:
 
-![Sift's options page in dark theme, with sections for Debugging, Display, Toolbar layout, Appearance and Experimental features.](docs/screenshots/options.png)
+![Sift's options page in dark theme, with sections for Debugging, Display, Toolbar layout, Appearance and Experimental features.](docs/screenshots/options-dark.png)
 
-> **Note on the screenshots:** these are real captures of the extension running against live Gmail,
-> but the sender names, subjects, message previews, attachment filenames and label names have all
-> been replaced with invented ones. Nothing in the images is a real person, message or file. The
-> markup Sift actually inspects – attachment types, calendar-invite markers, star state – was left
-> untouched, so the filter results shown are genuine.
+The toolbar is translated into all 25 shipped locales and mirrors for right-to-left languages:
+
+![Sift's toolbar in Arabic inside a mirrored Gmail inbox. The sidebar sits on the right, and the filter buttons run right to left starting from the selected "All" button.](docs/screenshots/locale-ar-toolbar.png)
+
+> **Note on the screenshots:** every person, subject, message preview, attachment filename and
+> label in these images is invented – nothing shown is a real person, message or file, and no real
+> mailbox was captured. They are produced by running the built extension against a replica inbox
+> ([`scripts/screenshots/gmail-inbox.html`](scripts/screenshots/gmail-inbox.html)) and clicking
+> each filter, so the filtering itself is genuine: Sift classifies those rows with exactly the same
+> code path it runs against live Gmail. The full set – one capture per filter, plus theme, layout,
+> debug and language variants – lives in [`docs/screenshots/`](docs/screenshots/) and is
+> regenerated with `pnpm run screenshots:capture`.
 
 ---
 

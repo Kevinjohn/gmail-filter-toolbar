@@ -8,11 +8,11 @@
     "description": "Description of the extension."
   },
   "label_toolbar": {
-    "message": "Kalenderfilter",
+    "message": "Værktøjslinje til e-mail- og kalenderfilter",
     "description": "ARIA label for the main toolbar."
   },
   "label_options": {
-    "message": "E-mailfilter: ",
+    "message": "E-mail- og kalenderfilter: ",
     "description": "Label preceding the filter buttons."
   },
   "btn_all": {
@@ -56,11 +56,11 @@
     "description": "Button to show only emails with presentation attachments."
   },
   "page_title": {
-    "message": "Kalenderindstillinger",
+    "message": "Indstillinger for filterværktøjslinjen",
     "description": "Title for the extension's options page."
   },
   "options_page_description": {
-    "message": "Indstillinger for Gmail Kalenderindstillinger udvidelse.",
+    "message": "Konfigurer filtreringsindstillinger og præferencer for værktøjslinjen til Gmail.",
     "description": "A short summary of the options page."
   },
   "options_debug_legend": {
@@ -124,7 +124,7 @@
     "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
   },
   "extension_action_title": {
-    "message": "Kalenderfilter er integreret på Gmail-sider",
+    "message": "Værktøjslinjen til e-mail- og kalenderfilter er integreret på Gmail-sider",
     "description": "The title of the extension's action button in the browser toolbar."
   },
   "alt_starred": {

@@ -8,11 +8,11 @@
     "description": "Description of the extension."
   },
   "label_toolbar": {
-    "message": "Kalenderfilter",
+    "message": "Werkbalk voor e-mail- en agendafilter",
     "description": "ARIA label for the main toolbar."
   },
   "label_options": {
-    "message": "E-mailfilter: ",
+    "message": "E-mail- en agendafilter: ",
     "description": "Label preceding the filter buttons."
   },
   "btn_all": {
@@ -56,11 +56,11 @@
     "description": "Button to show only emails with presentation attachments."
   },
   "page_title": {
-    "message": "Agenda-opties",
+    "message": "Opties voor de filterwerkbalk",
     "description": "Title for the extension's options page."
   },
   "options_page_description": {
-    "message": "Instellingen voor de Gmail Agenda Opties extensie.",
+    "message": "Configureer filteropties en werkbalkvoorkeuren voor Gmail.",
     "description": "A short summary of the options page."
   },
   "options_debug_legend": {
@@ -124,7 +124,7 @@
     "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
   },
   "extension_action_title": {
-    "message": "Agenda-filter is ingebouwd op Gmail-pagina's",
+    "message": "De werkbalk voor e-mail- en agendafilter is ingebouwd op Gmail-pagina's",
     "description": "The title of the extension's action button in the browser toolbar."
   },
   "alt_starred": {

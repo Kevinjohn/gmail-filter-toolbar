@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.11.0] - 2026-07-31
+
+### Fixed
+
+- **Every language except English still called the extension "Calendar Options".** The 2.9.0 Sift
+  rebrand updated `extension_name` in all 25 locales but missed five other keys, so anyone whose
+  browser resolved to a non-`en` bundle — including `en_GB` — opened the options page to a heading
+  reading "Calendar Options" and a description referring to "the Gmail Calendar Options extension".
+  The toolbar's own ARIA label and the browser-action tooltip carried the same stale wording.
+  `label_toolbar`, `label_options`, `page_title`, `options_page_description` and
+  `extension_action_title` are now translated in all 24 affected locales. `options_alignment_center`
+  keeps its British "Centre" in `en_GB`.
+
+### Added
+
+- **Marketing screenshots are now reproducible.** `pnpm run screenshots:capture` drives the built
+  extension against an invented Gmail replica (`scripts/screenshots/gmail-inbox.html`) and writes
+  the full set in `docs/screenshots/` — one capture per filter, plus theme, layout, debug and
+  language variants. The row count of every capture is asserted during the run, so a drift between
+  the fixture and the extension's classification fails the run rather than publishing a misleading
+  image. No real mailbox is involved.
+
 ## [2.10.2] - 2026-07-29
 
 ### Changed
@@ -14,7 +36,7 @@ All notable changes to this project will be documented in this file.
   the further apart they got, the harder it was to be sure which control belonged to which label.
   The page is now capped at `45rem` and centred.
 
-  The cap is expressed in `rem` rather than pixels on purpose: it is a measure for *text*, so it
+  The cap is expressed in `rem` rather than pixels on purpose: it is a measure for _text_, so it
   should follow whatever base font size the reader has configured. At a 24px root it opens out to
   1080px instead of squeezing the larger type into a 720px column, and at a 12px root it tightens to
   540px. A fixed `720px` would have quietly worked against anyone who had increased their default
@@ -44,7 +66,7 @@ All notable changes to this project will be documented in this file.
   updated or reloaded, already-open Gmail tabs keep running the previous content script. Its toolbar
   stayed fully interactive but was attached to a dead extension context: clicking a filter applied
   it optimistically, then threw `TypeError: Cannot read properties of undefined (reading
-  'getMessage')` from `refreshUI`, because an orphaned script has no `chrome.i18n`. The write had no
+'getMessage')` from `refreshUI`, because an orphaned script has no `chrome.i18n`. The write had no
   live `chrome.storage` to reach either, so the chosen filter silently reverted on the next page
   load — the toolbar looked like it worked and did not.
 

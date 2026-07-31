@@ -1,6 +1,6 @@
 {
   "name": "sift",
-  "version": "2.10.2",
+  "version": "2.11.0",
   "packageManager": "pnpm@11.7.0",
   "description": "Filter Gmail by calendar invites, attachments, starred messages, or regular mail.",
   "license": "MIT",
@@ -55,7 +55,8 @@
     "lint:locales": "node scripts/lint-locales.js",
     "lint:docs": "node scripts/lint-docs.mjs",
     "verify:dist": "node scripts/verify-dist.mjs",
-    "prepare": "husky"
+    "prepare": "husky",
+    "screenshots:capture": "node scripts/capture-screenshots.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.42.1",

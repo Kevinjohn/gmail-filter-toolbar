@@ -8,11 +8,11 @@
     "description": "Description of the extension."
   },
   "label_toolbar": {
-    "message": "Filtr kalendáře",
+    "message": "Panel nástrojů pro filtrování e-mailů a kalendáře",
     "description": "ARIA label for the main toolbar."
   },
   "label_options": {
-    "message": "Filtr e-mailů: ",
+    "message": "Filtr e-mailů a kalendáře: ",
     "description": "Label preceding the filter buttons."
   },
   "btn_all": {
@@ -56,11 +56,11 @@
     "description": "Button to show only emails with presentation attachments."
   },
   "page_title": {
-    "message": "Možnosti kalendáře",
+    "message": "Možnosti panelu filtrů",
     "description": "Title for the extension's options page."
   },
   "options_page_description": {
-    "message": "Nastavení rozšíření Možnosti kalendáře Gmail.",
+    "message": "Nastavte možnosti filtrování a předvolby panelu nástrojů pro Gmail.",
     "description": "A short summary of the options page."
   },
   "options_debug_legend": {
@@ -124,7 +124,7 @@
     "description": "Announcement for screen readers when filter is updated. $1 is the filter mode (e.g., All Email, Mail Only)"
   },
   "extension_action_title": {
-    "message": "Filtr kalendáře je vložen na stránky Gmailu",
+    "message": "Panel nástrojů pro filtrování e-mailů a kalendáře je vložen na stránky Gmailu",
     "description": "The title of the extension's action button in the browser toolbar."
   },
   "alt_starred": {

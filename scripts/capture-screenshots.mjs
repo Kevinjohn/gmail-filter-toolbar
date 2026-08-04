@@ -40,9 +40,9 @@ const BASE_SETTINGS = {
   siftDebug: false,
   siftShowButtonText: true,
   siftShowFavourites: true,
-  siftShowAiNotetakers: true,
-  siftShowDevNotifications: true,
-  siftToolbarAlignment: 'start',
+  siftShowAiNotetakers: false,
+  siftShowDevNotifications: false,
+  siftToolbarAlignment: 'center',
 };
 
 /**
@@ -61,8 +61,18 @@ const SHOTS = [
   { name: 'filter-sheets', mode: 'SPREADSHEET', rows: 2 },
   { name: 'filter-slides', mode: 'PRESENTATION', rows: 2 },
   { name: 'filter-favourites', mode: 'FAVOURITES', rows: 2 },
-  { name: 'filter-ai-notes', mode: 'AI_NOTETAKERS', rows: 2 },
-  { name: 'filter-dev', mode: 'DEV_NOTIFICATIONS', rows: 2 },
+  {
+    name: 'filter-ai-notes',
+    mode: 'AI_NOTETAKERS',
+    rows: 2,
+    settings: { siftShowAiNotetakers: true },
+  },
+  {
+    name: 'filter-dev',
+    mode: 'DEV_NOTIFICATIONS',
+    rows: 2,
+    settings: { siftShowDevNotifications: true },
+  },
 
   // --- appearance & layout ------------------------------------------------------------
   { name: 'toolbar-icons-only', mode: 'ALL', rows: 26, settings: { siftShowButtonText: false } },

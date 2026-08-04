@@ -100,7 +100,7 @@ describe('loadState', () => {
     expect(debugOn).toBe(false);
     expect(showButtonText).toBe(true);
     expect(showFavouritesButton).toBe(false);
-    expect(toolbarAlignment).toBe(ALIGNMENTS.START);
+    expect(toolbarAlignment).toBe(ALIGNMENTS.CENTER);
     expect(themePreference).toBe(THEMES.SYSTEM);
   });
 
@@ -211,9 +211,9 @@ describe('value setters', () => {
     expect(themePreference).toBe(THEMES.SYSTEM);
   });
 
-  test('setToolbarAlignment falls back to start', () => {
+  test('setToolbarAlignment falls back to center', () => {
     setToolbarAlignment('invalid');
-    expect(toolbarAlignment).toBe(ALIGNMENTS.START);
+    expect(toolbarAlignment).toBe(ALIGNMENTS.CENTER);
   });
 
   test('setShowFavouritesButton normalises to boolean', () => {

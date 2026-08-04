@@ -1,4 +1,4 @@
-# Sift — A Filter Toolbar for Gmail
+# Sift: A Filter Toolbar for Gmail
 
 > Lightweight browser extension (Chrome & Firefox) that adds a powerful filtering toolbar to Gmail, letting you instantly view only the emails you want – calendar invites, attachments, starred messages, or regular mail – directly in your inbox or any folder.
 
@@ -171,7 +171,7 @@ In Xcode:
 1. Build and Run (Cmd+R)
 2. Safari will launch
 3. Go to Safari > Preferences > Extensions
-4. Enable "Sift — A Filter Toolbar for Gmail"
+4. Enable "Sift: A Filter Toolbar for Gmail"
 5. Grant permissions when prompted
 
 **Note:** Safari extensions require an Xcode wrapper app. Settings use synced storage when
@@ -245,8 +245,8 @@ Firefox executes the background script as an event page (non-persistent backgrou
 
 Access the extension options page via:
 
-- **Chrome/Edge**: `chrome://extensions` → _Sift — A Filter Toolbar for Gmail_ → **Extension options**
-- **Firefox**: `about:addons` → _Sift — A Filter Toolbar for Gmail_ → **Options**
+- **Chrome/Edge**: `chrome://extensions` → _Sift: A Filter Toolbar for Gmail_ → **Extension options**
+- **Firefox**: `about:addons` → _Sift: A Filter Toolbar for Gmail_ → **Options**
 
 ### Available Settings
 

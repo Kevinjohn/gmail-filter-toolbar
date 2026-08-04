@@ -56,7 +56,8 @@
     "lint:docs": "node scripts/lint-docs.mjs",
     "verify:dist": "node scripts/verify-dist.mjs",
     "prepare": "husky",
-    "screenshots:capture": "node scripts/capture-screenshots.mjs"
+    "screenshots:capture": "node scripts/capture-screenshots.mjs",
+    "promo:capture": "node scripts/capture-promo-images.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.42.1",

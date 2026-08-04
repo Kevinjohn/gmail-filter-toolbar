@@ -123,7 +123,7 @@ document.documentElement.lang = documentLanguage;
 document.documentElement.dir = rtlLanguages.has(documentLanguage.split('-')[0]) ? 'rtl' : 'ltr';
 
 function normalizeAlignment(value) {
-  return Object.values(ALIGNMENTS).includes(value) ? value : ALIGNMENTS.START;
+  return Object.values(ALIGNMENTS).includes(value) ? value : ALIGNMENTS.CENTER;
 }
 
 /**
@@ -259,7 +259,7 @@ function readOptionsFromControls() {
     [SHOW_FAVOURITES_KEY]: showFavouritesCheckbox?.checked ?? false,
     [SHOW_AI_NOTETAKERS_KEY]: showAiNotetakersCheckbox?.checked ?? false,
     [SHOW_DEV_NOTIFICATIONS_KEY]: showDevNotificationsCheckbox?.checked ?? false,
-    [ALIGNMENT_KEY]: alignmentSelect?.value ?? ALIGNMENTS.START,
+    [ALIGNMENT_KEY]: alignmentSelect?.value ?? ALIGNMENTS.CENTER,
     [THEME_KEY]: themeSelect?.value ?? THEMES.SYSTEM,
   };
 }

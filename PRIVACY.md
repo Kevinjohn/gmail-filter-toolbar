@@ -2,7 +2,7 @@
 
 **Last updated:** 29 July 2026
 
-This policy covers the Sift — A Filter Toolbar for Gmail browser extension for Chrome, Edge, Firefox, and
+This policy covers the Sift: A Filter Toolbar for Gmail browser extension for Chrome, Edge, Firefox, and
 Safari.
 
 ## Summary

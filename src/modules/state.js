@@ -82,7 +82,7 @@ export let showDevNotificationsButton = false;
  * Toolbar alignment preference.
  * @stable
  */
-export let toolbarAlignment = ALIGNMENTS.START;
+export let toolbarAlignment = ALIGNMENTS.CENTER;
 
 export function setCurrentMode(mode) {
   if (!isValidMode(mode)) {
@@ -142,7 +142,7 @@ export function setShowDevNotificationsButton(value) {
 const ALIGNMENT_VALUES = new Set(Object.values(ALIGNMENTS));
 
 export function setToolbarAlignment(value) {
-  toolbarAlignment = ALIGNMENT_VALUES.has(value) ? value : ALIGNMENTS.START;
+  toolbarAlignment = ALIGNMENT_VALUES.has(value) ? value : ALIGNMENTS.CENTER;
 }
 
 export function loadState() {
@@ -176,7 +176,7 @@ export function loadState() {
       showFavouritesButton = false;
       showAiNotetakersButton = false;
       showDevNotificationsButton = false;
-      toolbarAlignment = ALIGNMENTS.START;
+      toolbarAlignment = ALIGNMENTS.CENTER;
     });
 }
 

@@ -9,10 +9,10 @@ const version = JSON.parse(readFileSync('package.json', 'utf8')).version;
 const artifactsDir = path.resolve('artifacts');
 const reuseBuilds = process.argv.includes('--reuse-builds');
 const approvedIconHashes = {
-  'icons/icon16.png': '91e6b565dc58ab2474d94f87f691b2643ee2475ff65b733b39c7dff22a200b20',
-  'icons/icon32.png': 'f0748bc8086a69cbecb47ea3ae8632111070956ee7b0db8f81925779b5597f7a',
-  'icons/icon48.png': '22434f9628821e9c26a4facfd7dcbd158abb1899c0280cb59c357d818ecd7540',
-  'icons/icon128.png': '3d996805136d9ec9a01c6c2084d5627d920adf012a551944d9eeadbf0d27882f',
+  'icons/icon16.png': '41fab93590607ecdc361b5fd469280718b13a5d5edaff4daf0d688f7ea0615fd',
+  'icons/icon32.png': '75d878174366166d8be20c74413d2efaa668d4484a785bc4cf2bdb1bcb915aa9',
+  'icons/icon48.png': 'd7733aaaac991de9a81572007ecf011861b6ed77611ddfb51febb8504479d5d0',
+  'icons/icon128.png': '69643eace85f71d31d577fd7b707d1afde0124627be4364038f25ac624332c0a',
 };
 
 function run(command, args, options = {}) {

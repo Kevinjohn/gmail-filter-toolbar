@@ -140,7 +140,7 @@ for (const locale of locales) {
       errors.push(`${locale}: unexpected message key "${key}"`);
     }
   }
-  if (localeMessages.extension_name?.message !== 'Sift — A Filter Toolbar for Gmail') {
+  if (localeMessages.extension_name?.message !== 'Sift: A Filter Toolbar for Gmail') {
     errors.push(`${locale}: extension_name must use the invariant product brand`);
   }
 }
